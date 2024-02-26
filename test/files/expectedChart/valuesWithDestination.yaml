@@ -1,0 +1,33 @@
+serviceInstances:
+  destination-lite:
+    name: bookshop-destination
+    serviceOfferingName: destination
+    servicePlanName: lite
+    parameters:
+      HTML5Runtime_enabled: true
+serviceBindings:
+  destination-lite:
+    name: bookshop-destination-bind
+    serviceInstanceName: bookshop-destination
+    secretName: bookshop-destination-bind-secret
+    secretKey: credentials
+    parameters: {}
+app:
+  domains:
+    primary: null
+    secondary: []
+  istioIngressGatewayLabels:
+    istio: ingressgateway
+    app: istio-ingressgateway
+btp:
+  globalAccountId: null
+  provider:
+    subdomain: null
+    tenantId: null
+imagePullSecrets: []
+workloads: null
+tenantOperations:
+  provisioning: []
+  upgrade: []
+  deprovisioning: []
+contentJobs: []

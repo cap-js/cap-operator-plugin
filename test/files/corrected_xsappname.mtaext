@@ -1,0 +1,12 @@
+_schema-version: "3.1"
+ID: demo.author-readings
+extends: author-readings
+
+parameters:
+    xsappname: partner-refapp-ph2
+
+modules:
+- name: author-readings-srv
+  properties:
+    OTLP_TRACE_URL: http://telemetry-otlp-traces.kyma-system:4318
+    IS_MTXS_ENABLED: "true"

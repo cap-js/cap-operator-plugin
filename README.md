@@ -2,13 +2,42 @@
 
 # cap-operator-plugin
 
-## About this project
+CAP Operator Plugin provides an easy way to generate CAP Operator resources required for deploying multitenant CAP Applications.
 
-CAP Operator Plugin provides an easy way to generate CAP Operator resources to deploy multitenant CAP Applications.
+## Setup
 
-## Requirements and Setup
+To integrate the CAP Operator Plugin into your project, follow these steps:
 
-*Insert a short description what is required to get your project running...*
+1. Add this self-configuring plugin package to your project:
+
+```sh
+ npm add @cap-js/cap-operator-plugin -D
+```
+
+2. After installation, execute one of the following commands based on your requirements:
+
+* To add a basic chart folder, use:
+```sh
+ cds add cap-operator
+```
+During `cds build`, the plugin will automatically inject the templates folder into the final chart.
+
+* To add a chart folder with templates included, use:
+```sh
+ cds add cap-operator-with-templates
+```
+During `cds build`, the plugin will copy the templates folder into the final chart.
+
+3. Once executed, the chart folder or chart folder with templates will be added to your project directory.
+
+4. Update the `values.yaml` file with your design-time deployment details according to `values.schema.json`. You can either use any YAML schema validation extension or run the following command to ensure correctness:
+```sh
+helm lint <chart-path>
+```
+
+5. After filling all the design-time information in `values.yaml`, run `cds build`. The final chart will be generated in the `gen` folder within your project directory.
+
+> Note: If you are adding the basic chart folder using the `cds add cap-operator` command, do not modify the `values.schema.json` file. The templates injected automatically during cds build are tightly coupled with the structure in `values.schema.json`. If schema changes are needed, use `cds add cap-operator-with-templates` to add the templates folder and adjust them accordingly.
 
 ## Support, Feedback, Contributing
 

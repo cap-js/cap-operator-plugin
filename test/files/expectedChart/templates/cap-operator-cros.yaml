@@ -1,0 +1,179 @@
+---
+apiVersion: sme.sap.com/v1alpha1
+kind: CAPApplication
+metadata:
+  name: cap-{{ include "appName" $ }}
+spec:
+  domains:
+    primary: {{.Values.app.domains.primary}}
+    {{- if .Values.app.domains.secondary }}
+    secondary:
+      {{- range .Values.app.domains.secondary }}
+      - {{.}}
+      {{- end }}
+    {{- end }}
+    istioIngressGatewayLabels:
+    {{- range $k, $v := .Values.app.istioIngressGatewayLabels }}
+    - name: {{ $k }}
+      value: {{ $v | default "invalidValue"}}
+    {{- end }}
+  btpAppName: {{ include "appName" $ }}
+  globalAccountId: "{{.Values.btp.globalAccountId}}"
+  provider:
+    subDomain: "{{.Values.btp.provider.subdomain}}"
+    tenantId: "{{.Values.btp.provider.tenantId}}"
+  btp:
+    services:
+    {{- $serviceInstances := .Values.serviceInstances }}
+    {{- range $k, $v := .Values.serviceBindings }}
+    {{- $serviceInstance := dict }}
+    {{- range $sik, $siv := $serviceInstances }}
+      {{- if eq $siv.name $v.serviceInstanceName }}
+        {{- $serviceInstance = $siv }}
+      {{- end }}
+    {{- end }}
+    {{- if hasKey $serviceInstance "serviceOfferingName" }}
+    - class: {{ get $serviceInstance "serviceOfferingName" | default "invalidValue" }}
+      {{- if $v.externalName }}
+      name: {{ $v.externalName | default "invalidValue" }}
+      {{- else }}
+      name: {{ $v.name | default "invalidValue" }}
+      {{- end }}
+      secret: {{ $v.secretName | default "invalidValue" }}
+    {{- end }}
+    {{- end }}
+---
+apiVersion: sme.sap.com/v1alpha1
+kind: CAPApplicationVersion
+metadata:
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/resource-policy: keep
+  name: {{ include "capApplicationVersionName" $ }}
+spec:
+  capApplicationInstance: "cap-{{ include "appName" $ }}"
+  version: "{{ .Values.app.version | default .Release.Revision }}"
+  registrySecrets:
+    {{- range .Values.imagePullSecrets }}
+    - {{.}}
+    {{- end }}
+  workloads:
+  {{- range $k, $v := .Values.workloads }}
+  - name: {{ $k }}
+
+    {{- if $v.labels }}
+    labels: {{- toYaml $v.labels | trim | nindent 6 }}
+    {{- end }}
+
+    {{- if $v.annotations }}
+    annotations: {{- toYaml $v.annotations | trim | nindent 6 }}
+    {{- end }}
+
+    {{- if $v.consumedBTPServices }}
+    consumedBTPServices: {{- toYaml $v.consumedBTPServices | trim | nindent 4 }}
+    {{- end }}
+
+    {{- if $v.deploymentDefinition }}
+    deploymentDefinition:
+
+      {{- if $v.deploymentDefinition.type }}
+      type: {{ $v.deploymentDefinition.type }}
+      {{- end }}
+
+      {{- if $v.deploymentDefinition.image }}
+      image: {{ $v.deploymentDefinition.image }}
+      {{- end }}
+
+      {{- if $v.deploymentDefinition.imagePullPolicy }}
+      imagePullPolicy: {{ $v.deploymentDefinition.imagePullPolicy }}
+      {{- end }}
+
+      {{- if $v.deploymentDefinition.command }}
+      command: {{- toYaml $v.deploymentDefinition.command | trim | nindent 6 }}
+      {{- end }}
+
+      {{- if $v.deploymentDefinition.env }}
+      env: {{- toYaml $v.deploymentDefinition.env | trim | nindent 6 }}
+      {{- end }}
+
+      {{- if $v.deploymentDefinition.resources }}
+      resources: {{- toYaml $v.deploymentDefinition.resources | trim | nindent 8 }}
+      {{- end }}
+
+      {{- if $v.deploymentDefinition.securityContext }}
+      securityContext: {{- toYaml $v.deploymentDefinition.securityContext | trim | nindent 8 }}
+      {{- end }}
+
+      {{- if $v.deploymentDefinition.podSecurityContext }}
+      podSecurityContext: {{- toYaml $v.deploymentDefinition.podSecurityContext | trim | nindent 8 }}
+      {{- end }}
+
+      {{- if $v.deploymentDefinition.replicas }}
+      replicas: {{ $v.deploymentDefinition.replicas }}
+      {{- end }}
+
+      {{- if $v.deploymentDefinition.ports }}
+      ports: {{- toYaml $v.deploymentDefinition.ports | trim | nindent 6 }}
+      {{- end }}
+
+      {{- if $v.deploymentDefinition.livenessProbe }}
+      livenessProbe: {{- toYaml $v.deploymentDefinition.livenessProbe | trim | nindent 8 }}
+      {{- end }}
+
+      {{- if $v.deploymentDefinition.readinessProbe }}
+      readinessProbe: {{- toYaml $v.deploymentDefinition.readinessProbe | trim | nindent 8 }}
+      {{- end }}
+    {{- end }}
+
+    {{- if $v.jobDefinition }}
+    jobDefinition:
+
+      {{- if $v.jobDefinition.type }}
+      type: {{ $v.jobDefinition.type }}
+      {{- end }}
+
+      {{- if $v.jobDefinition.image }}
+      image: {{ $v.jobDefinition.image }}
+      {{- end }}
+
+      {{- if $v.jobDefinition.imagePullPolicy }}
+      imagePullPolicy: {{ $v.jobDefinition.imagePullPolicy }}
+      {{- end }}
+
+      {{- if $v.jobDefinition.command }}
+      command: {{- toYaml $v.jobDefinition.command | trim | nindent 6 }}
+      {{- end }}
+
+      {{- if $v.jobDefinition.env }}
+      env: {{- toYaml $v.jobDefinition.env | trim | nindent 6 }}
+      {{- end }}
+
+      {{- if $v.jobDefinition.resources }}
+      resources: {{- toYaml $v.jobDefinition.resources | trim | nindent 8 }}
+      {{- end }}
+
+      {{- if $v.jobDefinition.securityContext }}
+      securityContext: {{- toYaml $v.jobDefinition.securityContext | trim | nindent 8 }}
+      {{- end }}
+
+      {{- if $v.jobDefinition.podSecurityContext }}
+      podSecurityContext: {{- toYaml $v.jobDefinition.podSecurityContext | trim | nindent 8 }}
+      {{- end }}
+
+      {{- if $v.jobDefinition.backoffLimit }}
+      backoffLimit: {{ $v.jobDefinition.backoffLimit }}
+      {{- end }}
+
+      {{- if $v.jobDefinition.ttlSecondsAfterFinished }}
+      ttlSecondsAfterFinished: {{ $v.jobDefinition.ttlSecondsAfterFinished }}
+      {{- end }}
+    {{- end }}
+  {{- end }}
+
+  {{- if .Values.tenantOperations }}
+  tenantOperations: {{- toYaml .Values.tenantOperations | trim | nindent 4 }}
+  {{- end }}
+
+  {{- if .Values.contentJobs }}
+  contentJobs: {{- toYaml .Values.contentJobs | trim | nindent 4 }}
+  {{- end }}
