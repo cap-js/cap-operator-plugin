@@ -1,6 +1,6 @@
 [![REUSE status](https://api.reuse.software/badge/github.com/cap-js/cap-operator-plugin)](https://api.reuse.software/info/github.com/cap-js/cap-operator-plugin)
 
-# cap-operator-plugin
+# CAP Operator Plugin
 
 CAP Operator Plugin provides an easy way to generate CAP Operator resources required for deploying multitenant CAP Applications.
 
