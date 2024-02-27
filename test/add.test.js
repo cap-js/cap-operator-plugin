@@ -45,9 +45,18 @@ describe('cds add cap-operator', () => {
         expect(getFileHash(join(__dirname,'files/expectedChart/values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
     })
 
+    it('Add templates to an existing cap-operator chart', async () => {
+        execSync(`cds add cap-operator --force`, { cwd: bookshop })
+        execSync(`cds add cap-operator --add-with-templates`, { cwd: bookshop })
+
+        expect(getFileHash(join(__dirname,'files/expectedChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))
+        expect(getFileHash(join(__dirname,'files/expectedChart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))
+        expect(getFileHash(join(__dirname,'files/expectedChart/values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
+    })
+
     it('Chart folder already added by `cds add helm` ', async () => {
         execSync(`cds add helm`, { cwd: bookshop })
-        expect(() => execSync(`cds add cap-operator`, { cwd: bookshop })).to.throw('Existing \'chart\' folder is not a CAP Operator helm chart. Run \'cds add cap-operator --force\' or \'cap-operator-with-templates --force\' to overwrite.')
+        expect(() => execSync(`cds add cap-operator`, { cwd: bookshop })).to.throw('Existing \'chart\' folder is not a CAP Operator helm chart. Run \'cds add cap-operator --force\' to overwrite.')
     })
 
     it('Chart folder already added but values.schema.json changed ', async () => {
@@ -62,7 +71,7 @@ describe('cds add cap-operator', () => {
     })
 
     it('Add cap-operator chart with templates', async () => {
-        execSync(`cds add cap-operator-with-templates`, { cwd: bookshop })
+        execSync(`cds add cap-operator --add-with-templates`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname,'files/expectedChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))
         expect(getFileHash(join(__dirname,'files/expectedChart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))
@@ -71,14 +80,18 @@ describe('cds add cap-operator', () => {
     })
 
     it('Add cap-operator chart with mta but mta.yaml is not present', async () => {
-        expect(() => execSync(`export WITH_MTA=mta.yaml && cds add cap-operator`, { cwd: bookshop })).to.throw('mta is not added to this project. Run \'cds add mta\'.')
+        expect(() => execSync(`cds add cap-operator --add-with-mta mta.yaml`, { cwd: bookshop })).to.throw('mta is not added to this project. Run \'cds add mta\'.')
+    })
+
+    it('Add cap-operator chart without mta.yaml but with mta extensions', async () => {
+        expect(() => execSync(`cds add cap-operator --add-with-mta-extensions corrected_xsappname.mtaext`, { cwd: bookshop })).to.throw('mta YAML not provided. Please pass the mta YAML via option \'--add-with-mta\'.')
     })
 
     it('Add cap-operator chart with mta and mtaExtensions', async () => {
         await cds.utils.copy(join('test/files', 'mta.yaml'), join(bookshop, 'mta.yaml'))
         await cds.utils.copy(join('test/files', 'corrected_xsappname.mtaext'), join(bookshop, 'corrected_xsappname.mtaext'))
 
-        execSync(`export WITH_MTA=mta.yaml && export WITH_MTA_EXTENSIONS=corrected_xsappname.mtaext && cds add cap-operator`, { cwd: bookshop })
+        execSync(`cds add cap-operator --add-with-mta mta.yaml --add-with-mta-extensions corrected_xsappname.mtaext`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname,'files/expectedChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))
         expect(getFileHash(join(__dirname,'files/expectedChart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))

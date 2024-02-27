@@ -24,7 +24,7 @@ During `cds build`, the plugin will automatically inject the templates folder in
 
 * To add a chart folder with templates included, use:
 ```sh
- cds add cap-operator-with-templates
+ cds add cap-operator --add-with-templates
 ```
 During `cds build`, the plugin will copy the templates folder into the final chart.
 
@@ -37,7 +37,7 @@ helm lint <chart-path>
 
 5. After filling all the design-time information in `values.yaml`, run `cds build`. The final chart will be generated in the `gen` folder within your project directory.
 
-> Note: If you are adding the basic chart folder using the `cds add cap-operator` command, do not modify the `values.schema.json` file. The templates injected automatically during cds build are tightly coupled with the structure in `values.schema.json`. If schema changes are needed, use `cds add cap-operator-with-templates` to add the templates folder and adjust them accordingly.
+> Note: If you are adding the basic chart folder using the `cds add cap-operator` command, do not modify the `values.schema.json` file. The templates injected automatically during `cds build` are tightly coupled with the structure in `values.schema.json`. If schema changes are needed, use option `--add-with-templates` to add the templates folder and adjust them accordingly.
 
 ## Support, Feedback, Contributing
 

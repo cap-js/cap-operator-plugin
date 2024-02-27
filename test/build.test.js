@@ -41,7 +41,7 @@ describe('cds build', () => {
     })
 
     it('Build cap-operator chart with modified templates', async () => {
-        execSync(`cds add cap-operator-with-templates`, { cwd: bookshop })
+        execSync(`cds add cap-operator --add-with-templates`, { cwd: bookshop })
 
         //modify template - dummy file delete
         await cds.utils.rimraf(join(bookshop,'chart/templates/_helpers.tpl'))
