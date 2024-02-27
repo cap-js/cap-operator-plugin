@@ -1,6 +1,5 @@
 {{- define "capApplicationVersionName" -}}
-{{- $saasRegistry := index .Values.serviceInstances "saas-registry" -}}
-{{ printf "cav-%s-%d" $saasRegistry.parameters.appName (default .Values.app.version .Release.Revision) }}
+{{ printf "cav-%s-%d" (include "appName" $) (default .Values.app.version .Release.Revision) }}
 {{- end -}}
 
 {{- define "appName" -}}
