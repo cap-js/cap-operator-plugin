@@ -1,0 +1,15 @@
+serviceInstances:
+  destination-lite:
+    name: {{appName}}-destination
+    serviceOfferingName: destination
+    servicePlanName: lite
+    parameters:
+      HTML5Runtime_enabled: true
+
+serviceBindings:
+  destination-lite:
+    name: {{appName}}-destination-bind
+    serviceInstanceName: {{appName}}-destination
+    secretName: {{appName}}-destination-bind-secret
+    secretKey: credentials
+    parameters: {}

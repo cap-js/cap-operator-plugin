@@ -1,0 +1,27 @@
+serviceInstances:
+    html5RepoRuntime:
+        name: {{appName}}-html5-repo-runtime
+        serviceOfferingName: html5-apps-repo
+        servicePlanName: app-runtime
+        parameters: {}
+
+    html5RepoHost:
+        name: {{appName}}-html5-repo-host
+        serviceOfferingName: html5-apps-repo
+        servicePlanName: app-host
+        parameters: {}
+
+serviceBindings:
+    html5RepoRuntime:
+        name: {{appName}}-html5-repo-runtime-bind
+        serviceInstanceName: {{appName}}-html5-repo-runtime
+        secretName: {{appName}}-html5-repo-runtime-bind-secret
+        secretKey: credentials
+        parameters: {}
+
+    html5RepoHost:
+        name: {{appName}}-html5-repo-host-bind
+        serviceInstanceName: {{appName}}-html5-repo-host
+        secretName: {{appName}}-html5-repo-host-bind-secret
+        secretKey: credentials
+        parameters: {}
