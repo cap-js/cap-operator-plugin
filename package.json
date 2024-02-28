@@ -23,8 +23,10 @@
     "@sap/cds": ">=7",
     "@sap/cds-dk": ">=7"
   },
+  "dependencies": {
+    "mustache": "^4.2.0"
+  },
   "devDependencies": {
-    "mustache": "^4.2.0",
     "chai": "^4.3.10",
     "mocha": "^10.3.0",
     "nyc": "^15.1.0"
