@@ -28,6 +28,12 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
 ```
 > During `cds build`, the plugin will copy the templates folder into the final chart.
 
+* **[Experimental]** To add a chart folder with the values.yaml prefilled with the design-time deployment details from the mta and mta extensions, use:
+```sh
+ cds add cap-operator --add-with-mta <mta-yaml-file-path> --add-with-mta-extensions <mta-ext-yaml-file-path>
+```
+> If you have multiple mta extensions, you can pass them as a comma-separated string in the order that they should be merged.
+
 3. Once executed, the chart folder or chart folder with templates will be added to your project directory.
 
 4. Update the `values.yaml` file with your design-time deployment details according to `values.schema.json`. You can either use any YAML schema validation extension or run the following command to ensure correctness:
