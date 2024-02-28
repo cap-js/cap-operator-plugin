@@ -20,13 +20,13 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
 ```sh
  cds add cap-operator
 ```
-During `cds build`, the plugin will automatically inject the templates folder into the final chart.
+> During `cds build`, the plugin will automatically inject the templates folder into the final chart.
 
 * To add a chart folder with templates included, use:
 ```sh
  cds add cap-operator --add-with-templates
 ```
-During `cds build`, the plugin will copy the templates folder into the final chart.
+> During `cds build`, the plugin will copy the templates folder into the final chart.
 
 3. Once executed, the chart folder or chart folder with templates will be added to your project directory.
 
