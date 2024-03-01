@@ -32,6 +32,7 @@
     "nyc": "^15.1.0"
   },
   "scripts": {
-    "test": "nyc mocha --timeout 20000"
+    "test": "mocha --timeout 20000",
+    "test-coverage-lcov": "nyc mocha --timeout 20000 && nyc --reporter lcov --reporter text --report-dir coverage report"
   }
 }
