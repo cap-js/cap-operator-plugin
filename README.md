@@ -30,7 +30,7 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
 
 3. Once executed, the chart folder or chart folder with templates will be added to your project directory.
 
-4. Update the `values.yaml` file with your design-time deployment details according to `values.schema.json`. You can either use any YAML schema validation extension or run the following command to ensure correctness:
+4. Update the `values.yaml` file with your design-time deployment details according to `values.schema.json`. You can either use any YAML schema validation extension like [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) or run the following command to ensure correctness:
 ```sh
 helm lint <chart-path>
 ```
