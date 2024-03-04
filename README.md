@@ -4,6 +4,15 @@
 
 CAP Operator Plugin provides an easy way to generate [CAP Operator](https://sap.github.io/cap-operator/) resources to deploy multitenant CAP Applications.
 
+## Requirements
+
+The CAP Operator plugin requires the following packages:
+
+```sh
+@sap/cds: ">=7"
+@sap/cds-dk: ">=7"
+```
+
 ## Setup
 
 To integrate the CAP Operator Plugin into your project, follow these steps:
@@ -47,7 +56,7 @@ helm lint <chart-path>
 >```
 > If you have multiple mta extensions, you can pass them as a comma-separated string in the order that they should be merged.
 
-## Support, Feedback, Contributing
+## Contributing
 
 This project is open to feature requests/suggestions, bug reports etc. via [GitHub issues](https://github.com/cap-js/cap-operator-plugin/issues). Contribution and feedback are encouraged and always welcome. For more information about how to contribute, the project structure, as well as additional contribution information, see our [Contribution Guidelines](CONTRIBUTING.md).
 
