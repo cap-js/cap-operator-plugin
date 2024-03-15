@@ -21,7 +21,7 @@
   ],
   "peerDependencies": {
     "@sap/cds": ">=7",
-    "@sap/cds-dk": ">=7"
+    "@sap/cds-dk": "git+https://github.tools.sap/cap/cds-dk#main"
   },
   "dependencies": {
     "mustache": "^4.2.0"
