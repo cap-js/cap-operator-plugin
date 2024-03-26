@@ -1,36 +1,51 @@
 serviceInstances:
-
+  xsuaa:
+    name: bookshop-uaa
+    serviceOfferingName: xsuaa
+    servicePlanName: broker
+    parameters:
+      xsappname: bookshop
+      tenant-mode: shared
+      oauth2-configuration:
+        credential-types:
+          - instance-secret
+          - binding-secret
+        redirect-uris: []
 serviceBindings:
-
+  xsuaa:
+    name: bookshop-uaa-bind
+    serviceInstanceName: bookshop-uaa
+    secretName: bookshop-uaa-bind-secret
+    secretKey: credentials
+    parameters: {}
 app:
-  # -- BTP application name (xsappname)
   domains:
-    # -- primary domain to expose application routes (usually a subdomain of the cluster domain). Ensure this is under 62 chars.
-    primary:
-    # -- Customer specific domains for which dns entries are created (these can be stable and transferred between clusters)
+    primary: null
     secondary: []
-  # -- Labels used to identify the istio ingress-gateway component and its corresponding namespace
   istioIngressGatewayLabels:
     istio: ingressgateway
     app: istio-ingressgateway
-
 btp:
-  # -- BTP Global account identifier where the application is hosted
-  globalAccountId: # mandatory let helm fail if not provided
+  globalAccountId: null
   provider:
-    # -- Subdomain of the provider sub-account where application services are created
-    subdomain: # mandatory let helm fail if not provided
-    # -- Tenant identifier for the provider sub-account (usually a guid)
-    tenantId: # mandatory let helm fail if not provided
-
-# -- Image pull secrets
+    subdomain: null
+    tenantId: null
 imagePullSecrets: []
-
 workloads:
-
+  app-router:
+    name: app-router
+    labels:
+      sme.sap.com/app-type: bookshop
+    consumedBTPServices:
+      - bookshop-uaa-bind
+    deploymentDefinition:
+      type: Router
+      image: null
+      ports:
+        - name: router-port
+          port: 5000
 tenantOperations:
   provisioning: []
   upgrade: []
   deprovisioning: []
-
 contentJobs: []

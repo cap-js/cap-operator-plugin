@@ -1,5 +1,5 @@
 serviceInstances:
-  destination-lite:
+  destination:
     name: bookshop-destination
     serviceOfferingName: destination
     servicePlanName: lite
@@ -18,7 +18,7 @@ serviceInstances:
           - binding-secret
         redirect-uris: []
 serviceBindings:
-  destination-lite:
+  destination:
     name: bookshop-destination-bind
     serviceInstanceName: bookshop-destination
     secretName: bookshop-destination-bind-secret

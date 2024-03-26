@@ -107,7 +107,7 @@ describe('cds add cap-operator', () => {
         expect(getFileHash(join(__dirname,'files/expectedChart/valuesWithDestination.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
     })
 
-    it.only('Add xsuaa, approuter and destination. Then add cap-operator chart', async () => {
+    it('Add xsuaa, approuter and destination. Then add cap-operator chart', async () => {
         execSync(`cds add xsuaa`, { cwd: bookshop })
         execSync(`cds add approuter`, { cwd: bookshop })
         execSync(`cds add destination`, { cwd: bookshop })
