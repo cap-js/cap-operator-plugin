@@ -1,4 +1,10 @@
 serviceInstances:
+  destination:
+    name: bookshop-destination
+    serviceOfferingName: destination
+    servicePlanName: lite
+    parameters:
+      HTML5Runtime_enabled: true
   xsuaa:
     name: bookshop-uaa
     serviceOfferingName: xsuaa
@@ -12,6 +18,12 @@ serviceInstances:
           - binding-secret
         redirect-uris: []
 serviceBindings:
+  destination:
+    name: bookshop-destination-bind
+    serviceInstanceName: bookshop-destination
+    secretName: bookshop-destination-bind-secret
+    secretKey: credentials
+    parameters: {}
   xsuaa:
     name: bookshop-uaa-bind
     serviceInstanceName: bookshop-uaa
@@ -38,6 +50,7 @@ workloads:
       sme.sap.com/app-type: bookshop
     consumedBTPServices:
       - bookshop-uaa-bind
+      - bookshop-destination-bind
     deploymentDefinition:
       type: Router
       image: null

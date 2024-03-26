@@ -1,12 +1,30 @@
 serviceInstances:
-  destination-lite:
+  xsuaa:
+    name: bookshop-uaa
+    serviceOfferingName: xsuaa
+    servicePlanName: broker
+    parameters:
+      xsappname: bookshop
+      tenant-mode: shared
+      oauth2-configuration:
+        credential-types:
+          - instance-secret
+          - binding-secret
+        redirect-uris: []
+  destination:
     name: bookshop-destination
     serviceOfferingName: destination
     servicePlanName: lite
     parameters:
       HTML5Runtime_enabled: true
 serviceBindings:
-  destination-lite:
+  xsuaa:
+    name: bookshop-uaa-bind
+    serviceInstanceName: bookshop-uaa
+    secretName: bookshop-uaa-bind-secret
+    secretKey: credentials
+    parameters: {}
+  destination:
     name: bookshop-destination-bind
     serviceInstanceName: bookshop-destination
     secretName: bookshop-destination-bind-secret
@@ -25,7 +43,20 @@ btp:
     subdomain: null
     tenantId: null
 imagePullSecrets: []
-workloads: null
+workloads:
+  app-router:
+    name: app-router
+    labels:
+      sme.sap.com/app-type: bookshop
+    consumedBTPServices:
+      - bookshop-uaa-bind
+      - bookshop-destination-bind
+    deploymentDefinition:
+      type: Router
+      image: null
+      ports:
+        - name: router-port
+          port: 5000
 tenantOperations:
   provisioning: []
   upgrade: []

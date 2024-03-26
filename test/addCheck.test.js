@@ -40,6 +40,6 @@ describe('cds add cap-operator canRun method test', () => {
         execSync(`cds add xsuaa`, { cwd: bookshop })
         execSync(`cds add approuter`, { cwd: bookshop })
         const log = execSync(`cds add cap-operator`, { cwd: bookshop }).toString()
-        expect(log).to.include('❌  Multitenancy is not added to this project. Run \'cds add multitenancy\'.')
+        expect(log).to.include('❌  multitenancy is not added to this project. Run \'cds add multitenancy\'.')
     })
 })
