@@ -1,0 +1,19 @@
+workloads:
+    server:
+        name: server
+        labels:
+            sme.sap.com/app-type: {{appName}}
+        consumedBTPServices:
+        {{#hasXsuaa}}
+        - {{appName}}-uaa-bind
+        {{/hasXsuaa}}
+        {{#hasDestination}}
+        - {{appName}}-destination-bind
+        {{/hasDestination}}
+        {{#hasMultitenancy}}
+        - {{appName}}-saas-registry-bind
+        - {{appName}}-service-manager-bind
+        {{/hasMultitenancy}}
+        deploymentDefinition:
+            type: CAP
+            image:
