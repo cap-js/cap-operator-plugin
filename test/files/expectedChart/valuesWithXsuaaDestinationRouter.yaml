@@ -17,6 +17,22 @@ serviceInstances:
           - instance-secret
           - binding-secret
         redirect-uris: []
+  saas-registry:
+    name: bookshop-saas-registry
+    serviceOfferingName: saas-registry
+    servicePlanName: application
+    parameters:
+      plan: general
+      appUrls:
+        callbackTimeoutMillis: 300000
+        onSubscriptionAsync: true
+        onUnSubscriptionAsync: true
+      category: CAP
+  service-manager:
+    name: bookshop-service-manager
+    serviceOfferingName: service-manager
+    servicePlanName: container
+    parameters: {}
 serviceBindings:
   destination:
     name: bookshop-destination-bind
@@ -28,6 +44,18 @@ serviceBindings:
     name: bookshop-uaa-bind
     serviceInstanceName: bookshop-uaa
     secretName: bookshop-uaa-bind-secret
+    secretKey: credentials
+    parameters: {}
+  saas-registry:
+    name: bookshop-saas-registry-bind
+    serviceInstanceName: bookshop-saas-registry
+    secretName: bookshop-saas-registry-bind-secret
+    secretKey: credentials
+    parameters: {}
+  service-manager:
+    name: bookshop-service-manager-bind
+    serviceInstanceName: bookshop-service-manager
+    secretName: bookshop-service-manager-bind-secret
     secretKey: credentials
     parameters: {}
 app:
@@ -57,6 +85,18 @@ workloads:
       ports:
         - name: router-port
           port: 5000
+  server:
+    name: server
+    labels:
+      sme.sap.com/app-type: bookshop
+    consumedBTPServices:
+      - bookshop-uaa-bind
+      - bookshop-destination-bind
+      - bookshop-saas-registry-bind
+      - bookshop-service-manager-bind
+    deploymentDefinition:
+      type: CAP
+      image: null
 tenantOperations:
   provisioning: []
   upgrade: []

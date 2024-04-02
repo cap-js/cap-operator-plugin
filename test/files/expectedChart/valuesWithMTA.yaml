@@ -55,18 +55,6 @@ serviceInstances:
     serviceOfferingName: application-logs
     servicePlanName: standard
     parameters: {}
-  xsuaa:
-    name: bookshop-uaa
-    serviceOfferingName: xsuaa
-    servicePlanName: broker
-    parameters:
-      xsappname: bookshop
-      tenant-mode: shared
-      oauth2-configuration:
-        credential-types:
-          - instance-secret
-          - binding-secret
-        redirect-uris: []
 serviceBindings:
   author-readings-uaa-bind:
     name: author-readings-uaa-bind
@@ -123,12 +111,6 @@ serviceBindings:
     secretKey: credentials
     secretName: author-readings-html5-repo-host-bind-secret
     serviceInstanceName: author-readings-html5-repo-host
-  xsuaa:
-    name: bookshop-uaa-bind
-    serviceInstanceName: bookshop-uaa
-    secretName: bookshop-uaa-bind-secret
-    secretKey: credentials
-    parameters: {}
 app:
   domains:
     primary: null
@@ -223,18 +205,6 @@ workloads:
       env:
         - name: TENANT_HOST_PATTERN
           value: ^(.*)-${default-uri}
-  app-router:
-    name: app-router
-    labels:
-      sme.sap.com/app-type: bookshop
-    consumedBTPServices:
-      - bookshop-uaa-bind
-    deploymentDefinition:
-      type: Router
-      image: null
-      ports:
-        - name: router-port
-          port: 5000
 tenantOperations:
   provisioning: []
   upgrade: []
