@@ -23,6 +23,10 @@ serviceInstances:
     servicePlanName: application
     parameters:
       plan: general
+      xsappname: bookshop
+      appName: bookshop
+      displayName: (bookshop)
+      description: (A simple CAP project.)
       appUrls:
         callbackTimeoutMillis: 300000
         onSubscriptionAsync: true

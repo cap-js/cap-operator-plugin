@@ -5,6 +5,10 @@ serviceInstances:
     servicePlanName: application
     parameters:
       plan: general
+      xsappname: {{appName}}
+      appName: {{appName}}
+      displayName: ({{appName}})
+      description: ({{appDescription}})
       appUrls:
         callbackTimeoutMillis: 300000
         onSubscriptionAsync: true
