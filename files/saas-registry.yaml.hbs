@@ -1,0 +1,20 @@
+serviceInstances:
+  saas-registry:
+    name: {{appName}}-saas-registry
+    serviceOfferingName: saas-registry
+    servicePlanName: application
+    parameters:
+      plan: general
+      appUrls:
+        callbackTimeoutMillis: 300000
+        onSubscriptionAsync: true
+        onUnSubscriptionAsync: true
+      category: "CAP"
+
+serviceBindings:
+  saas-registry:
+    name: {{appName}}-saas-registry-bind
+    serviceInstanceName: {{appName}}-saas-registry
+    secretName: {{appName}}-saas-registry-bind-secret
+    secretKey: credentials
+    parameters: {}
