@@ -83,6 +83,7 @@ workloads:
     consumedBTPServices:
       - bookshop-uaa-bind
       - bookshop-destination-bind
+      - bookshop-saas-registry-bind
     deploymentDefinition:
       type: Router
       image: null
@@ -95,7 +96,6 @@ workloads:
       sme.sap.com/app-type: bookshop
     consumedBTPServices:
       - bookshop-uaa-bind
-      - bookshop-destination-bind
       - bookshop-saas-registry-bind
       - bookshop-service-manager-bind
     deploymentDefinition:

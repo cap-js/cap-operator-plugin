@@ -7,9 +7,6 @@ workloads:
         {{#hasXsuaa}}
         - {{appName}}-uaa-bind
         {{/hasXsuaa}}
-        {{#hasDestination}}
-        - {{appName}}-destination-bind
-        {{/hasDestination}}
         {{#hasMultitenancy}}
         - {{appName}}-saas-registry-bind
         - {{appName}}-service-manager-bind

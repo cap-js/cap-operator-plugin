@@ -13,6 +13,9 @@ workloads:
         {{#hasHTML5Repo}}
         - {{appName}}-html5-repo-runtime-bind
         {{/hasHTML5Repo}}
+        {{#hasMultitenancy}}
+        - {{appName}}-saas-registry-bind
+        {{/hasMultitenancy}}
         deploymentDefinition:
             type: Router
             image:
