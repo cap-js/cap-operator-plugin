@@ -6,7 +6,7 @@ CAP Operator Plugin provides an easy way to generate [CAP Operator](https://sap.
 
 ## Requirements
 
-The CAP Operator plugin requires `@sap/cds-dk: ">=7"`. If @sap/cds-dk is installed globally, please ensure that the installed version is greater than or equal to 7.
+The CAP Operator plugin requires `@sap/cds-dk: ">=7.8.1"`. If @sap/cds-dk is installed globally, please ensure that the installed version is greater than or equal to `7.8.1`.
 
 ## Setup
 
@@ -55,7 +55,9 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
         - imagePullSecrets
         - env information inside each workload like database instance ID
 
-    As a developer, you need to fill in the design-time deployment details in the `values.yaml` file which can be pushed to your repository. The plugin will prefill some of the design-time details based on the project configuration. But this needs to be verified and the missing information should be filled in manually. You can refer to `values.schema.json` file for the structure of the `values.yaml` file. You can either use any YAML schema validation extension like [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) or run the following command to ensure the correctness of the `values.yaml` file:
+    As a developer, you need to fill in the design-time deployment details in the `values.yaml` file, which can then be pushed to your repository. The plugin will auto-populate some of these details based on the project configuration, but it's essential to verify them and manually fill in any missing information. You can refer to `values.schema.json` file for the structure of the `values.yaml` file.
+
+    You can utilize a YAML schema validation extension such as [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml), or alternatively, run the following command to validate the `values.yaml` file:
 
     ```sh
     helm lint <chart-path>
@@ -69,7 +71,7 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
    helm upgrade -i -n <namespace> <release-name> <chart-path> -f <runtime-values.yaml-path>
    ```
 
-## Things to Note
+## ❗Things to Note
 
 * If you are adding the basic chart folder using the `cds add cap-operator` command, do not modify the `values.schema.json` file. The templates injected automatically during `cds build` are tightly coupled with the structure in `values.schema.json`. If schema changes are needed, use option `--add-with-templates` to add the templates folder and adjust them accordingly.
 
