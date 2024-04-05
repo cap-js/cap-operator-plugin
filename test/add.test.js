@@ -47,7 +47,7 @@ describe('cds add cap-operator', () => {
 
     it('Add templates to an existing cap-operator chart', async () => {
         execSync(`cds add cap-operator --force`, { cwd: bookshop })
-        execSync(`cds add cap-operator --add-with-templates`, { cwd: bookshop })
+        execSync(`cds add cap-operator --with-templates`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname,'files/expectedChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))
         expect(getFileHash(join(__dirname,'files/expectedChart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))
@@ -71,7 +71,7 @@ describe('cds add cap-operator', () => {
     })
 
     it('Add cap-operator chart with templates', async () => {
-        execSync(`cds add cap-operator --add-with-templates`, { cwd: bookshop })
+        execSync(`cds add cap-operator --with-templates`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname,'files/expectedChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))
         expect(getFileHash(join(__dirname,'files/expectedChart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))
@@ -80,18 +80,18 @@ describe('cds add cap-operator', () => {
     })
 
     it('Add cap-operator chart with mta but mta.yaml is not present', async () => {
-        expect(() => execSync(`cds add cap-operator --add-with-mta mta.yaml`, { cwd: bookshop })).to.throw('mta is not added to this project. Run \'cds add mta\'.')
+        expect(() => execSync(`cds add cap-operator --with-mta mta.yaml`, { cwd: bookshop })).to.throw('mta is not added to this project. Run \'cds add mta\'.')
     })
 
     it('Add cap-operator chart without mta.yaml but with mta extensions', async () => {
-        expect(() => execSync(`cds add cap-operator --add-with-mta-extensions corrected_xsappname.mtaext`, { cwd: bookshop })).to.throw('mta YAML not provided. Please pass the mta YAML via option \'--add-with-mta\'.')
+        expect(() => execSync(`cds add cap-operator --with-mta-extensions corrected_xsappname.mtaext`, { cwd: bookshop })).to.throw('mta YAML not provided. Please pass the mta YAML via option \'--with-mta\'.')
     })
 
     it('Add cap-operator chart with mta and mtaExtensions', async () => {
         await cds.utils.copy(join('test/files', 'mta.yaml'), join(bookshop, 'mta.yaml'))
         await cds.utils.copy(join('test/files', 'corrected_xsappname.mtaext'), join(bookshop, 'corrected_xsappname.mtaext'))
 
-        execSync(`cds add cap-operator --add-with-mta mta.yaml --add-with-mta-extensions corrected_xsappname.mtaext`, { cwd: bookshop })
+        execSync(`cds add cap-operator --with-mta mta.yaml --with-mta-extensions corrected_xsappname.mtaext`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname,'files/expectedChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))
         expect(getFileHash(join(__dirname,'files/expectedChart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))

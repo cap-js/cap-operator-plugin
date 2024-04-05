@@ -28,14 +28,14 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
 
     * To add a chart folder with templates included, use:
         ```sh
-        cds add cap-operator --add-with-templates
+        cds add cap-operator --with-templates
         ```
         > During `cds build`, the plugin will copy the templates folder into the final chart.
 
     > ### ⚠️ Experimental
     > To add a chart folder with the values.yaml prefilled with the design-time deployment details from the mta and mta extensions, use:
     >```sh
-    > cds add cap-operator --add-with-mta <mta-yaml-file-path> --add-with-mta-extensions <mta-ext-yaml-file-path>
+    > cds add cap-operator --with-mta <mta-yaml-file-path> --with-mta-extensions <mta-ext-yaml-file-path>
     >```
     > If you have multiple mta extensions, you can pass them as a comma-separated string in order to merge them.
 
@@ -73,7 +73,7 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
 
 ## ❗Things to Note
 
-* If you are adding the basic chart folder using the `cds add cap-operator` command, do not modify the `values.schema.json` file. The templates injected automatically during `cds build` are tightly coupled with the structure in `values.schema.json`. If schema changes are needed, use option `--add-with-templates` to add the templates folder and adjust them accordingly.
+* If you are adding the basic chart folder using the `cds add cap-operator` command, do not modify the `values.schema.json` file. The templates injected automatically during `cds build` are tightly coupled with the structure in `values.schema.json`. If schema changes are needed, use option `--with-templates` to add the templates folder and adjust them accordingly.
 
 * When defining environment variables for workloads in the `values.yaml` file, it's important to mirror these definitions in the `runtime-values.yaml` file. This ensures consistency and avoids potential conflicts, as Helm does not merge arrays. If you're introducing new environment variables in `runtime-values.yaml` for a workload, remember to include existing variables from `values.yaml` to maintain coherence.
 
