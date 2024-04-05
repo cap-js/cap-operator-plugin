@@ -41,23 +41,25 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
 
 2. Once executed, the chart folder or chart folder with templates will be added to your project directory.
 
-3. The `values.yaml` requires two type of details:
+3. The `values.yaml` requires two types of details:
 
     * Design-time deployment details
-        - serviceInstances
-        - serviceBindings
-        - workloads
-        - tenantOperations
-        - contentJobs
+        - [serviceInstances](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-instance)
+        - [serviceBindings](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-binding)
+        - workloads - There are two types of workloads:
+            - [Deployment definition](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#workloads-with-deploymentdefinition)
+            - [Job definition](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#workloads-with-jobdefinition)
+        - [tenantOperations](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#sequencing-tenant-operations)
+        - [contentJobs](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#sequencing-content-jobs)
     * Runtime deployment details
         - app
         - btp
         - imagePullSecrets
-        - env information inside each workload like database instance ID
+        - env information inside workloads like database instance ID
 
     As a developer, you need to fill in the design-time deployment details in the `values.yaml` file, which can then be pushed to your repository. The plugin will auto-populate some of these details based on the project configuration, but it's essential to verify them and manually fill in any missing information. You can refer to `values.schema.json` file for the structure of the `values.yaml` file.
 
-    You can utilize a YAML schema validation extension such as [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml), or alternatively, run the following command to validate the `values.yaml` file:
+    You can utilize a YAML schema validation extension such as [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml), or alternatively, run the following command to validate the `values.yaml` file. You can ignore the errors from runtime values as they are not filled in yet.
 
     ```sh
     helm lint <chart-path>
@@ -68,7 +70,7 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
 5. Now to deploy the application, you can pass the runtime values in a separate `runtime-values.yaml` file and deploy the chart using the following command:
 
    ```sh
-   helm upgrade -i -n <namespace> <release-name> <chart-path> -f <runtime-values.yaml-path>
+   helm upgrade -i -n <namespace> <release-name> <project-path>/gen/chart -f <runtime-values.yaml-path>
    ```
 
 ## ❗Things to Note
