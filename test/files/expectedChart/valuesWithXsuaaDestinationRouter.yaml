@@ -14,7 +14,6 @@ serviceInstances:
       tenant-mode: shared
       oauth2-configuration:
         credential-types:
-          - instance-secret
           - binding-secret
         redirect-uris: []
   saas-registry:
