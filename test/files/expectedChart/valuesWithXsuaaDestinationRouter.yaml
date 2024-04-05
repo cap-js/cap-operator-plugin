@@ -1,4 +1,10 @@
 serviceInstances:
+  destination:
+    name: bookshop-destination
+    serviceOfferingName: destination
+    servicePlanName: lite
+    parameters:
+      HTML5Runtime_enabled: true
   xsuaa:
     name: bookshop-uaa
     serviceOfferingName: xsuaa
@@ -30,13 +36,13 @@ serviceInstances:
     serviceOfferingName: service-manager
     servicePlanName: container
     parameters: {}
-  destination:
-    name: bookshop-destination
-    serviceOfferingName: destination
-    servicePlanName: lite
-    parameters:
-      HTML5Runtime_enabled: true
 serviceBindings:
+  destination:
+    name: bookshop-destination-bind
+    serviceInstanceName: bookshop-destination
+    secretName: bookshop-destination-bind-secret
+    secretKey: credentials
+    parameters: {}
   xsuaa:
     name: bookshop-uaa-bind
     serviceInstanceName: bookshop-uaa
@@ -53,12 +59,6 @@ serviceBindings:
     name: bookshop-service-manager-bind
     serviceInstanceName: bookshop-service-manager
     secretName: bookshop-service-manager-bind-secret
-    secretKey: credentials
-    parameters: {}
-  destination:
-    name: bookshop-destination-bind
-    serviceInstanceName: bookshop-destination
-    secretName: bookshop-destination-bind-secret
     secretKey: credentials
     parameters: {}
 app:

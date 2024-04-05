@@ -1,0 +1,20 @@
+serviceInstances:
+    xsuaa:
+        name: {{appName}}-uaa
+        serviceOfferingName: xsuaa
+        servicePlanName: broker
+        parameters:
+            xsappname: {{appName}}
+            tenant-mode: shared
+            oauth2-configuration:
+                credential-types:
+                    - binding-secret
+                redirect-uris: []
+
+serviceBindings:
+    xsuaa:
+        name: {{appName}}-uaa-bind
+        serviceInstanceName: {{appName}}-uaa
+        secretName: {{appName}}-uaa-bind-secret
+        secretKey: credentials
+        parameters: {}
