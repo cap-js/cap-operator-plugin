@@ -37,7 +37,7 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
     >```sh
     > cds add cap-operator --with-mta <mta-yaml-file-path> --with-mta-extensions <mta-ext-yaml-file-path>
     >```
-    > If you have multiple mta extensions, you can pass them as a comma-separated string in order to merge them.
+    > If you have multiple mta extensions, you can pass them as a comma-separated string to merge them.
 
 2. Once executed, the chart folder or chart folder with templates will be added to your project directory.
 
@@ -57,9 +57,9 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
         - imagePullSecrets
         - env information inside workloads like database instance ID
 
-    As a developer, you need to fill in the design-time deployment details in the `values.yaml` file, which can then be pushed to your repository. The plugin will auto-populate some of these details based on the project configuration, but it's essential to verify them and manually fill in any missing information. You can refer to `values.schema.json` file for the structure of the `values.yaml` file.
+    As a developer, you must fill in the design-time deployment details in the `values.yaml` file, which can then be pushed to your repository. The plugin will auto-populate some of these details based on the project configuration, but verifying them and manually filling in any missing information is essential. You can refer to `values.schema.json` file for the structure of the `values.yaml` file.
 
-    You can utilize a YAML schema validation extension such as [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml), or alternatively, run the following command to validate the `values.yaml` file. You can ignore the errors from runtime values as they are not filled in yet.
+    You can utilize a YAML schema validation extension such as [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml), or run the following command to validate the `values.yaml` file. You can ignore the errors from runtime values as they are not filled in yet.
 
     ```sh
     helm lint <chart-path>
@@ -72,6 +72,7 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
    ```sh
    helm upgrade -i -n <namespace> <release-name> <project-path>/gen/chart -f <runtime-values.yaml-path>
    ```
+As a reference, you can check out the [CAP Operator helm chart](https://github.com/cap-js/incidents-app/tree/cap-operator-plugin/chart) in the sample incident app. And also the corresponding [runtime-values.yaml](https://github.com/cap-js/incidents-app/blob/cap-operator-plugin/runtime-values.yaml) file.
 
 ## ❗Things to Note
 
