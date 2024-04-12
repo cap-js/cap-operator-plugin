@@ -74,99 +74,11 @@ spec:
     {{- end }}
 
     {{- if $v.deploymentDefinition }}
-    deploymentDefinition:
-
-      {{- if $v.deploymentDefinition.type }}
-      type: {{ $v.deploymentDefinition.type }}
-      {{- end }}
-
-      {{- if $v.deploymentDefinition.image }}
-      image: {{ $v.deploymentDefinition.image }}
-      {{- end }}
-
-      {{- if $v.deploymentDefinition.imagePullPolicy }}
-      imagePullPolicy: {{ $v.deploymentDefinition.imagePullPolicy }}
-      {{- end }}
-
-      {{- if $v.deploymentDefinition.command }}
-      command: {{- toYaml $v.deploymentDefinition.command | trim | nindent 6 }}
-      {{- end }}
-
-      {{- if $v.deploymentDefinition.env }}
-      env: {{- toYaml $v.deploymentDefinition.env | trim | nindent 6 }}
-      {{- end }}
-
-      {{- if $v.deploymentDefinition.resources }}
-      resources: {{- toYaml $v.deploymentDefinition.resources | trim | nindent 8 }}
-      {{- end }}
-
-      {{- if $v.deploymentDefinition.securityContext }}
-      securityContext: {{- toYaml $v.deploymentDefinition.securityContext | trim | nindent 8 }}
-      {{- end }}
-
-      {{- if $v.deploymentDefinition.podSecurityContext }}
-      podSecurityContext: {{- toYaml $v.deploymentDefinition.podSecurityContext | trim | nindent 8 }}
-      {{- end }}
-
-      {{- if $v.deploymentDefinition.replicas }}
-      replicas: {{ $v.deploymentDefinition.replicas }}
-      {{- end }}
-
-      {{- if $v.deploymentDefinition.ports }}
-      ports: {{- toYaml $v.deploymentDefinition.ports | trim | nindent 6 }}
-      {{- end }}
-
-      {{- if $v.deploymentDefinition.livenessProbe }}
-      livenessProbe: {{- toYaml $v.deploymentDefinition.livenessProbe | trim | nindent 8 }}
-      {{- end }}
-
-      {{- if $v.deploymentDefinition.readinessProbe }}
-      readinessProbe: {{- toYaml $v.deploymentDefinition.readinessProbe | trim | nindent 8 }}
-      {{- end }}
+    deploymentDefinition: {{- toYaml $v.deploymentDefinition | trim | nindent 6 }}
     {{- end }}
 
     {{- if $v.jobDefinition }}
-    jobDefinition:
-
-      {{- if $v.jobDefinition.type }}
-      type: {{ $v.jobDefinition.type }}
-      {{- end }}
-
-      {{- if $v.jobDefinition.image }}
-      image: {{ $v.jobDefinition.image }}
-      {{- end }}
-
-      {{- if $v.jobDefinition.imagePullPolicy }}
-      imagePullPolicy: {{ $v.jobDefinition.imagePullPolicy }}
-      {{- end }}
-
-      {{- if $v.jobDefinition.command }}
-      command: {{- toYaml $v.jobDefinition.command | trim | nindent 6 }}
-      {{- end }}
-
-      {{- if $v.jobDefinition.env }}
-      env: {{- toYaml $v.jobDefinition.env | trim | nindent 6 }}
-      {{- end }}
-
-      {{- if $v.jobDefinition.resources }}
-      resources: {{- toYaml $v.jobDefinition.resources | trim | nindent 8 }}
-      {{- end }}
-
-      {{- if $v.jobDefinition.securityContext }}
-      securityContext: {{- toYaml $v.jobDefinition.securityContext | trim | nindent 8 }}
-      {{- end }}
-
-      {{- if $v.jobDefinition.podSecurityContext }}
-      podSecurityContext: {{- toYaml $v.jobDefinition.podSecurityContext | trim | nindent 8 }}
-      {{- end }}
-
-      {{- if $v.jobDefinition.backoffLimit }}
-      backoffLimit: {{ $v.jobDefinition.backoffLimit }}
-      {{- end }}
-
-      {{- if $v.jobDefinition.ttlSecondsAfterFinished }}
-      ttlSecondsAfterFinished: {{ $v.jobDefinition.ttlSecondsAfterFinished }}
-      {{- end }}
+    jobDefinition: {{- toYaml $v.jobDefinition | trim | nindent 6 }}
     {{- end }}
   {{- end }}
 

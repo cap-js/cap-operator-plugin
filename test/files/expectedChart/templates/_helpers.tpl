@@ -3,6 +3,6 @@
 {{- end -}}
 
 {{- define "appName" -}}
-{{- $saasRegistry := index .Values.serviceInstances "saas-registry" -}}
-{{ printf "%s" $saasRegistry.parameters.appName }}
+{{- $xsuaa := index .Values.serviceInstances "xsuaa" -}}
+{{ printf "%s" $xsuaa.parameters.xsappname }}
 {{- end -}}
