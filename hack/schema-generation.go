@@ -64,6 +64,12 @@ func updateProperties(data []byte) []byte {
 	rawExt["additionalProperties"] = true
 	m["$defs"].(map[string]interface{})["RawExtension"] = rawExt
 
+	quantity := m["$defs"].(map[string]interface{})["Quantity"].(map[string]interface{})
+	quantity["type"] = "string"
+	delete(quantity,"properties")
+	delete(quantity,"required")
+	m["$defs"].(map[string]interface{})["Quantity"] = quantity
+
 	serviceBindingSpec := m["$defs"].(map[string]interface{})["serviceBindingExt"].(map[string]interface{})
 	serviceBindingSpec["required"] = []string{"name", "serviceInstanceName", "secretName"}
 

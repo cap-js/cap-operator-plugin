@@ -1489,15 +1489,7 @@
         },
         "Quantity": {
             "additionalProperties": false,
-            "properties": {
-                "Format": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "Format"
-            ],
-            "type": "object"
+            "type": "string"
         },
         "QuobyteVolumeSource": {
             "additionalProperties": false,
