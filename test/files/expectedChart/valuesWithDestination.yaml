@@ -1,4 +1,20 @@
 serviceInstances:
+  destination:
+    name: bookshop-destination
+    serviceOfferingName: destination
+    servicePlanName: lite
+    parameters:
+      HTML5Runtime_enabled: true
+  html5RepoRuntime:
+    name: bookshop-html5-repo-runtime
+    serviceOfferingName: html5-apps-repo
+    servicePlanName: app-runtime
+    parameters: {}
+  html5RepoHost:
+    name: bookshop-html5-repo-host
+    serviceOfferingName: html5-apps-repo
+    servicePlanName: app-host
+    parameters: {}
   xsuaa:
     name: bookshop-uaa
     serviceOfferingName: xsuaa
@@ -30,13 +46,25 @@ serviceInstances:
     serviceOfferingName: service-manager
     servicePlanName: container
     parameters: {}
-  destination:
-    name: bookshop-destination
-    serviceOfferingName: destination
-    servicePlanName: lite
-    parameters:
-      HTML5Runtime_enabled: true
 serviceBindings:
+  destination:
+    name: bookshop-destination-bind
+    serviceInstanceName: bookshop-destination
+    secretName: bookshop-destination-bind-secret
+    secretKey: credentials
+    parameters: {}
+  html5RepoRuntime:
+    name: bookshop-html5-repo-runtime-bind
+    serviceInstanceName: bookshop-html5-repo-runtime
+    secretName: bookshop-html5-repo-runtime-bind-secret
+    secretKey: credentials
+    parameters: {}
+  html5RepoHost:
+    name: bookshop-html5-repo-host-bind
+    serviceInstanceName: bookshop-html5-repo-host
+    secretName: bookshop-html5-repo-host-bind-secret
+    secretKey: credentials
+    parameters: {}
   xsuaa:
     name: bookshop-uaa-bind
     serviceInstanceName: bookshop-uaa
@@ -53,12 +81,6 @@ serviceBindings:
     name: bookshop-service-manager-bind
     serviceInstanceName: bookshop-service-manager
     secretName: bookshop-service-manager-bind-secret
-    secretKey: credentials
-    parameters: {}
-  destination:
-    name: bookshop-destination-bind
-    serviceInstanceName: bookshop-destination
-    secretName: bookshop-destination-bind-secret
     secretKey: credentials
     parameters: {}
 app:
@@ -82,6 +104,7 @@ workloads:
     consumedBTPServices:
       - bookshop-uaa-bind
       - bookshop-destination-bind
+      - bookshop-html5-repo-runtime-bind
       - bookshop-saas-registry-bind
     deploymentDefinition:
       type: Router
@@ -98,7 +121,35 @@ workloads:
       - bookshop-saas-registry-bind
       - bookshop-service-manager-bind
     deploymentDefinition:
+      env:
+        - name: CDS_CONFIG
+          value: null
       type: CAP
+      image: null
+  content-deploy:
+    name: content-deploy
+    labels:
+      sme.sap.com/app-type: bookshop
+    consumedBTPServices:
+      - bookshop-uaa-bind
+      - bookshop-saas-registry-bind
+      - bookshop-html5-repo-host-bind
+    deploymentDefinition:
+      type: Content
+      image: null
+  tenant-job:
+    name: tenant-job
+    labels:
+      sme.sap.com/app-type: bookshop
+    consumedBTPServices:
+      - bookshop-uaa-bind
+      - bookshop-saas-registry-bind
+      - bookshop-service-manager-bind
+    deploymentDefinition:
+      env:
+        - name: CDS_CONFIG
+          value: null
+      type: TenantOperation
       image: null
 tenantOperations:
   provisioning: []

@@ -14,7 +14,7 @@ describe('cds add cap-operator', () => {
         await tempUtil.cleanUp()
         temp = await tempUtil.mkTempFolder()
         bookshop = join(temp, 'bookshop')
-        execSync(`cds init bookshop --add multitenancy,approuter,xsuaa`, { cwd: temp })
+        execSync(`cds init bookshop --add multitenancy,approuter,xsuaa,html5-repo`, { cwd: temp })
         updateDependency(bookshop)
         execSync(`npm install`, { cwd: bookshop })
         setupHack(bookshop)
@@ -107,15 +107,4 @@ describe('cds add cap-operator', () => {
         expect(getFileHash(join(__dirname,'files/expectedChart/valuesWithDestination.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
     })
 
-    it('Add xsuaa, approuter and destination. Then add cap-operator chart', async () => {
-        execSync(`cds add xsuaa`, { cwd: bookshop })
-        execSync(`cds add approuter`, { cwd: bookshop })
-        execSync(`cds add destination`, { cwd: bookshop })
-        execSync(`cds add cap-operator --force`, { cwd: bookshop })
-
-
-        expect(getFileHash(join(__dirname,'files/expectedChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))
-        expect(getFileHash(join(__dirname,'files/expectedChart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))
-        expect(getFileHash(join(__dirname,'files/expectedChart/valuesWithXsuaaDestinationRouter.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
-    })
 })

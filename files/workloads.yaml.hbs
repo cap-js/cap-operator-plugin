@@ -1,0 +1,56 @@
+workloads:
+    server:
+        name: server
+        labels:
+            sme.sap.com/app-type: {{appName}}
+        consumedBTPServices:
+        {{#hasXsuaa}}
+        - {{appName}}-uaa-bind
+        {{/hasXsuaa}}
+        {{#hasMultitenancy}}
+        - {{appName}}-saas-registry-bind
+        - {{appName}}-service-manager-bind
+        {{/hasMultitenancy}}
+        deploymentDefinition:
+            env:
+            - name: CDS_CONFIG
+              value:
+            type: CAP
+            image:
+
+    content-deploy:
+        name: content-deploy
+        labels:
+            sme.sap.com/app-type: {{appName}}
+        consumedBTPServices:
+        {{#hasXsuaa}}
+        - {{appName}}-uaa-bind
+        {{/hasXsuaa}}
+        {{#hasMultitenancy}}
+        - {{appName}}-saas-registry-bind
+        {{/hasMultitenancy}}
+        {{#hasHtml5Repo}}
+        - {{appName}}-html5-repo-host-bind
+        {{/hasHtml5Repo}}
+        deploymentDefinition:
+            type: Content
+            image:
+
+    tenant-job:
+        name: tenant-job
+        labels:
+            sme.sap.com/app-type: {{appName}}
+        consumedBTPServices:
+        {{#hasXsuaa}}
+        - {{appName}}-uaa-bind
+        {{/hasXsuaa}}
+        {{#hasMultitenancy}}
+        - {{appName}}-saas-registry-bind
+        - {{appName}}-service-manager-bind
+        {{/hasMultitenancy}}
+        deploymentDefinition:
+            env:
+            - name: CDS_CONFIG
+              value:
+            type: TenantOperation
+            image:
