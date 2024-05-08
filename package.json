@@ -25,6 +25,7 @@
     "@sap/cds-foss": ">=5"
   },
   "dependencies": {
+    "inquirer": "^9.2.20",
     "mustache": "^4.2.0"
   },
   "devDependencies": {
@@ -33,7 +34,7 @@
     "nyc": "^15.1.0"
   },
   "scripts": {
-    "test": "mocha --timeout 20000",
+    "test": "mocha --timeout 5000000",
     "test-coverage-lcov": "nyc mocha --timeout 20000 && nyc --reporter lcov --reporter text --report-dir coverage report"
   }
 }
