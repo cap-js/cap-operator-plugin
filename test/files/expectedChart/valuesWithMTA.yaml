@@ -205,8 +205,3 @@ workloads:
       env:
         - name: TENANT_HOST_PATTERN
           value: ^(.*)-${default-uri}
-tenantOperations:
-  provisioning: []
-  upgrade: []
-  deprovisioning: []
-contentJobs: []
