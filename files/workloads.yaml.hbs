@@ -32,7 +32,7 @@ workloads:
         {{#hasHtml5Repo}}
         - {{appName}}-html5-repo-host-bind
         {{/hasHtml5Repo}}
-        deploymentDefinition:
+        jobDefinition:
             type: Content
             image:
 
@@ -48,7 +48,7 @@ workloads:
         - {{appName}}-saas-registry-bind
         - {{appName}}-service-manager-bind
         {{/hasMultitenancy}}
-        deploymentDefinition:
+        jobDefinition:
             env:
             - name: CDS_CONFIG
               value:
