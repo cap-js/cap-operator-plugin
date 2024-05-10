@@ -107,4 +107,12 @@ describe('cds add cap-operator', () => {
         expect(getFileHash(join(__dirname,'files/expectedChart/valuesWithDestination.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
     })
 
+    it('Generate runtime-values file', async () => {
+        await cds.utils.copy(join('test/files', 'input_values.yaml'), join(bookshop, 'input_values.yaml'))
+        execSync(`cds add cap-operator`, { cwd: bookshop })
+        execSync(`cds add cap-operator --generate-runtime-values-via-input-yaml input_values.yaml`, { cwd: bookshop })
+
+        expect(getFileHash(join(__dirname,'files/expectedChart/runtime-values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
+    })
+
 })

@@ -1,0 +1,50 @@
+serviceInstances:
+  saas-registry:
+    parameters:
+      xsappname: bookshop
+      appName: bookshop
+      displayName: bookshop
+      description: A simple CAP project.
+      appUrls:
+        getDependencies: https://bem-aad-sadad-123456789012.bookshop.c-abc.kyma.ondemand.com/callback/v1.0/dependencies
+        onSubscription: https://cap-op.c-abc.kyma.ondemand.com/provision/tenants/{tenantId}
+  xsuaa:
+    parameters:
+      xsappname: bookshop
+      oauth2-configuration:
+        redirect-uris:
+          - https://*bookshop.c-abc.kyma.ondemand.com/**
+app:
+  domains:
+    primary: bookshop.c-abc.kyma.ondemand.com
+    secondary: []
+  istioIngressGatewayLabels:
+    istio: ingressgateway
+    app: istio-ingressgateway
+btp:
+  globalAccountId: dc94db56-asda-adssa-dada-123456789012
+  provider:
+    subdomain: bem-aad-sadad-123456789012
+    tenantId: dasdsd-1234-1234-1234-123456789012
+imagePullSecrets:
+  - regcred
+workloads:
+  app-router:
+    deploymentDefinition:
+      env:
+        - name: TENANT_HOST_PATTERN
+          value: ^(.*).bookshop.c-abc.kyma.ondemand.com
+  server:
+    deploymentDefinition:
+      env:
+        - name: CDS_CONFIG
+          value: '{"requires":{"cds.xt.DeploymentService":{"hdi": { "create":
+            {"database_id": "sdasd-4c4d-4d4d-4d4d-123456789012" } }}}}'
+  content-deploy:
+    jobDefinition:
+      env: []
+  tenant-job:
+    jobDefinition:
+      env:
+        - name: CDS_CONFIG
+          value: null
