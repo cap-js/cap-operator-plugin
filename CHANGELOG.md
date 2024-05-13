@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Added
 
-- Updated runtime deployment details in the readme file with links to the cap-operator documentation
+- Updated the readme file with more information on the various parameters and deployment steps
 
 ### Fixed
 
