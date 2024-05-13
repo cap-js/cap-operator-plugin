@@ -28,9 +28,3 @@ imagePullSecrets: []
 
 workloads:
 
-tenantOperations:
-  provisioning: []
-  upgrade: []
-  deprovisioning: []
-
-contentJobs: []
