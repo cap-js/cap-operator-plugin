@@ -134,7 +134,7 @@ workloads:
       - bookshop-uaa-bind
       - bookshop-saas-registry-bind
       - bookshop-html5-repo-host-bind
-    deploymentDefinition:
+    jobDefinition:
       type: Content
       image: null
   tenant-job:
@@ -145,14 +145,9 @@ workloads:
       - bookshop-uaa-bind
       - bookshop-saas-registry-bind
       - bookshop-service-manager-bind
-    deploymentDefinition:
+    jobDefinition:
       env:
         - name: CDS_CONFIG
           value: null
       type: TenantOperation
       image: null
-tenantOperations:
-  provisioning: []
-  upgrade: []
-  deprovisioning: []
-contentJobs: []
