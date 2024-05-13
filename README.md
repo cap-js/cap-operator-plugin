@@ -43,7 +43,7 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
 
 3. The `values.yaml` requires two types of details:
 
-    * Design-time deployment details
+    * Design-time deployment
         - [serviceInstances](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-instance)
         - [serviceBindings](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-binding)
         - workloads - There are two types of workloads:
@@ -51,11 +51,18 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
             - [Job definition](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#workloads-with-jobdefinition)
         - [tenantOperations](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#sequencing-tenant-operations)
         - [contentJobs](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#sequencing-content-jobs)
-    * Runtime deployment details
+
+    * Runtime deployment
         - app
+            - Primary - Primary application domain will be used to generate a wildcard TLS certificate. In SAP Gardener managed clusters this is (usually) a subdomain of the cluster domain
+            - Secondary - Customer specific domains to serve application endpoints (optional)
+            - IstioIngressGatewayLabels - Labels used to identify the istio ingress-gateway component and its corresponding namespace. Usually {“app”:“istio-ingressgateway”,“istio”:“ingressgateway”}
         - btp
-        - imagePullSecrets
-        - env information inside workloads like database instance ID
+            - GlobalAccountId - SAP BTP Global Account Identifier where services are entitles for the current application
+            - Subdomain - BTP subaccount subdomain
+            - TenantId - BTP subaccount Tenant ID
+        - [imagePullSecrets](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) - Registry secrets used to pull images of the application components
+        - env information inside workloads
 
     As a developer, you must fill in the design-time deployment details in the `values.yaml` file, which can then be pushed to your repository. The plugin will auto-populate some of these details based on the project configuration, but verifying them and manually filling in any missing information is essential. You can refer to `values.schema.json` file for the structure of the `values.yaml` file.
 
@@ -72,6 +79,12 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
    ```sh
    helm upgrade -i -n <namespace> <release-name> <project-path>/gen/chart -f <runtime-values.yaml-path>
    ```
+
+   > If you are using `xsuaa` service instance and want to set the `xs-security.json` as a parameter, you can do so by setting the `jsonParameters` attribute on the `xsuaa` service instance as follows:
+   >```sh
+   > helm upgrade -i -n <namespace> <release-name> <project-path>/gen/chart --set-file serviceInstances.xsuaa.jsonParameters=<project-path>/xs-security.json -f <runtime-values.yaml-path>
+   >```
+   
 As a reference, you can check out the [CAP Operator helm chart](https://github.com/cap-js/incidents-app/tree/cap-operator-plugin/chart) in the sample incident app. And also the corresponding [runtime-values.yaml](https://github.com/cap-js/incidents-app/blob/cap-operator-plugin/runtime-values.yaml) file.
 
 ## ❗Things to Note
