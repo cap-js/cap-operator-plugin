@@ -47,4 +47,5 @@ workloads:
     jobDefinition:
       env:
         - name: CDS_CONFIG
-          value: null
+          value: '{"requires":{"cds.xt.DeploymentService":{"hdi": { "create":
+            {"database_id": "sdasd-4c4d-4d4d-4d4d-123456789012" } }}}}'
