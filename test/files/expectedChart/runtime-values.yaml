@@ -38,11 +38,9 @@ workloads:
     deploymentDefinition:
       env:
         - name: CDS_CONFIG
-          value: '{"requires":{"cds.xt.DeploymentService":{"hdi": { "create":
-            {"database_id": "sdasd-4c4d-4d4d-4d4d-123456789012" } }}}}'
+          value: '{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"sdasd-4c4d-4d4d-4d4d-123456789012"}}}}}'
   tenant-job:
     jobDefinition:
       env:
         - name: CDS_CONFIG
-          value: '{"requires":{"cds.xt.DeploymentService":{"hdi": { "create":
-            {"database_id": "sdasd-4c4d-4d4d-4d4d-123456789012" } }}}}'
+          value: '{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"sdasd-4c4d-4d4d-4d4d-123456789012"}}}}}'
