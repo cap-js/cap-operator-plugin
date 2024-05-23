@@ -115,4 +115,11 @@ describe('cds add cap-operator', () => {
         expect(getFileHash(join(__dirname,'files/expectedChart/runtime-values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
 
+    it('Generate runtime-values file using wrong input_values.yaml', async () => {
+        await cds.utils.copy(join('test/files', 'input_values_wrong.yaml'), join(bookshop, 'input_values_wrong.yaml'))
+        execSync(`cds add cap-operator`, { cwd: bookshop })
+
+        expect(() => execSync(`cds add cap-operator --generate-runtime-values-via-input-yaml input_values_wrong.yaml`, { cwd: bookshop })).to.throw(`'appName', 'capOperatorSubdomain', 'clusterDomain', 'globalAccountId', 'providerSubdomain', 'tenantId', 'hanaInstanceId' and 'imagePullSecret' are mandatory fields in the input yaml file.`)
+    })
+
 })

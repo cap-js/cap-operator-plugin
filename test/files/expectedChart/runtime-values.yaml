@@ -1,22 +1,22 @@
 serviceInstances:
   saas-registry:
     parameters:
-      xsappname: bookshop
-      appName: bookshop
-      displayName: bookshop
+      xsappname: bkshop
+      appName: bkshop
+      displayName: bkshop
       description: A simple CAP project.
       appUrls:
-        getDependencies: https://bem-aad-sadad-123456789012.bookshop.c-abc.kyma.ondemand.com/callback/v1.0/dependencies
+        getDependencies: https://bem-aad-sadad-123456789012.bkshop.c-abc.kyma.ondemand.com/callback/v1.0/dependencies
         onSubscription: https://cap-op.c-abc.kyma.ondemand.com/provision/tenants/{tenantId}
   xsuaa:
     parameters:
-      xsappname: bookshop
+      xsappname: bkshop
       oauth2-configuration:
         redirect-uris:
-          - https://*bookshop.c-abc.kyma.ondemand.com/**
+          - https://*bkshop.c-abc.kyma.ondemand.com/**
 app:
   domains:
-    primary: bookshop.c-abc.kyma.ondemand.com
+    primary: bkshop.c-abc.kyma.ondemand.com
     secondary: []
   istioIngressGatewayLabels:
     istio: ingressgateway
@@ -33,7 +33,7 @@ workloads:
     deploymentDefinition:
       env:
         - name: TENANT_HOST_PATTERN
-          value: ^(.*).bookshop.c-abc.kyma.ondemand.com
+          value: ^(.*).bkshop.c-abc.kyma.ondemand.com
   server:
     deploymentDefinition:
       env:

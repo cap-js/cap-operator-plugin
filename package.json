@@ -25,7 +25,6 @@
     "@sap/cds-foss": ">=5"
   },
   "dependencies": {
-    "inquirer": "^9.2.20",
     "mustache": "^4.2.0"
   },
   "devDependencies": {
