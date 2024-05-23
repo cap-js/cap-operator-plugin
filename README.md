@@ -91,13 +91,14 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
         Sample input yaml -
 
         ```yaml
+        appName: incidentapp
         capOperatorSubdomain: cap-op
         clusterDomain: abc.com
         globalAccountId: abcdef-abcd-4ef1-9263-1b6b7b6b7b6b
         providerSubdomain: provider-subdomain-1234
         tenantId: da37c8e0-74d4-abcd-b5e2-sd8f7d8f7d8f
-        imagePullSecret: regcred
         hanaInstanceId: 46e285d9-abcd-4c7d-8ebb-502sd8f7d8f7d
+        imagePullSecret: regcred
         ```
 
     The `runtime-values.yaml` file will be created in the chart folder of your project directory.
