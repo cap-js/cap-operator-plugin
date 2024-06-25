@@ -1,5 +1,4 @@
 serviceInstances:
-    {{#hasMultitenancy}}
     saas-registry:
         parameters:
             xsappname: {{appName}}
@@ -9,15 +8,12 @@ serviceInstances:
             appUrls:
                 getDependencies: "https://{{providerSubdomain}}.{{appName}}.{{clusterDomain}}/callback/v1.0/dependencies"
                 onSubscription: "https://{{capOperatorSubdomain}}.{{clusterDomain}}/provision/tenants/{tenantId}"
-    {{/hasMultitenancy}}
-    {{#hasXsuaa}}
     xsuaa:
         parameters:
             xsappname: {{appName}}
             oauth2-configuration:
                 redirect-uris:
                 - "https://*{{appName}}.{{clusterDomain}}/**"
-    {{/hasXsuaa}}
 app:
     domains:
         primary: {{appName}}.{{clusterDomain}}
