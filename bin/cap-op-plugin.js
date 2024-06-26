@@ -4,7 +4,7 @@
 const cds = require('@sap/cds-dk')
 const yaml = require('@sap/cds-foss').yaml
 const Mustache = require('mustache')
-const { ask, mergeObj } = require('../lib/util')
+const { ask, mergeObj, isCAPOperatorChart } = require('../lib/util')
 
 const isCli = require.main === module
 const SUPPORTED = {'generate-runtime-values': ['--via-prompts', '--via-input-yaml']}
@@ -54,6 +54,11 @@ EXAMPLES
 }
 
 async function generateRuntimeValues(option, inputYamlPath) {
+
+    if (!((cds.utils.exists('chart') && isCAPOperatorChart('chart')))) {
+        throw new Error("No CAP Operator chart found in the project. Please run 'cds add cap-operator --force' to add the CAP Operator chart folder.")
+    }
+
     let answerStruct = {}
     const { appName, appDescription } = getAppDetails()
 
@@ -65,7 +70,7 @@ async function generateRuntimeValues(option, inputYamlPath) {
             throw new Error(`'appName', 'capOperatorSubdomain', 'clusterDomain', 'globalAccountId', 'providerSubdomain' and 'tenantId' are mandatory fields in the input yaml file.`)
 
     } else {
-        const answer = await ask(
+        const questions = [
             ['Enter app name for deployment: ', appName, true],
             ['Enter CAP Operator subdomain (In kyma cluster it is "cap-op" by default): ', 'cap-op', true],
             ['Enter your cluster shoot domain: ','', true],
@@ -74,16 +79,16 @@ async function generateRuntimeValues(option, inputYamlPath) {
             ['Enter your provider tenant ID: ','', true],
             ['Enter your HANA database instance ID: ','', false],
             ['Enter your image pull secrets: ','', false]
-        )
+        ]
 
-        answerStruct['appName'] = answer[0]
-        answerStruct['capOperatorSubdomain'] = answer[1]
-        answerStruct['clusterDomain'] = answer[2]
-        answerStruct['globalAccountId'] = answer[3]
-        answerStruct['providerSubdomain'] = answer[4]
-        answerStruct['tenantId'] = answer[5]
-        answerStruct['hanaInstanceId'] = answer[6]
-        answerStruct['imagePullSecret'] = answer[7]
+        const answerKeys = [
+            'appName', 'capOperatorSubdomain', 'clusterDomain',
+            'globalAccountId', 'providerSubdomain', 'tenantId',
+            'hanaInstanceId', 'imagePullSecret'
+        ]
+
+        const answer = await ask(...questions)
+        answerStruct = Object.fromEntries(answerKeys.map((key, index) => [key, answer[index]]))
     }
 
     answerStruct['appDescription'] = appDescription ?? answerStruct['appName']
@@ -109,7 +114,7 @@ async function generateRuntimeValues(option, inputYamlPath) {
             if (index > -1) {
                 // Get existing CDS_CONFIG and merge with new CDS_CONFIG for HANA
                 const existingCdsConfigJson = JSON.parse(runtimeValuesYaml['workloads'][workloadKey]['deploymentDefinition']['env'][index].value)
-                const mergedCdsConfig = mergeObj(JSON.parse(cdsConfigHana), existingCdsConfigJson)
+                const mergedCdsConfig = mergeObj(existingCdsConfigJson, JSON.parse(cdsConfigHana))
 
                 runtimeValuesYaml['workloads'][workloadKey]['deploymentDefinition']['env'][index] = {name: 'CDS_CONFIG', value: JSON.stringify(mergedCdsConfig) }
             } else
@@ -121,7 +126,7 @@ async function generateRuntimeValues(option, inputYamlPath) {
             if (index > -1) {
                 // Get existing CDS_CONFIG and merge with new CDS_CONFIG for HANA
                 const existingCdsConfigJson = JSON.parse(runtimeValuesYaml['workloads'][workloadKey]['jobDefinition']['env'][index].value)
-                const mergedCdsConfig = mergeObj(JSON.parse(cdsConfigHana), existingCdsConfigJson)
+                const mergedCdsConfig = mergeObj(existingCdsConfigJson, JSON.parse(cdsConfigHana))
 
                 runtimeValuesYaml['workloads'][workloadKey]['jobDefinition']['env'][index] = {name: 'CDS_CONFIG', value: JSON.stringify(mergedCdsConfig)}
             } else
@@ -148,7 +153,7 @@ async function generateRuntimeValues(option, inputYamlPath) {
         }
     }
 
-    await cds.util.write(yaml.stringify(runtimeValuesYaml)).to(cds.utils.path.join(cds.root, 'chart/runtime-values.yaml'))
+    await cds.utils.write(yaml.stringify(runtimeValuesYaml)).to(cds.utils.path.join(cds.root, 'chart/runtime-values.yaml'))
     console.log("Generated 'runtime-values.yaml' file in the 'chart' folder.")
 }
 

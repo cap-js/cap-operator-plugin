@@ -79,13 +79,13 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
     * **Interactive Mode** - This mode will ask you for all the runtime values one by one. To use this mode, run the following command:
 
         ```sh
-        cds add cap-operator --generate-runtime-values-via-prompts
+        npx cap-op-plugin generate-runtime-values --via-prompts
         ```
 
     * **File Mode** - Via this mode you can provide all the required runtime values in a yaml file. To use this mode, run the following command:
 
         ```sh
-        cds add cap-operator --generate-runtime-values-via-input-yaml <yaml-file-path>
+        npx cap-op-plugin generate-runtime-values --via-input-yaml <input-yaml-path>
         ```
 
         Sample input yaml -

@@ -110,7 +110,7 @@ describe('cds add cap-operator', () => {
     it('Generate runtime-values file', async () => {
         await cds.utils.copy(join('test/files', 'input_values.yaml'), join(bookshop, 'input_values.yaml'))
         execSync(`cds add cap-operator`, { cwd: bookshop })
-        execSync(`cds add cap-operator --generate-runtime-values-via-input-yaml input_values.yaml`, { cwd: bookshop })
+        execSync(`npx cap-op-plugin generate-runtime-values --via-input-yaml input_values.yaml`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname,'files/expectedChart/runtime-values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
@@ -119,7 +119,6 @@ describe('cds add cap-operator', () => {
         await cds.utils.copy(join('test/files', 'input_values_wrong.yaml'), join(bookshop, 'input_values_wrong.yaml'))
         execSync(`cds add cap-operator`, { cwd: bookshop })
 
-        expect(() => execSync(`cds add cap-operator --generate-runtime-values-via-input-yaml input_values_wrong.yaml`, { cwd: bookshop })).to.throw(`'appName', 'capOperatorSubdomain', 'clusterDomain', 'globalAccountId', 'providerSubdomain' and 'tenantId' are mandatory fields in the input yaml file.`)
+        expect(() => execSync(`npx cap-op-plugin generate-runtime-values --via-input-yaml input_values_wrong.yaml`, { cwd: bookshop })).to.throw(`'appName', 'capOperatorSubdomain', 'clusterDomain', 'globalAccountId', 'providerSubdomain' and 'tenantId' are mandatory fields in the input yaml file.`)
     })
-
 })
