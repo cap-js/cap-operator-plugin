@@ -4,7 +4,7 @@
 const cds = require('@sap/cds-dk')
 const yaml = require('@sap/cds-foss').yaml
 const Mustache = require('mustache')
-const { ask } = require('../lib/util')
+const { ask, mergeObj } = require('../lib/util')
 
 const isCli = require.main === module
 const SUPPORTED = {'generate-runtime-values': ['--via-prompts', '--via-input-yaml']}
@@ -109,7 +109,7 @@ async function generateRuntimeValues(option, inputYamlPath) {
             if (index > -1) {
                 // Get existing CDS_CONFIG and merge with new CDS_CONFIG for HANA
                 const existingCdsConfigJson = JSON.parse(runtimeValuesYaml['workloads'][workloadKey]['deploymentDefinition']['env'][index].value)
-                const mergedCdsConfig = await cds.add.merge(existingCdsConfigJson).into(JSON.parse(cdsConfigHana))
+                const mergedCdsConfig = mergeObj(JSON.parse(cdsConfigHana), existingCdsConfigJson)
 
                 runtimeValuesYaml['workloads'][workloadKey]['deploymentDefinition']['env'][index] = {name: 'CDS_CONFIG', value: JSON.stringify(mergedCdsConfig) }
             } else
@@ -121,7 +121,7 @@ async function generateRuntimeValues(option, inputYamlPath) {
             if (index > -1) {
                 // Get existing CDS_CONFIG and merge with new CDS_CONFIG for HANA
                 const existingCdsConfigJson = JSON.parse(runtimeValuesYaml['workloads'][workloadKey]['jobDefinition']['env'][index].value)
-                const mergedCdsConfig = await cds.add.merge(existingCdsConfigJson).into(JSON.parse(cdsConfigHana))
+                const mergedCdsConfig = mergeObj(JSON.parse(cdsConfigHana), existingCdsConfigJson)
 
                 runtimeValuesYaml['workloads'][workloadKey]['jobDefinition']['env'][index] = {name: 'CDS_CONFIG', value: JSON.stringify(mergedCdsConfig)}
             } else
