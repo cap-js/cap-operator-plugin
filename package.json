@@ -28,6 +28,7 @@
     "@sap/cds-foss": ">=5"
   },
   "dependencies": {
+    "@kubernetes/client-node": "^0.21.0",
     "mustache": "^4.2.0"
   },
   "devDependencies": {
