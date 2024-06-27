@@ -156,12 +156,12 @@ workloads:
       type: null
       image: null
       env:
-        - name: SUBSCRIPTION_URL
-          value: ${protocol}://\${tenant_subdomain}.${app-url}-srv.${domain}
         - name: OTLP_TRACE_URL
           value: http://telemetry-otlp-traces.kyma-system:4318
         - name: IS_MTXS_ENABLED
           value: "true"
+        - name: SUBSCRIPTION_URL
+          value: ${protocol}://\${tenant_subdomain}.${app-url}-srv.${domain}
   author-readings-mtx-srv:
     name: author-readings-mtx-srv
     consumedBTPServices:

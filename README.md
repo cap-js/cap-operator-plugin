@@ -32,12 +32,18 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
         ```
         > During `cds build`, the plugin will copy the templates folder into the final chart.
 
+
     > ### ⚠️ Experimental
     > To add a chart folder with the values.yaml prefilled with the design-time deployment details from the mta and mta extensions, use:
     >```sh
     > cds add cap-operator --with-mta <mta-yaml-file-path> --with-mta-extensions <mta-ext-yaml-file-path>
     >```
     > If you have multiple mta extensions, you can pass them as a comma-separated string to merge them.
+
+    > During `cds build`, the plugin will automatically inject the templates folder into the final chart similar to command `cds add cap-operator`. But If you want to add the templates folder as well during chart folder creation, then you can use the `--with-templates` option as shown below:
+    >```sh
+    > cds add cap-operator --with-mta <mta-yaml-file-path> --with-mta-extensions <mta-ext-yaml-file-path> --with-templates
+    >```
 
 2. Once executed, the chart folder or chart folder with templates will be added to your project directory.
 
@@ -74,7 +80,38 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
 
 4. After filling all the design-time information in `values.yaml`, run `cds build`. The final chart will be generated in the `gen` folder within your project directory.
 
-5. Now to deploy the application, you can pass the runtime values in a separate `runtime-values.yaml` file and deploy the chart using the following command:
+5. To deploy the application, you need to create `runtime-values.yaml` with all the runtime values as mentioned above. For that you can make use of the plugin itself. The plugins provides two ways to generate the runtime values file -
+
+    * **Interactive Mode** - This mode will ask you for all the runtime values one by one. To use this mode, run the following command:
+
+        ```sh
+        npx cap-op-plugin generate-runtime-values
+        ```
+
+    * **File Mode** - Via this mode you can provide all the required runtime values in a yaml file. To use this mode, run the following command:
+
+        ```sh
+        npx cap-op-plugin generate-runtime-values --with-input-yaml <input-yaml-path>
+        ```
+
+        Sample input yaml -
+
+        ```yaml
+        appName: incidentapp
+        capOperatorSubdomain: cap-op
+        clusterDomain: abc.com
+        globalAccountId: abcdef-abcd-4ef1-9263-1b6b7b6b7b6b
+        providerSubdomain: provider-subdomain-1234
+        tenantId: da37c8e0-74d4-abcd-b5e2-sd8f7d8f7d8f
+        hanaInstanceId: 46e285d9-abcd-4c7d-8ebb-502sd8f7d8f7d
+        imagePullSecret: regcred
+        ```
+
+        Similar to the interactive mode, `appName`, `capOperatorSubdomain`, `clusterDomain`, `globalAccountId`, `providerSubdomain`, and `tenantId` are mandatory fields. The plugin will throw an error if they are not provided in the input YAML.
+
+    The `runtime-values.yaml` file will be created in the chart folder of your project directory.
+
+5. Now you can finally deploy the application using the following command:
 
    ```sh
    helm upgrade -i -n <namespace> <release-name> <project-path>/gen/chart -f <runtime-values.yaml-path>
@@ -84,8 +121,8 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
    >```sh
    > helm upgrade -i -n <namespace> <release-name> <project-path>/gen/chart --set-file serviceInstances.xsuaa.jsonParameters=<project-path>/xs-security.json -f <runtime-values.yaml-path>
    >```
-   
-As a reference, you can check out the [CAP Operator helm chart](https://github.com/cap-js/incidents-app/tree/cap-operator-plugin/chart) in the sample incident app. And also the corresponding [runtime-values.yaml](https://github.com/cap-js/incidents-app/blob/cap-operator-plugin/runtime-values.yaml) file.
+
+As a reference, you can check out the [CAP Operator helm chart](https://github.com/cap-js/incidents-app/tree/cap-operator-plugin/chart) in the sample incident app. And also the corresponding [runtime-values.yaml](https://github.com/cap-js/incidents-app/blob/cap-operator-plugin/chart/runtime-values.yaml) file.
 
 ## ❗Things to Note
 

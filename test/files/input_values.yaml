@@ -1,0 +1,8 @@
+appName: bkshop
+capOperatorSubdomain: cap-op
+clusterDomain: c-abc.kyma.ondemand.com
+globalAccountId: dc94db56-asda-adssa-dada-123456789012
+providerSubdomain: bem-aad-sadad-123456789012
+tenantId: dasdsd-1234-1234-1234-123456789012
+imagePullSecret: regcred
+hanaInstanceId: sdasd-4c4d-4d4d-4d4d-123456789012
