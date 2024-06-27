@@ -7,7 +7,7 @@ const Mustache = require('mustache')
 const { ask, mergeObj, isCAPOperatorChart } = require('../lib/util')
 
 const isCli = require.main === module
-const SUPPORTED = { 'generate-runtime-values': ['--via-prompts', '--via-input-yaml'] }
+const SUPPORTED = { 'generate-runtime-values': ['--with-input-yaml'] }
 
 async function capOperatorPlugin(cmd, option, inputYamlPath) {
 
@@ -15,7 +15,7 @@ async function capOperatorPlugin(cmd, option, inputYamlPath) {
         if (!cmd) return _usage()
         if (!Object.keys(SUPPORTED).includes(cmd)) return _usage(`Unknown command ${cmd}.`)
         if (option && !SUPPORTED[cmd].includes(option)) return _usage(`Invalid option ${option}.`)
-        if (option === '--via-input-yaml' && !inputYamlPath) return _usage(`Input yaml path is missing.`)
+        if (option === '--with-input-yaml' && !inputYamlPath) return _usage(`Input yaml path is missing.`)
 
         if (cmd === 'generate-runtime-values') await generateRuntimeValues(option, inputYamlPath)
     } catch (e) {
@@ -39,7 +39,7 @@ async function _usage(message = '') {
 
 USAGE
 
-    cap-op-plugin <command> [--via-prompts, --via-input-yaml <input-yaml-path>]
+    cap-op-plugin <command> [--with-input-yaml <input-yaml-path>]
 
 COMMANDS
 
@@ -47,8 +47,8 @@ COMMANDS
 
 EXAMPLES
 
-    cap-op-plugin generate-runtime-values --via-prompts
-    cap-op-plugin generate-runtime-values --via-input-yaml /path/to/input.yaml
+    cap-op-plugin generate-runtime-values
+    cap-op-plugin generate-runtime-values --with-input-yaml /path/to/input.yaml
 `
     )
 }
@@ -62,7 +62,7 @@ async function generateRuntimeValues(option, inputYamlPath) {
     let answerStruct = {}
     const { appName, appDescription } = getAppDetails()
 
-    if (option === '--via-input-yaml' && inputYamlPath) {
+    if (option === '--with-input-yaml' && inputYamlPath) {
 
         answerStruct = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, inputYamlPath)))
 
