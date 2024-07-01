@@ -2,12 +2,9 @@
 /* eslint-disable no-console */
 
 const isCli = require.main === module
-process.noDeprecation = true
-
 const cds = require('@sap/cds-dk')
 const yaml = require('@sap/cds-foss').yaml
 const Mustache = require('mustache')
-const k8s = require('@kubernetes/client-node')
 
 const { ask, mergeObj, isCAPOperatorChart } = require('../lib/util')
 
@@ -57,7 +54,7 @@ EXAMPLES
 }
 
 async function generateRuntimeValues(option, inputYamlPath) {
-    if (!((cds.utils.exists('chart') && isCAPOperatorChart('chart')))) {
+    if (!((cds.utils.exists('chart') && isCAPOperatorChart(cds.utils.path.join(cds.root,'chart'))))) {
         throw new Error("No CAP Operator chart found in the project. Please run 'cds add cap-operator --force' to add the CAP Operator chart folder.")
     }
 
@@ -72,11 +69,10 @@ async function generateRuntimeValues(option, inputYamlPath) {
             throw new Error(`'appName', 'capOperatorSubdomain', 'clusterDomain', 'globalAccountId', 'providerSubdomain' and 'tenantId' are mandatory fields in the input yaml file.`)
 
     } else {
-        const shootDomain = await getClusterShootDomain()
         const questions = [
             ['Enter app name for deployment: ', appName, true],
             ['Enter CAP Operator subdomain (In kyma cluster it is "cap-op" by default): ', 'cap-op', true],
-            ['Enter your cluster shoot domain: ', shootDomain, true],
+            ['Enter your cluster shoot domain: ', '', true],
             ['Enter your global account ID: ', '', true],
             ['Enter your provider subdomain: ', '', true],
             ['Enter your provider tenant ID: ', '', true],
@@ -159,23 +155,6 @@ function getAppDetails() {
     const { name, description } = JSON.parse(cds.utils.fs.readFileSync(cds.utils.path.join(cds.root, 'package.json')))
     const segments = (name ?? this.appName).trim().replace(/@/g, '').split('/').map(encodeURIComponent)
     return { appName: segments[segments.length - 1], appDescription: description }
-}
-
-async function getClusterShootDomain() {
-    try {
-        const kc = new k8s.KubeConfig()
-
-        // Load the default kubeconfig
-        kc.loadFromDefault()
-
-        const k8sApi = kc.makeApiClient(k8s.CoreV1Api)
-        const configMap = await k8sApi.readNamespacedConfigMap('shoot-info', 'kube-system')
-
-        // Extract the shoot domain from the config map
-        return configMap.body.data['domain'] ?? ''
-    } catch (err) {
-        return ''
-    }
 }
 
 if (isCli) {

@@ -2,14 +2,19 @@ const cds = require('@sap/cds-dk')
 const { join } = require('path')
 const { execSync } = require('child_process')
 const { expect } = require("chai")
+const readline = require('readline')
+const sinon = require('sinon')
 
 const TempUtil = require('./tempUtil')
 const tempUtil = new TempUtil(__filename, { local: true })
 
 const { getFileHash, updateDependency, setupHack, undoSetupHack } = require('./util')
+const { capOperatorPlugin } = require('../bin/cap-op-plugin')
 
 describe('cap-op-plugin', () => {
     let temp, bookshop
+    let rlInterface
+    let rlQuestion
 
     before(async () => {
         await tempUtil.cleanUp()
@@ -64,5 +69,32 @@ EXAMPLES
     cap-op-plugin generate-runtime-values
     cap-op-plugin generate-runtime-values --with-input-yaml /path/to/input.yaml
 `)
+    })
+
+    it('Generate runtime-values via prompts', async () => {
+        execSync(`cds add cap-operator`, { cwd: bookshop })
+
+        rlQuestion = sinon.stub()
+        rlInterface = {
+            question: rlQuestion,
+            close: sinon.stub()
+        }
+        sinon.stub(readline, 'createInterface').returns(rlInterface)
+
+        rlQuestion.onFirstCall().callsArgWith(1, 'bkshop')
+        rlQuestion.onSecondCall().callsArgWith(1, '')
+        rlQuestion.onThirdCall().callsArgWith(1, 'c-abc.kyma.ondemand.com')
+        rlQuestion.onCall(3).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
+        rlQuestion.onCall(4).callsArgWith(1, 'bem-aad-sadad-123456789012')
+        rlQuestion.onCall(5).callsArgWith(1, 'dasdsd-1234-1234-1234-123456789012')
+        rlQuestion.onCall(6).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
+        rlQuestion.onCall(7).callsArgWith(1, 'regcred')
+
+        cds.root = bookshop
+        await capOperatorPlugin('generate-runtime-values')
+
+        expect(getFileHash(join(__dirname, 'files/expectedChart/runtime-values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
+
+        sinon.restore()
     })
 })
