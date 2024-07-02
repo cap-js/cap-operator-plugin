@@ -12,42 +12,54 @@ The CAP Operator plugin requires `@sap/cds-dk: ">=7.8.1"`. If @sap/cds-dk is ins
 
 To integrate the CAP Operator Plugin into your project, follow these steps:
 
-1. Add this self-configuring plugin package to your project:
+1. Add the plugin package to your project as a dev dependency:
 
 ```sh
  npm add @cap-js/cap-operator-plugin -D
 ```
 
-2. After installation, execute one of the following commands based on your requirements:
+2. After installation, execute the following command to add the CAP Operator helm chart to your project:
 
-    * To add a basic chart folder, use:
-        ```sh
-        cds add cap-operator
-        ```
-        > During `cds build`, the plugin will automatically inject the templates folder into the final chart.
+    ```sh
+    cds add cap-operator
+    ```
+    This will create a `chart` folder in your directory with three files - `Chart.yaml`, `values.schema.json` and `values.yaml` and during `cds build`, the plugin will add the `templates` folder to the chart folder.
 
-    * To add a chart folder with templates included, use:
+    **Available Options -**
+
+    * `--with-templates`
+
+        By using this option, the plugin will also add the `templates` folder to the chart folder initially itself. This required in cases where applications has to modify the predefined templates to support more complex scenarios.
+
         ```sh
         cds add cap-operator --with-templates
         ```
-        > During `cds build`, the plugin will copy the templates folder into the final chart.
 
+    **Experimental Options -**
 
-    > ### ⚠️ Experimental
-    > To add a chart folder with the values.yaml prefilled with the design-time deployment details from the mta and mta extensions, use:
-    >```sh
-    > cds add cap-operator --with-mta <mta-yaml-file-path> --with-mta-extensions <mta-ext-yaml-file-path>
-    >```
-    > If you have multiple mta extensions, you can pass them as a comma-separated string to merge them.
+    * `--with-mta` && `--with-mta-extensions`
 
-    > During `cds build`, the plugin will automatically inject the templates folder into the final chart similar to command `cds add cap-operator`. But If you want to add the templates folder as well during chart folder creation, then you can use the `--with-templates` option as shown below:
-    >```sh
-    > cds add cap-operator --with-mta <mta-yaml-file-path> --with-mta-extensions <mta-ext-yaml-file-path> --with-templates
-    >```
+        Using `--with-mta` option, the `values.yaml` can be prefilled with the design-time deployment details from `mta.yaml`.
 
-2. Once executed, the chart folder or chart folder with templates will be added to your project directory.
+        ```sh
+        cds add cap-operator --with-mta <mta-yaml-file-path>
+        ```
 
-3. The `values.yaml` requires two types of details:
+        Using `--with-mta-extensions` option, you can also pass multiple mta extensions. If you have multiple mta extensions, you can pass them as a comma-separated string to merge them.
+
+        ```sh
+        cds add cap-operator --with-mta <mta-yaml-file-path> --with-mta-extensions <mta-ext-yaml-1-file-path>,<mta-ext-yaml-2-file-path>
+        ```
+
+        During `cds build`, the plugin will automatically inject the templates folder into the final chart similar to command `cds add cap-operator`. But If you want to add the templates folder during chart folder creation itself, then you can use `--with-templates` along with this option as shown below:
+
+        ```sh
+        cds add cap-operator --with-mta <mta-yaml-file-path> --with-mta-extensions <mta-ext-yaml-1-file-path>,<mta-ext-yaml-2-file-path> --with-templates
+        ```
+
+3. Once the above command is executed, the chart folder or chart folder with templates will be added to your project directory based on your options.
+
+4. Here, the `values.yaml` requires two types of information:
 
     * Design-time deployment
         - [serviceInstances](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-instance)
@@ -70,17 +82,17 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
         - [imagePullSecrets](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) - Registry secrets used to pull images of the application components
         - env information inside workloads
 
-    As a developer, you must fill in the design-time deployment details in the `values.yaml` file, which can then be pushed to your repository. The plugin will auto-populate some of these details based on the project configuration, but verifying them and manually filling in any missing information is essential. You can refer to `values.schema.json` file for the structure of the `values.yaml` file.
+    As a developer, you must fill in the design-time deployment information in the `values.yaml` file, which can then be pushed to your repository. The plugin will auto-populate some of the values based on your project configuration, but verifying them and manually filling in any missing information is essential. You can refer to `values.schema.json` file for the structure of the `values.yaml` file.
 
-    You can utilize a YAML schema validation extension such as [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml), or run the following command to validate the `values.yaml` file. You can ignore the errors from runtime values as they are not filled in yet.
+    You can utilize a YAML schema validation extension such as [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml), or run the following command to validate your `values.yaml` file. You can ignore the errors from runtime values as they are not filled in yet.
 
     ```sh
     helm lint <chart-path>
     ```
 
-4. After filling all the design-time information in `values.yaml`, run `cds build`. The final chart will be generated in the `gen` folder within your project directory.
+5. After filling all the design-time information in `values.yaml`, run `cds build`. The final chart will be generated in the `gen` folder within your project directory. If you have already added the templates during the plugin call, then you can skip this step as the helm chart is already complete.
 
-5. To deploy the application, you need to create `runtime-values.yaml` with all the runtime values as mentioned above. For that you can make use of the plugin itself. The plugins provides two ways to generate the runtime values file -
+6. Now to deploy the application, you need to create `runtime-values.yaml` with all the runtime values as mentioned above. For that you can make use of the plugin itself. The plugins provides two ways to generate the runtime values file -
 
     * **Interactive Mode** - This mode will ask you for all the runtime values one by one. To use this mode, run the following command:
 
@@ -109,18 +121,19 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
 
         Similar to the interactive mode, `appName`, `capOperatorSubdomain`, `clusterDomain`, `globalAccountId`, `providerSubdomain`, and `tenantId` are mandatory fields. The plugin will throw an error if they are not provided in the input YAML.
 
-    The `runtime-values.yaml` file will be created in the chart folder of your project directory.
+    Once executed, the `runtime-values.yaml` file will be created in the chart folder of your project directory.
 
-5. Now you can finally deploy the application using the following command:
+7. Now you can finally deploy the application using the following command:
 
    ```sh
    helm upgrade -i -n <namespace> <release-name> <project-path>/gen/chart -f <runtime-values.yaml-path>
    ```
 
-   > If you are using `xsuaa` service instance and want to set the `xs-security.json` as a parameter, you can do so by setting the `jsonParameters` attribute on the `xsuaa` service instance as follows:
-   >```sh
-   > helm upgrade -i -n <namespace> <release-name> <project-path>/gen/chart --set-file serviceInstances.xsuaa.jsonParameters=<project-path>/xs-security.json -f <runtime-values.yaml-path>
-   >```
+   If you are using `xsuaa` service instance and want to set the `xs-security.json` as a parameter, you can do so by setting the `jsonParameters` attribute on the `xsuaa` service instance as follows:
+
+   ```sh
+   helm upgrade -i -n <namespace> <release-name> <project-path>/gen/chart --set-file serviceInstances.xsuaa.jsonParameters=<project-path>/xs-security.json -f <runtime-values.yaml-path>
+   ```
 
 As a reference, you can check out the [CAP Operator helm chart](https://github.com/cap-js/incidents-app/tree/cap-operator-plugin/chart) in the sample incident app. And also the corresponding [runtime-values.yaml](https://github.com/cap-js/incidents-app/blob/cap-operator-plugin/chart/runtime-values.yaml) file.
 
