@@ -33,7 +33,8 @@
   "devDependencies": {
     "chai": "^4.3.10",
     "mocha": "^10.3.0",
-    "nyc": "^15.1.0"
+    "nyc": "^15.1.0",
+    "sinon": "^18.0.0"
   },
   "scripts": {
     "test": "mocha --timeout 20000",

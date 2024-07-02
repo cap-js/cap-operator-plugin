@@ -1,16 +1,16 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
 
+const isCli = require.main === module
 const cds = require('@sap/cds-dk')
 const yaml = require('@sap/cds-foss').yaml
 const Mustache = require('mustache')
+
 const { ask, mergeObj, isCAPOperatorChart } = require('../lib/util')
 
-const isCli = require.main === module
 const SUPPORTED = { 'generate-runtime-values': ['--with-input-yaml'] }
 
 async function capOperatorPlugin(cmd, option, inputYamlPath) {
-
     try {
         if (!cmd) return _usage()
         if (!Object.keys(SUPPORTED).includes(cmd)) return _usage(`Unknown command ${cmd}.`)
@@ -54,8 +54,7 @@ EXAMPLES
 }
 
 async function generateRuntimeValues(option, inputYamlPath) {
-
-    if (!((cds.utils.exists('chart') && isCAPOperatorChart('chart')))) {
+    if (!((cds.utils.exists('chart') && isCAPOperatorChart(cds.utils.path.join(cds.root,'chart'))))) {
         throw new Error("No CAP Operator chart found in the project. Please run 'cds add cap-operator --force' to add the CAP Operator chart folder.")
     }
 
