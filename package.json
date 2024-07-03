@@ -23,17 +23,17 @@
     "CHANGELOG.md"
   ],
   "peerDependencies": {
-    "@sap/cds": ">=7",
-    "@sap/cds-dk": ">=7",
+    "@sap/cds": "~7",
+    "@sap/cds-dk": "~7",
     "@sap/cds-foss": ">=5"
   },
   "dependencies": {
     "mustache": "^4.2.0"
   },
   "devDependencies": {
-    "chai": "^4.3.10",
-    "mocha": "^10.3.0",
-    "nyc": "^15.1.0",
+    "chai": "^4.4.1",
+    "mocha": "^10.5.2",
+    "nyc": "^17.0.0",
     "sinon": "^18.0.0"
   },
   "scripts": {

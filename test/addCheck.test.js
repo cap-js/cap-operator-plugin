@@ -26,20 +26,18 @@ describe('cds add cap-operator canRun method test', () => {
     })
 
     it('Add cap-operator chart without xsuaa', async () => {
-        const log = execSync(`cds add cap-operator`, { cwd: bookshop }).toString()
-        expect(log).to.include('❌  xsuaa is not added to this project. Run \'cds add xsuaa\'.')
+        // TODO: should also log: '❌  xsuaa is not added to this project. Run \'cds add xsuaa\'.'
+        expect(() => execSync(`cds add cap-operator`, { cwd: bookshop })).to.throw('cannot run plugin \'cap-operator\'')
     })
-
     it('Add cap-operator chart without approuter', async () => {
         execSync(`cds add xsuaa`, { cwd: bookshop })
-        const log = execSync(`cds add cap-operator`, { cwd: bookshop }).toString()
-        expect(log).to.include('❌  approuter is not added to this project. Run \'cds add approuter\'.')
+        // TODO: should also log: '❌  approuter is not added to this project. Run \'cds add approuter\'.'
+        expect(() => execSync(`cds add cap-operator`, { cwd: bookshop })).to.throw('cannot run plugin \'cap-operator\'')
     })
-
     it('Add cap-operator chart without mulitenancy', async () => {
         execSync(`cds add xsuaa`, { cwd: bookshop })
         execSync(`cds add approuter`, { cwd: bookshop })
-        const log = execSync(`cds add cap-operator`, { cwd: bookshop }).toString()
-        expect(log).to.include('❌  multitenancy is not added to this project. Run \'cds add multitenancy\'.')
+        // TODO: should also log: '❌  multitenancy is not added to this project. Run \'cds add multitenancy\'.'
+        expect(() => execSync(`cds add cap-operator`, { cwd: bookshop })).to.throw('cannot run plugin \'cap-operator\'')
     })
 })
