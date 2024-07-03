@@ -23,35 +23,43 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
     ```sh
     cds add cap-operator
     ```
-    This will create a `chart` folder in your directory with three files - `Chart.yaml`, `values.schema.json` and `values.yaml` and during `cds build`, the plugin will add the `templates` folder to the chart folder.
+    This will create a `chart` folder in your directory with three files - `Chart.yaml`, `values.schema.json` and `values.yaml`. And during `cds build`, the plugin will automatically add the `templates` folder to the final chart.
 
     **Available Options -**
 
     * `--with-templates`
 
-        By using this option, the plugin will also add the `templates` folder to the chart folder initially itself. This required in cases where applications has to modify the predefined templates to support more complex scenarios.
+        By using this option, the plugin will also add the `templates` folder to the chart folder initially itself. This required in cases where applications has to modify the predefined template files to support more complex scenarios.
 
         ```sh
         cds add cap-operator --with-templates
+        ```
+
+    * `--force`
+
+        Via this option, you can overwrite the existing chart folder.
+
+        ```sh
+        cds add cap-operator --force
         ```
 
     **Experimental Options -**
 
     * `--with-mta` && `--with-mta-extensions`
 
-        Using `--with-mta` option, the `values.yaml` can be prefilled with the design-time deployment details from `mta.yaml`.
+        Using `--with-mta` option, the `values.yaml` can be prefilled with the design-time deployment information from `mta.yaml`.
 
         ```sh
         cds add cap-operator --with-mta <mta-yaml-file-path>
         ```
 
-        Using `--with-mta-extensions` option, you can also pass multiple mta extensions. If you have multiple mta extensions, you can pass them as a comma-separated string to merge them.
+        Using `--with-mta-extensions` option, you can also pass mta extensions. If you have multiple mta extensions, you can pass them as a comma-separated string to merge them.
 
         ```sh
         cds add cap-operator --with-mta <mta-yaml-file-path> --with-mta-extensions <mta-ext-yaml-1-file-path>,<mta-ext-yaml-2-file-path>
         ```
 
-        During `cds build`, the plugin will automatically inject the templates folder into the final chart similar to command `cds add cap-operator`. But If you want to add the templates folder during chart folder creation itself, then you can use `--with-templates` along with this option as shown below:
+        Similar to command `cds add cap-operator`, the plugin will automatically inject the templates folder into the final chart during `cds build`. But If you want to add the `templates` folder during chart folder creation itself, then you can use `--with-templates` along with this option as shown below:
 
         ```sh
         cds add cap-operator --with-mta <mta-yaml-file-path> --with-mta-extensions <mta-ext-yaml-1-file-path>,<mta-ext-yaml-2-file-path> --with-templates
@@ -59,7 +67,7 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
 
 3. Once the above command is executed, the chart folder or chart folder with templates will be added to your project directory based on your options.
 
-4. Here, the `values.yaml` requires two types of information:
+4. The generated `values.yaml` contains two types of information:
 
     * Design-time deployment
         - [serviceInstances](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-instance)
@@ -90,9 +98,27 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
     helm lint <chart-path>
     ```
 
-5. After filling all the design-time information in `values.yaml`, run `cds build`. The final chart will be generated in the `gen` folder within your project directory. If you have already added the templates during the plugin call, then you can skip this step as the helm chart is already complete.
+5. After filling all the design-time information in `values.yaml`, run `cds build`. The final chart will be generated in the `gen` folder within your project directory.
 
-6. Now to deploy the application, you need to create `runtime-values.yaml` with all the runtime values as mentioned above. For that you can make use of the plugin itself. The plugins provides two ways to generate the runtime values file -
+    >If you have already added the `templates` folder during the initial plugin call using `--with-templates`, then you can skip this step as the helm chart is already complete and you can directly consume it.
+
+6. Now to deploy the application, you need to create the `runtime-values.yaml` with all the runtime values as mentioned above. For that you can make use of the plugin itself.
+
+    The plugin requires the following information to generate the `runtime-values.yaml`-
+
+    * Application name (appName) *[Mandatory]*
+    * CAP Operator subdomain (capOperatorSubdomain) *[Mandatory]* - In Kyma clusters, CAP Operator subdomain is defaulted to `cap-op`. But if you are using your own gardener cluster, then you need to provide the subdomain that you used to install the CAP Operator.
+    * Cluster shoot domain (clusterDomain) *[Mandatory]*
+        ```sh
+        kubectl get gateway -n kyma-system kyma-gateway -o jsonpath='{.spec.servers[0].hosts[0]}'
+        ```
+    * Global Account ID (globalAccountId) *[Mandatory]* - Global Account ID to which you are deploying the application to.
+    * Provider subdomain (providerSubdomain) *[Mandatory]* - Subdomain of the provider subaccount to which you are deploying the application to.
+    * Tenant ID (tenantId) *[Mandatory]* - Tenant ID of the provider subaccount to which you are deploying the application to.
+    * HANA Instance ID (hanaInstanceId) *[Optional]* - ID of the HANA instance to which the application is deployed to. Only required if there are multiple HANA instances in the subaccount.
+    * Image Pull Secrets (imagePullSecret) *[Optional]* - Kubernetes secret used to pull the application images.
+
+    The plugins provides two ways to generate the runtime values file -
 
     * **Interactive Mode** - This mode will ask you for all the runtime values one by one. To use this mode, run the following command:
 
@@ -141,7 +167,7 @@ As a reference, you can check out the [CAP Operator helm chart](https://github.c
 
 * If you are adding the basic chart folder using the `cds add cap-operator` command, do not modify the `values.schema.json` file. The templates injected automatically during `cds build` are tightly coupled with the structure in `values.schema.json`. If schema changes are needed, use option `--with-templates` to add the templates folder and adjust them accordingly.
 
-* When defining environment variables for workloads in the `values.yaml` file, it's important to mirror these definitions in the `runtime-values.yaml` file. This ensures consistency and avoids potential conflicts, as Helm does not merge arrays. If you're introducing new environment variables in `runtime-values.yaml` for a workload, remember to include existing variables from `values.yaml` to maintain coherence.
+* When defining environment variables for workloads in the `values.yaml` file, it's important to mirror these definitions in the `runtime-values.yaml` file. This ensures consistency and avoids potential conflicts, as Helm does not merge arrays. If you're introducing new environment variables in `runtime-values.yaml` for a workload, remember to include existing variables from `values.yaml` to maintain coherence. If you use the plugin to generate the `runtime-values.yaml`, the environment variables will be automatically copied from `values.yaml`.
 
 ## Contributing
 
