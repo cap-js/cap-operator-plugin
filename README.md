@@ -25,7 +25,7 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
     ```
     ![](.images/cds-add-cap-operator.gif)
 
-    This will create a `chart` folder in your directory with three files: `Chart.yaml`, `values.schema.json`, and `values.yaml`. Here, if you notice, the `templates` folder is missing. This is by design. The idea is that only these three files need to be pushed into your GitHub repository. When you deploy your application, you can call `cds build`, and during the build, the plugin will generate the final Helm chart and include the predefined `templates` folder in your project's `gen` directory.
+    This will create a `chart` folder in your directory with three files: `Chart.yaml`, `values.schema.json`, and `values.yaml`. Here, if you notice, the `templates` folder is missing. This is by design. The idea is that only these three files need to be pushed into your GitHub repository. When you deploy your application, you can call `cds build`, and during the build, the plugin will generate the final helm chart in your project's `gen` directory, which includes the predefined `templates` folder.
 
     **Available Options -**
 
@@ -103,11 +103,11 @@ The generated `chart/values.yaml` contains two types of information:
    ```
 ## Deploy your application
 
-1. You must generate the final helm chart before deploying your application. You can do so by running `cds build`. During the build, the plugin will generate the final Helm chart and include the predefined `templates` folder in your project's `gen` directory.
+1. You must generate the final helm chart before deploying your application. You can do so by running `cds build`. During the build, the plugin will generate the final helm chart in your project's `gen` directory, which includes the predefined `templates` folder.
 
    > If you have already added the `templates` folder during the initial plugin call using `--with-templates` option, you can skip this step as the helm chart is already complete.
 
-2. Until now, we have only filled in the design time information in the chart. But to deploy the application, you need to create a `runtime-values.yaml` file with all the runtime values, as mentioned in the configuration section. You can create the file using the plugin itself.
+2. Until now, we have only filled in the design time information in the chart. But to deploy the application, you need to create a `runtime-values.yaml` file with all the runtime values, as mentioned in the configuration section. You can generate the file using the plugin itself.
 
     The plugin requires the following information to generate the `runtime-values.yaml`-
 
