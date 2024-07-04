@@ -62,6 +62,8 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
         cds add cap-operator --with-mta <mta-yaml-file-path> --with-mta-extensions <mta-ext-yaml-1-file-path>,<mta-ext-yaml-2-file-path>
         ```
 
+        ![](.images/cds-add-cap-operator-with-mta.gif)
+
         As mentioned above, the plugin will automatically inject the templates folder into the final chart during `cds build`. But If you want to add the `templates` folder during chart folder creation itself, then you can use `--with-templates` along with this option as shown below:
 
         ```sh
