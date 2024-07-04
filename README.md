@@ -14,22 +14,22 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
 
 1. Add the plugin package to your project as a dev dependency:
 
-```sh
- npm add @cap-js/cap-operator-plugin -D
-```
+   ```sh
+    npm add @cap-js/cap-operator-plugin -D
+   ```
 
 2. After installation, execute the following command to add the CAP Operator helm chart to your project:
 
     ```sh
     cds add cap-operator
     ```
-    This will create a `chart` folder in your directory with three files - `Chart.yaml`, `values.schema.json` and `values.yaml`. And during `cds build`, the plugin will automatically add the `templates` folder to the final chart.
+    This will create a `chart` folder in your directory with three files: `Chart.yaml`, `values.schema.json`, and `values.yaml`. During `cds build`, the plugin will automatically add the `templates` folder to the final generated chart.
 
     **Available Options -**
 
     * `--with-templates`
 
-        By using this option, the plugin will also add the `templates` folder to the chart folder initially itself. This required in cases where applications has to modify the predefined template files to support more complex scenarios.
+        By using this option, the plugin will also add the `templates` folder to the chart folder initially. This is required in cases where applications have to modify the predefined template files to support more complex scenarios.
 
         ```sh
         cds add cap-operator --with-templates
@@ -53,13 +53,13 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
         cds add cap-operator --with-mta <mta-yaml-file-path>
         ```
 
-        Using `--with-mta-extensions` option, you can also pass mta extensions. If you have multiple mta extensions, you can pass them as a comma-separated string to merge them.
+        Using `--with-mta-extensions`, you can also pass mta extensions. If you have multiple mta extensions, you can pass them as a comma-separated string to merge them.
 
         ```sh
         cds add cap-operator --with-mta <mta-yaml-file-path> --with-mta-extensions <mta-ext-yaml-1-file-path>,<mta-ext-yaml-2-file-path>
         ```
 
-        Similar to command `cds add cap-operator`, the plugin will automatically inject the templates folder into the final chart during `cds build`. But If you want to add the `templates` folder during chart folder creation itself, then you can use `--with-templates` along with this option as shown below:
+        Like command `cds add cap-operator`, the plugin will automatically inject the templates folder into the final chart during `cds build`. But If you want to add the `templates` folder during chart folder creation itself, then you can use `--with-templates` along with this option as shown below:
 
         ```sh
         cds add cap-operator --with-mta <mta-yaml-file-path> --with-mta-extensions <mta-ext-yaml-1-file-path>,<mta-ext-yaml-2-file-path> --with-templates
@@ -80,53 +80,53 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
 
     * Runtime deployment
         - app
-            - Primary - Primary application domain will be used to generate a wildcard TLS certificate. In SAP Gardener managed clusters this is (usually) a subdomain of the cluster domain
-            - Secondary - Customer specific domains to serve application endpoints (optional)
+            - Primary - Primary application domain will be used to generate a wildcard TLS certificate. In SAP Gardener managed clusters, this is (usually) a subdomain of the cluster domain
+            - Secondary - Customer-specific domains to serve application endpoints (optional)
             - IstioIngressGatewayLabels - Labels used to identify the istio ingress-gateway component and its corresponding namespace. Usually {“app”:“istio-ingressgateway”,“istio”:“ingressgateway”}
         - btp
-            - GlobalAccountId - SAP BTP Global Account Identifier where services are entitles for the current application
+            - GlobalAccountId - SAP BTP Global Account Identifier where services are entitled for the current application
             - Subdomain - BTP subaccount subdomain
             - TenantId - BTP subaccount Tenant ID
         - [imagePullSecrets](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) - Registry secrets used to pull images of the application components
         - env information inside workloads
 
-    As a developer, you must fill in the design-time deployment information in the `values.yaml` file, which can then be pushed to your repository. The plugin will auto-populate some of the values based on your project configuration, but verifying them and manually filling in any missing information is essential. You can refer to `values.schema.json` file for the structure of the `values.yaml` file.
+    As a developer, you must fill in the design-time deployment information in the `values.yaml` file, which can then be pushed to your repository. The plugin will auto-populate some values based on your project configuration, but verifying them and manually filling in any missing information is essential. You can refer to `values.schema.json` file for the structure of the `values.yaml` file.
 
-    You can utilize a YAML schema validation extension such as [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml), or run the following command to validate your `values.yaml` file. You can ignore the errors from runtime values as they are not filled in yet.
+    You can utilize a YAML schema validation extension such as [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) or run the following command to validate your `values.yaml` file. You can ignore the errors from runtime values as they are not filled in yet.
 
     ```sh
     helm lint <chart-path>
     ```
 
-5. After filling all the design-time information in `values.yaml`, run `cds build`. The final chart will be generated in the `gen` folder within your project directory.
+5. After filling all the design-time information in `values.yaml`, run `cds build`. The final chart will be generated in your project directory's `gen` folder.
 
-    >If you have already added the `templates` folder during the initial plugin call using `--with-templates`, then you can skip this step as the helm chart is already complete and you can directly consume it.
+    >If you have already added the `templates` folder during the initial plugin call using `--with-templates`, then you can skip this step as the helm chart is already complete, and you can directly consume it.
 
-6. Now to deploy the application, you need to create the `runtime-values.yaml` with all the runtime values as mentioned above. For that you can make use of the plugin itself.
+6. Now, to deploy the application, you need to create the `runtime-values.yaml` with all the runtime values as mentioned above. You can use the plugin itself to do that.
 
     The plugin requires the following information to generate the `runtime-values.yaml`-
 
     * Application name (appName) *[Mandatory]*
-    * CAP Operator subdomain (capOperatorSubdomain) *[Mandatory]* - In Kyma clusters, CAP Operator subdomain is defaulted to `cap-op`. But if you are using your own gardener cluster, then you need to provide the subdomain that you used to install the CAP Operator.
-    * Cluster shoot domain (clusterDomain) *[Mandatory]*
+    * CAP Operator subdomain (capOperatorSubdomain) *[Mandatory]* - In Kyma clusters, CAP Operator subdomain is defaulted to `cap-op`. But if you are using your own gardener cluster, you need to provide the subdomain you used to install the CAP Operator.
+    * Cluster shoot domain (clusterDomain) *[Mandatory]* - Shoot domain of your cluster. In Kyma clusters, you can get the shoot domain by running the following command.
         ```sh
         kubectl get gateway -n kyma-system kyma-gateway -o jsonpath='{.spec.servers[0].hosts[0]}'
         ```
-    * Global Account ID (globalAccountId) *[Mandatory]* - Global Account ID to which you are deploying the application to.
-    * Provider subdomain (providerSubdomain) *[Mandatory]* - Subdomain of the provider subaccount to which you are deploying the application to.
-    * Tenant ID (tenantId) *[Mandatory]* - Tenant ID of the provider subaccount to which you are deploying the application to.
-    * HANA Instance ID (hanaInstanceId) *[Optional]* - ID of the HANA instance to which the application is deployed to. Only required if there are multiple HANA instances in the subaccount.
-    * Image Pull Secrets (imagePullSecret) *[Optional]* - Kubernetes secret used to pull the application images.
+    * Global Account ID (globalAccountId) *[Mandatory]* - SAP BTP Global Account Identifier where services are entitled for the application.
+    * Provider subdomain (providerSubdomain) *[Mandatory]* - Subdomain of the provider subaccount to which you deploy the application.
+    * Tenant ID (tenantId) *[Mandatory]* - Tenant ID of the provider subaccount to which you deploy the application.
+    * HANA Instance ID (hanaInstanceId) *[Optional]* - ID of the HANA instance to which the application is deployed. It is only required if there are multiple HANA instances in the subaccount.
+    * Image Pull Secrets (imagePullSecret) *[Optional]* - Kubernetes secret used to pull the application docker images from a private container image registry or repository.
 
-    The plugins provides two ways to generate the runtime values file -
+    The plugins provide two ways to generate the runtime values file -
 
-    * **Interactive Mode** - This mode will ask you for all the runtime values one by one. To use this mode, run the following command:
+    * **Interactive Mode** - This mode will ask you individually for all the runtime values. To use this mode, run the following command:
 
         ```sh
         npx cap-op-plugin generate-runtime-values
         ```
 
-    * **File Mode** - Via this mode you can provide all the required runtime values in a yaml file. To use this mode, run the following command:
+    * **File Mode** - You can provide all the required runtime values in a YAML file using this mode. To use this mode, run the following command:
 
         ```sh
         npx cap-op-plugin generate-runtime-values --with-input-yaml <input-yaml-path>
@@ -155,7 +155,7 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
    helm upgrade -i -n <namespace> <release-name> <project-path>/gen/chart -f <runtime-values.yaml-path>
    ```
 
-   If you are using `xsuaa` service instance and want to set the `xs-security.json` as a parameter, you can do so by setting the `jsonParameters` attribute on the `xsuaa` service instance as follows:
+   If you want to set the `xs-security.json` as a parameter in your `xsuaa` service instance, you can do so by setting the `jsonParameters` attribute on the service instance as follows:
 
    ```sh
    helm upgrade -i -n <namespace> <release-name> <project-path>/gen/chart --set-file serviceInstances.xsuaa.jsonParameters=<project-path>/xs-security.json -f <runtime-values.yaml-path>
@@ -167,7 +167,7 @@ As a reference, you can check out the [CAP Operator helm chart](https://github.c
 
 * If you are adding the basic chart folder using the `cds add cap-operator` command, do not modify the `values.schema.json` file. The templates injected automatically during `cds build` are tightly coupled with the structure in `values.schema.json`. If schema changes are needed, use option `--with-templates` to add the templates folder and adjust them accordingly.
 
-* When defining environment variables for workloads in the `values.yaml` file, it's important to mirror these definitions in the `runtime-values.yaml` file. This ensures consistency and avoids potential conflicts, as Helm does not merge arrays. If you're introducing new environment variables in `runtime-values.yaml` for a workload, remember to include existing variables from `values.yaml` to maintain coherence. If you use the plugin to generate the `runtime-values.yaml`, the environment variables will be automatically copied from `values.yaml`.
+* When defining environment variables for workloads in the `values.yaml` file, it's essential to mirror these definitions in the `runtime-values.yaml` file. This ensures consistency and avoids potential conflicts, as Helm does not merge arrays. If you're introducing new environment variables in `runtime-values.yaml` for a workload, remember to include existing variables from `values.yaml` to maintain coherence. If you use the plugin to generate the `runtime-values.yaml`, the environment variables will be automatically copied from `values.yaml`.
 
 ## Contributing
 
