@@ -23,8 +23,8 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
     ```sh
     cds add cap-operator
     ```
-    ![](.images/add-cap-operator.gif)
-    
+    ![](.images/cds-add-cap-operator.gif)
+
     This will create a `chart` folder in your directory with three files: `Chart.yaml`, `values.schema.json`, and `values.yaml`. Here, if you notice, the `templates` folder is missing. This is by design. The idea is that only these three files need to be pushed into your GitHub repository. When you deploy your application, you can call `cds build`, and during the build, the plugin will generate the final Helm chart and include the predefined `templates` folder in your project's `gen` directory.
 
     **Available Options -**
