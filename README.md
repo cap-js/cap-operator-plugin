@@ -36,6 +36,7 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
         ```sh
         cds add cap-operator --with-templates
         ```
+        ![](.images/cds-add-cap-operator-with-templates.gif)
 
     * `--force`
 
