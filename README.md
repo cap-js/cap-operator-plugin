@@ -108,6 +108,8 @@ The generated `chart/values.yaml` contains two types of information:
 
 1. You must generate the final helm chart before deploying your application. You can do so by running `cds build`. During the build, the plugin will generate the final helm chart in your project's `gen` directory, which includes the predefined `templates` folder.
 
+   ![](.images/cds-build.gif)
+
    > If you have already added the `templates` folder during the initial plugin call using `--with-templates` option, you can skip this step as the helm chart is already complete.
 
 2. Until now, we have only filled in the design time information in the chart. But to deploy the application, you need to create a `runtime-values.yaml` file with all the runtime values, as mentioned in the configuration section. You can generate the file using the plugin itself.
@@ -134,11 +136,15 @@ The generated `chart/values.yaml` contains two types of information:
         npx cap-op-plugin generate-runtime-values
         ```
 
+        ![](.images/cap-op-plugin-gen-prompt.gif)
+
     * **File Mode** - You can provide all the required runtime values in a YAML file using this mode. To use this mode, run the following command:
 
         ```sh
         npx cap-op-plugin generate-runtime-values --with-input-yaml <input-yaml-path>
         ```
+
+        ![](.images/cap-op-plugin-gen-input-yaml.gif)
 
         Sample input yaml -
 
