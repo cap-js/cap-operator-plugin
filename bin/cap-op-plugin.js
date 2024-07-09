@@ -39,11 +39,11 @@ async function _usage(message = '') {
 
 USAGE
 
-    cap-op-plugin <command> [--with-input-yaml <input-yaml-path>]
+    cap-op-plugin <command>
 
 COMMANDS
 
-    generate-runtime-values   generate runtime-values.yaml file for the cap-operator chart
+    generate-runtime-values [--with-input-yaml <input-yaml-path>]   Generate runtime-values.yaml file for the cap-operator chart
 
 EXAMPLES
 
