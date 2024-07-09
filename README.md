@@ -12,44 +12,71 @@ The CAP Operator plugin requires `@sap/cds-dk: ">=7.8.1"`. If @sap/cds-dk is ins
 
 To integrate the CAP Operator Plugin into your project, follow these steps:
 
-1. Add this self-configuring plugin package to your project:
+1. Add the plugin package to your project as a dev dependency:
 
-```sh
- npm add @cap-js/cap-operator-plugin -D
-```
+   ```sh
+    npm add @cap-js/cap-operator-plugin -D
+   ```
 
-2. After installation, execute one of the following commands based on your requirements:
+2. After installation, execute the following command to add the CAP Operator helm chart to your project:
 
-    * To add a basic chart folder, use:
-        ```sh
-        cds add cap-operator
-        ```
-        > During `cds build`, the plugin will automatically inject the templates folder into the final chart.
+    ```sh
+    cds add cap-operator
+    ```
+    ![](.images/cds-add-cap-operator.gif)
 
-    * To add a chart folder with templates included, use:
+    This will create a `chart` folder in your directory with three files: `Chart.yaml`, `values.schema.json`, and `values.yaml`. Here, if you notice, the `templates` folder is missing. This is by design. The idea is that only these three files need to be pushed into your GitHub repository. When you deploy your application, you can call `cds build`, and during the build, the plugin will generate the final helm chart in your project's `gen` directory, which includes the predefined `templates` folder.
+
+    **Available Options -**
+
+    * `--with-templates`
+
+        Using this option, the plugin will also add the `templates` folder to the chart folder initially itself. This is required when applications have to modify the predefined template files to support more complex scenarios. If you use this option, you can skip the `cds build` step, as the chart already contains the `templates` folder.
+
         ```sh
         cds add cap-operator --with-templates
         ```
-        > During `cds build`, the plugin will copy the templates folder into the final chart.
+        ![](.images/cds-add-cap-operator-with-templates.gif)
 
+    * `--force`
 
-    > ### ⚠️ Experimental
-    > To add a chart folder with the values.yaml prefilled with the design-time deployment details from the mta and mta extensions, use:
-    >```sh
-    > cds add cap-operator --with-mta <mta-yaml-file-path> --with-mta-extensions <mta-ext-yaml-file-path>
-    >```
-    > If you have multiple mta extensions, you can pass them as a comma-separated string to merge them.
+        Via this option, you can overwrite the existing chart folder.
 
-    > During `cds build`, the plugin will automatically inject the templates folder into the final chart similar to command `cds add cap-operator`. But If you want to add the templates folder as well during chart folder creation, then you can use the `--with-templates` option as shown below:
-    >```sh
-    > cds add cap-operator --with-mta <mta-yaml-file-path> --with-mta-extensions <mta-ext-yaml-file-path> --with-templates
-    >```
+        ```sh
+        cds add cap-operator --force
+        ```
 
-2. Once executed, the chart folder or chart folder with templates will be added to your project directory.
+    **Experimental Options -**
 
-3. The `values.yaml` requires two types of details:
+    * `--with-mta` && `--with-mta-extensions`
 
-    * Design-time deployment
+        Using `--with-mta` option, the `values.yaml` can be prefilled with the design-time deployment information from `mta.yaml`.
+
+        ```sh
+        cds add cap-operator --with-mta <mta-yaml-file-path>
+        ```
+
+        Using `--with-mta-extensions`, you can also pass mta extensions. If you have multiple mta extensions, you can pass them as a comma-separated string to merge them.
+
+        ```sh
+        cds add cap-operator --with-mta <mta-yaml-file-path> --with-mta-extensions <mta-ext-yaml-1-file-path>,<mta-ext-yaml-2-file-path>
+        ```
+
+        ![](.images/cds-add-cap-operator-with-mta.gif)
+
+        As mentioned above, the plugin will automatically inject the templates folder into the final chart during `cds build`. But If you want to add the `templates` folder during chart folder creation itself, then you can use `--with-templates` along with this option as shown below:
+
+        ```sh
+        cds add cap-operator --with-mta <mta-yaml-file-path> --with-mta-extensions <mta-ext-yaml-1-file-path>,<mta-ext-yaml-2-file-path> --with-templates
+        ```
+
+3. Once the above command is executed, the basic chart folder or chart folder with templates will be added to your project directory, depending on your choice.
+
+## Configuration
+
+The generated `chart/values.yaml` contains two types of information:
+
+   * Design-time deployment
         - [serviceInstances](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-instance)
         - [serviceBindings](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-binding)
         - workloads - There are two types of workloads:
@@ -58,41 +85,66 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
         - [tenantOperations](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#sequencing-tenant-operations)
         - [contentJobs](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#sequencing-content-jobs)
 
-    * Runtime deployment
+   * Runtime deployment
         - app
-            - Primary - Primary application domain will be used to generate a wildcard TLS certificate. In SAP Gardener managed clusters this is (usually) a subdomain of the cluster domain
-            - Secondary - Customer specific domains to serve application endpoints (optional)
+            - Primary - Primary application domain will be used to generate a wildcard TLS certificate. In SAP Gardener managed clusters, this is (usually) a subdomain of the cluster domain
+            - Secondary - Customer-specific domains to serve application endpoints (optional)
             - IstioIngressGatewayLabels - Labels used to identify the istio ingress-gateway component and its corresponding namespace. Usually {“app”:“istio-ingressgateway”,“istio”:“ingressgateway”}
         - btp
-            - GlobalAccountId - SAP BTP Global Account Identifier where services are entitles for the current application
-            - Subdomain - BTP subaccount subdomain
-            - TenantId - BTP subaccount Tenant ID
-        - [imagePullSecrets](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) - Registry secrets used to pull images of the application components
+            - GlobalAccountId - SAP BTP Global Account Identifier where services are entitled for the current application
+            - Subdomain - Subdomain of the provider subaccount to which you deploy the application.
+            - TenantId - Tenant ID of the provider subaccount to which you deploy the application
+        - [imagePullSecrets](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) - Kubernetes secret used to pull the application docker images from a private container image registry or repository.
         - env information inside workloads
 
-    As a developer, you must fill in the design-time deployment details in the `values.yaml` file, which can then be pushed to your repository. The plugin will auto-populate some of these details based on the project configuration, but verifying them and manually filling in any missing information is essential. You can refer to `values.schema.json` file for the structure of the `values.yaml` file.
+   As a developer, you must fill in the design-time deployment information in the `values.yaml` file, which can then be pushed to your GitHub repository. The plugin will auto-populate some values based on your project configuration, but verifying them and manually filling in any missing information is essential. You can refer to `values.schema.json` file for the structure of the `values.yaml` file. 
+   
+   **Please fill the `values.yaml` according to the schema, as it is tightly coupled to the predefined templates.** You can utilize a YAML schema validation extension such as [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) or run the following command to validate your `values.yaml` file. You can ignore the errors from runtime values as they are not filled in yet.
 
-    You can utilize a YAML schema validation extension such as [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml), or run the following command to validate the `values.yaml` file. You can ignore the errors from runtime values as they are not filled in yet.
+   ```sh
+   helm lint <chart-path>
+   ```
+## Deploy your application
 
-    ```sh
-    helm lint <chart-path>
-    ```
+1. You must generate the final helm chart before deploying your application. You can do so by running `cds build`. During the build, the plugin will generate the final helm chart in your project's `gen` directory, which includes the predefined `templates` folder.
 
-4. After filling all the design-time information in `values.yaml`, run `cds build`. The final chart will be generated in the `gen` folder within your project directory.
+   ![](.images/cds-build.gif)
 
-5. To deploy the application, you need to create `runtime-values.yaml` with all the runtime values as mentioned above. For that you can make use of the plugin itself. The plugins provides two ways to generate the runtime values file -
+   > If you have already added the `templates` folder during the initial plugin call using `--with-templates` option, you can skip this step as the helm chart is already complete.
 
-    * **Interactive Mode** - This mode will ask you for all the runtime values one by one. To use this mode, run the following command:
+2. Until now, we have only filled in the design time information in the chart. But to deploy the application, you need to create a `runtime-values.yaml` file with all the runtime values, as mentioned in the configuration section. You can generate the file using the plugin itself.
+
+    The plugin requires the following information to generate the `runtime-values.yaml`-
+
+    * **Application name (appName) *[Mandatory]***
+    * **CAP Operator subdomain (capOperatorSubdomain) *[Mandatory]*** - In Kyma clusters, CAP Operator subdomain is defaulted to `cap-op`. But if you are using your gardener cluster, you must provide the subdomain you used to install the CAP Operator.
+    * **Cluster shoot domain (clusterDomain) *[Mandatory]*** - Shoot domain of your cluster. In Kyma clusters, you can get the shoot domain by running the following command.
+        ```sh
+        kubectl get gateway -n kyma-system kyma-gateway -o jsonpath='{.spec.servers[0].hosts[0]}'
+        ```
+    * **Global Account ID (globalAccountId) *[Mandatory]*** - SAP BTP Global Account Identifier where services are entitled for the application.
+    * **Provider subdomain (providerSubdomain) *[Mandatory]*** - Subdomain of the provider subaccount to which you deploy the application.
+    * **Tenant ID (tenantId) *[Mandatory]*** - Tenant ID of the provider subaccount to which you deploy the application.
+    * **HANA Instance ID (hanaInstanceId) *[Optional]*** - ID of the HANA instance to which the application is deployed. It is only required if there are multiple HANA instances in the subaccount.
+    * **Image Pull Secrets (imagePullSecret) *[Optional]*** - Kubernetes secret used to pull the application docker images from a private container image registry or repository.
+
+    The plugins provide two ways to generate the runtime values file -
+
+    * **Interactive Mode** - This mode will ask you individually for all the runtime values. To use this mode, run the following command:
 
         ```sh
         npx cap-op-plugin generate-runtime-values
         ```
 
-    * **File Mode** - Via this mode you can provide all the required runtime values in a yaml file. To use this mode, run the following command:
+        ![](.images/cap-op-plugin-gen-prompt.gif)
+
+    * **File Mode** - You can provide all the required runtime values in a YAML file using this mode. To use this mode, run the following command:
 
         ```sh
         npx cap-op-plugin generate-runtime-values --with-input-yaml <input-yaml-path>
         ```
+
+        ![](.images/cap-op-plugin-gen-input-yaml.gif)
 
         Sample input yaml -
 
@@ -109,18 +161,21 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
 
         Similar to the interactive mode, `appName`, `capOperatorSubdomain`, `clusterDomain`, `globalAccountId`, `providerSubdomain`, and `tenantId` are mandatory fields. The plugin will throw an error if they are not provided in the input YAML.
 
-    The `runtime-values.yaml` file will be created in the chart folder of your project directory.
+    Once executed, the `runtime-values.yaml` file will be created in the chart folder of your project directory.
 
-5. Now you can finally deploy the application using the following command:
+7. Now you can finally deploy the application using the following command:
 
    ```sh
-   helm upgrade -i -n <namespace> <release-name> <project-path>/gen/chart -f <runtime-values.yaml-path>
+   helm upgrade -i -n <namespace> <release-name> <project-path>/gen/chart -f <project-path>/chart/runtime-values.yaml
    ```
 
-   > If you are using `xsuaa` service instance and want to set the `xs-security.json` as a parameter, you can do so by setting the `jsonParameters` attribute on the `xsuaa` service instance as follows:
-   >```sh
-   > helm upgrade -i -n <namespace> <release-name> <project-path>/gen/chart --set-file serviceInstances.xsuaa.jsonParameters=<project-path>/xs-security.json -f <runtime-values.yaml-path>
-   >```
+   If you want to set the `xs-security.json` as a parameter in your `xsuaa` service instance, you can do so by setting the `jsonParameters` attribute on the service instance as follows:
+
+   ```sh
+   helm upgrade -i -n <namespace> <release-name> <project-path>/gen/chart --set-file serviceInstances.xsuaa.jsonParameters=<project-path>/xs-security.json -f <project-path>/chart/runtime-values.yaml
+   ```
+
+## Example 
 
 As a reference, you can check out the [CAP Operator helm chart](https://github.com/cap-js/incidents-app/tree/cap-operator-plugin/chart) in the sample incident app. And also the corresponding [runtime-values.yaml](https://github.com/cap-js/incidents-app/blob/cap-operator-plugin/chart/runtime-values.yaml) file.
 
@@ -128,7 +183,7 @@ As a reference, you can check out the [CAP Operator helm chart](https://github.c
 
 * If you are adding the basic chart folder using the `cds add cap-operator` command, do not modify the `values.schema.json` file. The templates injected automatically during `cds build` are tightly coupled with the structure in `values.schema.json`. If schema changes are needed, use option `--with-templates` to add the templates folder and adjust them accordingly.
 
-* When defining environment variables for workloads in the `values.yaml` file, it's important to mirror these definitions in the `runtime-values.yaml` file. This ensures consistency and avoids potential conflicts, as Helm does not merge arrays. If you're introducing new environment variables in `runtime-values.yaml` for a workload, remember to include existing variables from `values.yaml` to maintain coherence.
+* When defining environment variables for workloads in the `values.yaml` file, it's essential to mirror these definitions in the `runtime-values.yaml` file. This ensures consistency and avoids potential conflicts, as Helm does not merge arrays. If you're introducing new environment variables in `runtime-values.yaml` for a workload, remember to include existing variables from `values.yaml` to maintain coherence. If you use the plugin to generate the `runtime-values.yaml`, the environment variables will be automatically copied from `values.yaml`.
 
 ## Contributing
 
