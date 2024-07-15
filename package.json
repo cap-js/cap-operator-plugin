@@ -23,8 +23,8 @@
     "CHANGELOG.md"
   ],
   "peerDependencies": {
-    "@sap/cds": "~7",
-    "@sap/cds-dk": "~7",
+    "@sap/cds": "~8",
+    "@sap/cds-dk": "~8",
     "@sap/cds-foss": ">=5"
   },
   "dependencies": {
