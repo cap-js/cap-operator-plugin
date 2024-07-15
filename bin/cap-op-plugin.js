@@ -159,9 +159,9 @@ function getAppDetails() {
 }
 
 function getShootDomain() {
-     let domain = ''
-     try {
-        const domainCmd = execSync(`kubectl config view --minify --output jsonpath="{.clusters[*].cluster.server}"`, { stdio: "pipe" }).toString()
+    let domain = ''
+    try {
+        const domainCmd = execSync(`kubectl config view --minify --output jsonpath="{.clusters[*].cluster.server}"`, { stdio: "pipe", shell: false }).toString()
         const domainStartIndex = domainCmd.indexOf('api.')
         if (domainStartIndex !== -1) {
             domain = domainCmd.substring(domainStartIndex + 4)
