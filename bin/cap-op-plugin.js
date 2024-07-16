@@ -161,7 +161,7 @@ function getAppDetails() {
 async function getShootDomain() {
     let domain = ''
     try {
-        const kubectl = spawn('kubectl', ['config', 'view', '--minify', '--output', 'jsonpath="{.clusters[*].cluster.server}"'], { shell: false })
+        const kubectl = spawn('kubectl', ['config', 'view', '--minify', '--output', 'jsonpath={.clusters[*].cluster.server}'], { shell: false })
 
         await new Promise((resolve, reject) => {
             kubectl.stdout.on('data', (data) => {
