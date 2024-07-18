@@ -29,7 +29,7 @@ describe('cds add cap-operator', () => {
         await tempUtil.cleanUp()
     })
 
-    it.only('Add cap-operator chart', async () => {
+    it('Add cap-operator chart', async () => {
         execSync(`cds add cap-operator`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname,'files/expectedChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))
