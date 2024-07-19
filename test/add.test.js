@@ -35,6 +35,9 @@ describe('cds add cap-operator', () => {
         expect(getFileHash(join(__dirname,'files/expectedChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))
         expect(getFileHash(join(__dirname,'files/expectedChart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))
         expect(getFileHash(join(__dirname,'files/expectedChart/values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
+
+        // Check changes to xs-security.json
+        expect(getFileHash(join(__dirname,'files/xs-security.json'))).to.equal(getFileHash(join(bookshop, 'xs-security.json')))
     })
 
     it('Add cap-operator chart with force', async () => {
