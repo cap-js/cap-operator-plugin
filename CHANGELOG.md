@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## Version 0.0.3 - tbd
+
+### Added
+
+- Added CLI to generate runtime values file `npx cap-op-plugin generate-runtime-values`
+- Updated `values.schema.json` as per the latest version of CAP Operator and BTP Service Operator
+- Default `$XSAPPNAME.Callback` & `$XSAPPNAME.mtcallback` scope (if not present) in `xs-security.json` on plugin call
+- Switched chart to v2 apiVersion
+- Enabled sonar checks
+
 ## Version 0.0.2 - 13-May-2024
 
 ### Added
