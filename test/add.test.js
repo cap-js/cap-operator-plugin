@@ -26,7 +26,7 @@ describe('cds add cap-operator', () => {
 
     after(async () => {
         undoSetupHack(bookshop)
-        //await tempUtil.cleanUp()
+        await tempUtil.cleanUp()
     })
 
     it('Add cap-operator chart', async () => {
