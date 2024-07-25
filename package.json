@@ -19,8 +19,10 @@
   "files": [
     "cds-plugin.js",
     "lib",
+    "bin",
     "files",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "README.md"
   ],
   "peerDependencies": {
     "@sap/cds": "~7",
