@@ -7,10 +7,9 @@ All notable changes to this project will be documented in this file. This projec
 ### Added
 
 - Added CLI to generate runtime values file `npx cap-op-plugin generate-runtime-values`
-- Updated `values.schema.json` as per the latest version of CAP Operator and BTP Service Operator
+- Updated `values.schema.json` to the latest version of CAP Operator(v0.6.0) and BTP Service Operator(v0.6.5)
 - Default `$XSAPPNAME.Callback` & `$XSAPPNAME.mtcallback` scope (if not present) in `xs-security.json` on plugin call
 - Switched chart to v2 apiVersion
-- Enabled sonar checks
 
 ## Version 0.0.2 - 13-May-2024
 
