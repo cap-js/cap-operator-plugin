@@ -6,11 +6,13 @@ The CAP Operator Plugin offers a simple method for generating [CAP Operator](htt
 
 ## Before You Start
 
-The CAP Operator plugin requires `@sap/cds-dk: ">=7.9.5"`. If you've installed @sap/cds-dk  globally, ensure that the installed version is `7.9.5` or higher.
+The CAP Operator plugin requires `@sap/cds-dk: "~7.9.5"`. If you've installed @sap/cds-dk  globally, ensure that the installed version is `7.9.5` or higher, but below `8`.
+
+> `@sap/cds-dk: "~8"` is not supported yet.
 
 ## Set Up the Plugin
 
-To integrate the CAP Operator Plugin into your project, follow these steps:  
+To integrate the CAP Operator Plugin into your project, follow these steps:
 
 1. Add the plugin package to your project as a dev dependency:
 
@@ -24,8 +26,8 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
     ```
     ![](.images/cds-add-cap-operator.gif)
 
-    This creates a `chart` folder in your directory with three files: `Chart.yaml`, `values.schema.json`, and `values.yaml`. 
-    
+    This creates a `chart` folder in your directory with three files: `Chart.yaml`, `values.schema.json`, and `values.yaml`.
+
     You might notice that the `templates` folder is missing. This is intentional. The idea is to push only these three files into your GitHub repository. When you deploy your application, you can call `cds build`, and during the build, the plugin generates the final Helm chart in your project's `gen` directory, which includes the predefined `templates` folder.
 
     **Available Options**
@@ -98,8 +100,8 @@ The generated `chart/values.yaml` contains two types of information:
         - [imagePullSecrets](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) - Kubernetes secret used to pull the application docker images from a private container image registry or repository.
         - env information inside workloads
 
-   As a developer, you must fill in the design-time deployment information in the `values.yaml` file, which can then be pushed to your GitHub repository. The plugin auto-populates some values based on your project configuration, but verifying them and manually filling in any missing information is essential. You can refer to `values.schema.json` file for the structure of the `values.yaml` file. 
-   
+   As a developer, you must fill in the design-time deployment information in the `values.yaml` file, which can then be pushed to your GitHub repository. The plugin auto-populates some values based on your project configuration, but verifying them and manually filling in any missing information is essential. You can refer to `values.schema.json` file for the structure of the `values.yaml` file.
+
    **Please fill the `values.yaml` according to the schema as it is tightly coupled to the predefined templates.** You can use a YAML schema validation extension such as [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) or run the following command to validate your `values.yaml` file. You can ignore the errors from runtime values as they are not filled in yet.
 
    ```sh
@@ -160,8 +162,7 @@ The generated `chart/values.yaml` contains two types of information:
         imagePullSecret: regcred
         ```
 
-        Similar to the interactive mode, `appName`, `capOperatorSubdomain`, `clusterDomain`, `globalAccountId`, `providerSubdomain`, and `tenantId` are mandatory fields. If they're not provided in the input YAML, the plugin throws an error. 
-
+        Similar to the interactive mode, `appName`, `capOperatorSubdomain`, `clusterDomain`, `globalAccountId`, `providerSubdomain`, and `tenantId` are mandatory fields. If they're not provided in the input YAML, the plugin throws an error.
     After execution, the `runtime-values.yaml` file is created in the chart folder of your project directory.
 
 7. Now, you can deploy the application using the following command:
@@ -176,7 +177,7 @@ The generated `chart/values.yaml` contains two types of information:
    helm upgrade -i -n <namespace> <release-name> <project-path>/gen/chart --set-file serviceInstances.xsuaa.jsonParameters=<project-path>/xs-security.json -f <project-path>/chart/runtime-values.yaml
    ```
 
-## Example 
+## Example
 
 As a reference, check out the [CAP Operator Helm chart](https://github.com/cap-js/incidents-app/tree/cap-operator-plugin/chart) in the sample incident app. Also, take a look at the corresponding [runtime-values.yaml](https://github.com/cap-js/incidents-app/blob/cap-operator-plugin/chart/runtime-values.yaml) file.
 
