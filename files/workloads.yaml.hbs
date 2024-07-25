@@ -12,9 +12,6 @@ workloads:
         - {{appName}}-service-manager-bind
         {{/hasMultitenancy}}
         deploymentDefinition:
-            env:
-            - name: CDS_CONFIG
-              value:
             type: CAP
             image:
 
@@ -49,8 +46,5 @@ workloads:
         - {{appName}}-service-manager-bind
         {{/hasMultitenancy}}
         jobDefinition:
-            env:
-            - name: CDS_CONFIG
-              value:
             type: TenantOperation
             image:
