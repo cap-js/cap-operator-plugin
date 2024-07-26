@@ -55,7 +55,7 @@ describe('cds add cap-operator', () => {
     })
 
     it('Chart folder already added by `cds add helm` ', async () => {
-        execSync(`cds add helm`, { cwd: bookshop })
+        execSync(`cds add helm --y`, { cwd: bookshop })
         expect(() => execSync(`cds add cap-operator`, { cwd: bookshop })).to.throw('Existing \'chart\' folder is not a CAP Operator helm chart. Run \'cds add cap-operator --force\' to overwrite.')
     })
 
