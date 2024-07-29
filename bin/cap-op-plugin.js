@@ -5,6 +5,7 @@ const isCli = require.main === module
 const cds = require('@sap/cds-dk')
 const yaml = require('@sap/cds-foss').yaml
 const Mustache = require('mustache')
+const { spawn } = require('child_process')
 
 const { ask, mergeObj, isCAPOperatorChart } = require('../lib/util')
 
@@ -72,7 +73,7 @@ async function generateRuntimeValues(option, inputYamlPath) {
         const questions = [
             ['Enter app name for deployment: ', appName, true],
             ['Enter CAP Operator subdomain (In kyma cluster it is "cap-op" by default): ', 'cap-op', true],
-            ['Enter your cluster shoot domain: ', '', true],
+            ['Enter your cluster shoot domain: ', await getShootDomain(), true],
             ['Enter your global account ID: ', '', true],
             ['Enter your provider subdomain: ', '', true],
             ['Enter your provider tenant ID: ', '', true],
@@ -155,6 +156,28 @@ function getAppDetails() {
     const { name, description } = JSON.parse(cds.utils.fs.readFileSync(cds.utils.path.join(cds.root, 'package.json')))
     const segments = (name ?? this.appName).trim().replace(/@/g, '').split('/').map(encodeURIComponent)
     return { appName: segments[segments.length - 1], appDescription: description }
+}
+
+async function getShootDomain() {
+    let domain = ''
+    try {
+        const kubectl = spawn('kubectl', ['config', 'view', '--minify', '--output', 'jsonpath={.clusters[*].cluster.server}'], { shell: false })
+
+        await new Promise((resolve, reject) => {
+            kubectl.stdout.on('data', (data) => {
+                const domainStartIndex = data.indexOf('api.')
+                if (domainStartIndex !== -1) {
+                    domain = data.toString().substring(domainStartIndex + 4)
+                }
+            })
+
+            kubectl.stderr.on('data', () => { reject() })
+
+            kubectl.on('close', () => { resolve() })
+        })
+    } catch (error) {}
+
+    return domain
 }
 
 if (isCli) {

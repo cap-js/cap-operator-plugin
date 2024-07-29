@@ -121,9 +121,6 @@ workloads:
       - bookshop-saas-registry-bind
       - bookshop-service-manager-bind
     deploymentDefinition:
-      env:
-        - name: CDS_CONFIG
-          value: null
       type: CAP
       image: null
   content-deploy:
@@ -146,8 +143,5 @@ workloads:
       - bookshop-saas-registry-bind
       - bookshop-service-manager-bind
     jobDefinition:
-      env:
-        - name: CDS_CONFIG
-          value: null
       type: TenantOperation
       image: null
