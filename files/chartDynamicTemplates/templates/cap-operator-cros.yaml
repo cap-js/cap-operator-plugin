@@ -62,13 +62,9 @@ spec:
     labels:
       sme.sap.com/app-type: {{ include "appName" $ }}
     consumedBTPServices:
-    {{#hasXsuaa}}
     - {{ include "appName" $ }}-uaa-bind
-    {{/hasXsuaa}}
-    {{#hasMultitenancy}}
     - {{ include "appName" $ }}-saas-registry-bind
     - {{ include "appName" $ }}-service-manager-bind
-    {{/hasMultitenancy}}
     deploymentDefinition:
       type: CAP
       image: {{ .Values.server.image }}
@@ -76,18 +72,14 @@ spec:
     labels:
       sme.sap.com/app-type: {{ include "appName" $ }}
     consumedBTPServices:
-    {{#hasXsuaa}}
     - {{ include "appName" $ }}-uaa-bind
-    {{/hasXsuaa}}
-    {{#hasDestination}}
-    - {{ include "appName" $ }}-destination-bind
-    {{/hasDestination}}
-    {{#hasHTML5Repo}}
-    - {{ include "appName" $ }}-html5-repo-runtime-bind
-    {{/hasHTML5Repo}}
-    {{#hasMultitenancy}}
     - {{ include "appName" $ }}-saas-registry-bind
-    {{/hasMultitenancy}}
+    {{- if include "hasServicePlanName" "destination" -}}
+    - {{ include "appName" $ }}-destination-bind
+    {{- end -}}
+    {{- if include "hasServicePlanName" "html5-apps-repo" -}}
+    - {{ include "appName" $ }}-html5-repo-runtime-bind
+    {{- end -}}
     deploymentDefinition:
       type: Router
       image: {{ .Values.app-router.image }}
@@ -95,19 +87,12 @@ spec:
       - name: router-port
         port: 5000
   - name: tenant-job
-    annotations:
-      foo: bar
-      some.test.annotation.tenant.op: "Value for annotation: `some.test.annotation.tenant.op`"
     labels:
       sme.sap.com/app-type: {{ include "appName" $ }}
     consumedBTPServices:
-    {{#hasXsuaa}}
     - {{ include "appName" $ }}-uaa-bind
-    {{/hasXsuaa}}
-    {{#hasMultitenancy}}
     - {{ include "appName" $ }}-saas-registry-bind
     - {{ include "appName" $ }}-service-manager-bind
-    {{/hasMultitenancy}}
     jobDefinition:
       type: TenantOperation
       image: {{ .Values.tenant-job.image }}
@@ -115,15 +100,11 @@ spec:
     labels:
       sme.sap.com/app-type: {{ include "appName" $ }}
     consumedBTPServices:
-    {{#hasXsuaa}}
     - {{ include "appName" $ }}-uaa-bind
-    {{/hasXsuaa}}
-    {{#hasMultitenancy}}
     - {{ include "appName" $ }}-saas-registry-bind
-    {{/hasMultitenancy}}
-    {{#hasHtml5Repo}}
-    - {{ include "appName" $ }}-html5-repo-host-bind
-    {{/hasHtml5Repo}}
+    {{- if include "hasServicePlanName" "html5-apps-repo" -}}
+    - {{ include "appName" $ }}-html5-repo-runtime-bind
+    {{- end -}}
     jobDefinition:
       type: Content
       image: {{ .Values.content-deploy.image }}
