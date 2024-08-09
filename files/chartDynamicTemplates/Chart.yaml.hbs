@@ -1,0 +1,9 @@
+apiVersion: v2
+name: {{appName}}
+description: Helm chart to deploy {{appName}} using CAP Operator
+type: application
+version: 0.0.1
+appVersion: {{appVersion}}
+annotations:
+    app.kubernetes.io/managed-by: cap-operator-plugin
+    app.kubernetes.io/part-of: cap-operator-dynamic-templates
