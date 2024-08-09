@@ -66,12 +66,16 @@ func updateProperties(data []byte) []byte {
 
 	quantity := m["$defs"].(map[string]interface{})["Quantity"].(map[string]interface{})
 	quantity["type"] = "string"
-	delete(quantity,"properties")
-	delete(quantity,"required")
+	delete(quantity, "properties")
+	delete(quantity, "required")
 	m["$defs"].(map[string]interface{})["Quantity"] = quantity
 
 	serviceBindingSpec := m["$defs"].(map[string]interface{})["serviceBindingExt"].(map[string]interface{})
 	serviceBindingSpec["required"] = []string{"name", "serviceInstanceName", "secretName"}
+
+	chartValue := m["$defs"].(map[string]interface{})["chartValue"].(map[string]interface{})
+	chartValue["additionalProperties"] = true
+	m["$defs"].(map[string]interface{})["chartValue"] = chartValue
 
 	data, _ = json.Marshal(m)
 
