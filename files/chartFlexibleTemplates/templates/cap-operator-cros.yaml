@@ -54,7 +54,7 @@ spec:
   capApplicationInstance: cap-{{ include "appName" $ }}
   version: "{{ .Values.app.version | default .Release.Revision }}"
   registrySecrets:
-    {{- range .Values.registrySecrets }}
+    {{- range .Values.imagePullSecrets }}
     - {{.}}
     {{- end }}
   workloads:
@@ -67,22 +67,22 @@ spec:
     - {{ include "appName" $ }}-service-manager-bind
     deploymentDefinition:
       type: CAP
-      image: {{ .Values.server.image }}
+      image: {{ .Values.workloads.server.image }}
   - name: app-router
     labels:
       sme.sap.com/app-type: {{ include "appName" $ }}
     consumedBTPServices:
     - {{ include "appName" $ }}-uaa-bind
     - {{ include "appName" $ }}-saas-registry-bind
-    {{- if include "hasServicePlanName" "destination" -}}
+    {{- if eq (include "hasServiceOfferingName" (dict "si" .Values.serviceInstances "offeringName" "destination")) "true" }}
     - {{ include "appName" $ }}-destination-bind
-    {{- end -}}
-    {{- if include "hasServicePlanName" "html5-apps-repo" -}}
+    {{- end}}
+    {{- if eq (include "hasServiceOfferingName" (dict "si" .Values.serviceInstances "offeringName" "html5-apps-repo")) "true" }}
     - {{ include "appName" $ }}-html5-repo-runtime-bind
-    {{- end -}}
+    {{- end }}
     deploymentDefinition:
       type: Router
-      image: {{ .Values.app-router.image }}
+      image: {{ .Values.workloads.appRouter.image }}
       ports:
       - name: router-port
         port: 5000
@@ -95,16 +95,16 @@ spec:
     - {{ include "appName" $ }}-service-manager-bind
     jobDefinition:
       type: TenantOperation
-      image: {{ .Values.tenant-job.image }}
+      image: {{ .Values.workloads.tenantJob.image }}
   - name: content-deploy
     labels:
       sme.sap.com/app-type: {{ include "appName" $ }}
     consumedBTPServices:
     - {{ include "appName" $ }}-uaa-bind
     - {{ include "appName" $ }}-saas-registry-bind
-    {{- if include "hasServicePlanName" "html5-apps-repo" -}}
+    {{- if eq (include "hasServiceOfferingName" (dict "si" .Values.serviceInstances "offeringName" "html5-apps-repo")) "true" }}
     - {{ include "appName" $ }}-html5-repo-runtime-bind
-    {{- end -}}
+    {{- end }}
     jobDefinition:
       type: Content
-      image: {{ .Values.content-deploy.image }}
+      image: {{ .Values.workloads.contentDeploy.image }}

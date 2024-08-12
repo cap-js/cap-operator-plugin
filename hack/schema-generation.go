@@ -55,7 +55,7 @@ type chartValue struct {
 }
 
 type workloadDefinition struct {
-	image string `json:"image"`
+	Image string `json:"image"`
 }
 
 type chartValueV2 struct {
@@ -64,7 +64,7 @@ type chartValueV2 struct {
 	ImagePullSecrets []string                      `json:"imagePullSecrets,omitempty"`
 	ServiceInstances map[string]serviceInstanceExt `json:"serviceInstances"`
 	ServiceBindings  map[string]serviceBindingExt  `json:"serviceBindings"`
-	Workloads        workloadDefinition            `json:"workloads"`
+	Workloads        map[string]workloadDefinition `json:"workloads"`
 	TenantOperations v1alpha1.TenantOperations     `json:"tenantOperations,omitempty"`
 	ContentJobs      []string                      `json:"contentJobs,omitempty"`
 }
@@ -110,6 +110,10 @@ func updatePropertiesV2(data []byte) []byte {
 	serviceBindingSpec := m["$defs"].(map[string]interface{})["serviceBindingExt"].(map[string]interface{})
 	serviceBindingSpec["required"] = []string{"name", "serviceInstanceName", "secretName"}
 
+	workloadDefinition := m["$defs"].(map[string]interface{})["workloadDefinition"].(map[string]interface{})
+	workloadDefinition["additionalProperties"] = true
+	m["$defs"].(map[string]interface{})["workloadDefinition"] = workloadDefinition
+
 	chartValue := m["$defs"].(map[string]interface{})["chartValueV2"].(map[string]interface{})
 	chartValue["additionalProperties"] = true
 	m["$defs"].(map[string]interface{})["chartValue"] = chartValue
@@ -154,7 +158,7 @@ func main() {
 	fmt.Println(string(dataV2))
 
 	// write the whole body at once
-	err = os.WriteFile("../files/chartDynamicTemplates/values.schema.json", dataV2, 0644)
+	err = os.WriteFile("../files/chartFlexibleTemplates/values.schema.json", dataV2, 0644)
 	if err != nil {
 		panic(err)
 	}

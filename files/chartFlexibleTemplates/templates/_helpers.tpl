@@ -7,13 +7,14 @@
 {{ printf "%s" $xsuaa.parameters.xsappname }}
 {{- end -}}
 
-{{- define "hasServicePlanName" -}}
-{{- $servicePlanName := . -}}
-{{- $found := false -}}
-{{- range $key, $instance := .Values.serviceInstances -}}
-  {{- if eq $instance.servicePlanName $servicePlanName -}}
-    {{- $found = true -}}
-  {{- end -}}
+{{- define "hasServiceOfferingName" -}}
+{{- $found := "false" -}}
+{{- $offeringName := .offeringName -}}
+{{- $si := .si -}}
+{{- range $sik, $siv := $si}}
+{{- if (eq (get $siv "serviceOfferingName") $offeringName) -}}
+{{- $found = "true" -}}
+{{- end -}}
 {{- end -}}
 {{- $found -}}
 {{- end -}}

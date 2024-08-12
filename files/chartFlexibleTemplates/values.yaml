@@ -26,15 +26,15 @@ btp:
 # -- Image pull secrets
 imagePullSecrets: []
 
-worklods:
+workloads:
   server:
     image:
 
-  app-router:
+  appRouter:
     image:
 
-  tenant-job:
+  tenantJob:
     image:
 
-  content-deploy:
+  contentDeploy:
     image:

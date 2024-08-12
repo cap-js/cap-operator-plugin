@@ -208,7 +208,10 @@
                     "$ref": "#/$defs/TenantOperations"
                 },
                 "workloads": {
-                    "$ref": "#/$defs/workloadDefinition"
+                    "additionalProperties": {
+                        "$ref": "#/$defs/workloadDefinition"
+                    },
+                    "type": "object"
                 }
             },
             "required": [
@@ -257,7 +260,10 @@
                     "$ref": "#/$defs/TenantOperations"
                 },
                 "workloads": {
-                    "$ref": "#/$defs/workloadDefinition"
+                    "additionalProperties": {
+                        "$ref": "#/$defs/workloadDefinition"
+                    },
+                    "type": "object"
                 }
             },
             "required": [
@@ -392,8 +398,15 @@
             "type": "object"
         },
         "workloadDefinition": {
-            "additionalProperties": false,
-            "properties": {},
+            "additionalProperties": true,
+            "properties": {
+                "image": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "image"
+            ],
             "type": "object"
         }
     },
