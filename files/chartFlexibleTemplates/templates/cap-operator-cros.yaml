@@ -62,9 +62,9 @@ spec:
     labels:
       sme.sap.com/app-type: {{ include "appName" $ }}
     consumedBTPServices:
-    - {{ include "appName" $ }}-uaa-bind
-    - {{ include "appName" $ }}-saas-registry-bind
-    - {{ include "appName" $ }}-service-manager-bind
+    - {{ include "originalAppName" $ }}-uaa-bind
+    - {{ include "originalAppName" $ }}-saas-registry-bind
+    - {{ include "originalAppName" $ }}-service-manager-bind
     deploymentDefinition:
       type: CAP
       image: {{ .Values.workloads.server.image }}
@@ -77,13 +77,13 @@ spec:
     labels:
       sme.sap.com/app-type: {{ include "appName" $ }}
     consumedBTPServices:
-    - {{ include "appName" $ }}-uaa-bind
-    - {{ include "appName" $ }}-saas-registry-bind
+    - {{ include "originalAppName" $ }}-uaa-bind
+    - {{ include "originalAppName" $ }}-saas-registry-bind
     {{- if eq (include "hasServiceOfferingName" (dict "si" .Values.serviceInstances "offeringName" "destination")) "true" }}
-    - {{ include "appName" $ }}-destination-bind
+    - {{ include "originalAppName" $ }}-destination-bind
     {{- end}}
     {{- if eq (include "hasServiceOfferingName" (dict "si" .Values.serviceInstances "offeringName" "html5-apps-repo")) "true" }}
-    - {{ include "appName" $ }}-html5-repo-runtime-bind
+    - {{ include "originalAppName" $ }}-html5-repo-runtime-bind
     {{- end }}
     deploymentDefinition:
       type: Router
@@ -98,9 +98,9 @@ spec:
     labels:
       sme.sap.com/app-type: {{ include "appName" $ }}
     consumedBTPServices:
-    - {{ include "appName" $ }}-uaa-bind
-    - {{ include "appName" $ }}-saas-registry-bind
-    - {{ include "appName" $ }}-service-manager-bind
+    - {{ include "originalAppName" $ }}-uaa-bind
+    - {{ include "originalAppName" $ }}-saas-registry-bind
+    - {{ include "originalAppName" $ }}-service-manager-bind
     jobDefinition:
       type: TenantOperation
       image: {{ .Values.workloads.tenantJob.image }}
@@ -113,10 +113,10 @@ spec:
     labels:
       sme.sap.com/app-type: {{ include "appName" $ }}
     consumedBTPServices:
-    - {{ include "appName" $ }}-uaa-bind
-    - {{ include "appName" $ }}-saas-registry-bind
+    - {{ include "originalAppName" $ }}-uaa-bind
+    - {{ include "originalAppName" $ }}-saas-registry-bind
     {{- if eq (include "hasServiceOfferingName" (dict "si" .Values.serviceInstances "offeringName" "html5-apps-repo")) "true" }}
-    - {{ include "appName" $ }}-html5-repo-runtime-bind
+    - {{ include "originalAppName" $ }}-html5-repo-runtime-bind
     {{- end }}
     jobDefinition:
       type: Content
