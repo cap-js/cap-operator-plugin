@@ -7,7 +7,7 @@ const yaml = require('@sap/cds-foss').yaml
 const Mustache = require('mustache')
 const { spawn } = require('child_process')
 
-const { ask, mergeObj, isCAPOperatorChart } = require('../lib/util')
+const { ask, mergeObj, isCAPOperatorChart, isFlexibleTemplateChart } = require('../lib/util')
 
 const SUPPORTED = { 'generate-runtime-values': ['--with-input-yaml'] }
 
@@ -61,6 +61,7 @@ async function generateRuntimeValues(option, inputYamlPath) {
 
     let answerStruct = {}
     const { appName, appDescription } = getAppDetails()
+    const isFlexibleTemplateChart = isFlexibleTemplateChart('chart')
 
     if (option === '--with-input-yaml' && inputYamlPath) {
 
@@ -100,6 +101,17 @@ async function generateRuntimeValues(option, inputYamlPath) {
     if (!answerStruct['imagePullSecret'])
         delete runtimeValuesYaml['imagePullSecrets']
 
+    if (isFlexibleTemplateChart && answerStruct['hanaInstanceId'])
+        runtimeValuesYaml['hanaInstanceId'] = answerStruct['hanaInstanceId']
+
+    if (!isFlexibleTemplateChart)
+        updateWorkloadEnv(runtimeValuesYaml, valuesYaml, answerStruct)
+
+    await cds.utils.write(yaml.stringify(runtimeValuesYaml)).to(cds.utils.path.join(cds.root, 'chart/runtime-values.yaml'))
+    console.log("Generated 'runtime-values.yaml' file in the 'chart' folder.")
+}
+
+function updateWorkloadEnv(runtimeValuesYaml, valuesYaml, answerStruct) {
     runtimeValuesYaml['workloads'] = {}
     for (const [workloadKey, workloadDetails] of Object.entries(valuesYaml.workloads)) {
 
@@ -135,9 +147,6 @@ async function generateRuntimeValues(option, inputYamlPath) {
             delete runtimeValuesYaml['workloads'][workloadKey]
         }
     }
-
-    await cds.utils.write(yaml.stringify(runtimeValuesYaml)).to(cds.utils.path.join(cds.root, 'chart/runtime-values.yaml'))
-    console.log("Generated 'runtime-values.yaml' file in the 'chart' folder.")
 }
 
 function updateCdsConfigEnv(runtimeValuesYaml, workloadKey, workloadDefintion, cdsConfigHana) {

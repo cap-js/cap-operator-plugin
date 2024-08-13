@@ -171,7 +171,7 @@
             ],
             "type": "object"
         },
-        "chartValue": {
+        "chartValueSimplified": {
             "additionalProperties": true,
             "properties": {
                 "app": {
@@ -186,57 +186,8 @@
                     },
                     "type": "array"
                 },
-                "imagePullSecrets": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
-                },
-                "serviceBindings": {
-                    "additionalProperties": {
-                        "$ref": "#/$defs/serviceBindingExt"
-                    },
-                    "type": "object"
-                },
-                "serviceInstances": {
-                    "additionalProperties": {
-                        "$ref": "#/$defs/serviceInstanceExt"
-                    },
-                    "type": "object"
-                },
-                "tenantOperations": {
-                    "$ref": "#/$defs/TenantOperations"
-                },
-                "workloads": {
-                    "additionalProperties": {
-                        "$ref": "#/$defs/workloadDefinition"
-                    },
-                    "type": "object"
-                }
-            },
-            "required": [
-                "app",
-                "btp",
-                "serviceInstances",
-                "serviceBindings",
-                "workloads"
-            ],
-            "type": "object"
-        },
-        "chartValueV2": {
-            "additionalProperties": true,
-            "properties": {
-                "app": {
-                    "$ref": "#/$defs/app"
-                },
-                "btp": {
-                    "$ref": "#/$defs/btp"
-                },
-                "contentJobs": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
+                "hanaInstanceId": {
+                    "type": "string"
                 },
                 "imagePullSecrets": {
                     "items": {
@@ -410,6 +361,6 @@
             "type": "object"
         }
     },
-    "$ref": "#/$defs/chartValueV2",
+    "$ref": "#/$defs/chartValueSimplified",
     "$schema": "https://json-schema.org/draft/2020-12/schema"
 }

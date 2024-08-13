@@ -58,10 +58,11 @@ type workloadDefinition struct {
 	Image string `json:"image"`
 }
 
-type chartValueV2 struct {
+type chartValueSimplified struct {
 	App              app                           `json:"app"`
 	Btp              btp                           `json:"btp"`
 	ImagePullSecrets []string                      `json:"imagePullSecrets,omitempty"`
+	HanaInstanceId   string                        `json:"hanaInstanceId,omitempty"`
 	ServiceInstances map[string]serviceInstanceExt `json:"serviceInstances"`
 	ServiceBindings  map[string]serviceBindingExt  `json:"serviceBindings"`
 	Workloads        map[string]workloadDefinition `json:"workloads"`
@@ -97,7 +98,7 @@ func updateProperties(data []byte) []byte {
 	return data
 }
 
-func updatePropertiesV2(data []byte) []byte {
+func updatePropertiesSimplifiedChart(data []byte) []byte {
 
 	m := map[string]interface{}{}
 
@@ -114,9 +115,9 @@ func updatePropertiesV2(data []byte) []byte {
 	workloadDefinition["additionalProperties"] = true
 	m["$defs"].(map[string]interface{})["workloadDefinition"] = workloadDefinition
 
-	chartValue := m["$defs"].(map[string]interface{})["chartValueV2"].(map[string]interface{})
-	chartValue["additionalProperties"] = true
-	m["$defs"].(map[string]interface{})["chartValue"] = chartValue
+	chartValueSimplified := m["$defs"].(map[string]interface{})["chartValueSimplified"].(map[string]interface{})
+	chartValueSimplified["additionalProperties"] = true
+	m["$defs"].(map[string]interface{})["chartValueSimplified"] = chartValueSimplified
 
 	data, _ = json.Marshal(m)
 
@@ -148,13 +149,13 @@ func main() {
 
 	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-	sV2 := jsonschema.Reflect(&chartValueV2{})
+	sV2 := jsonschema.Reflect(&chartValueSimplified{})
 	dataV2, errV2 := json.MarshalIndent(sV2, "", "  ")
 	if errV2 != nil {
 		panic(errV2.Error())
 	}
 
-	dataV2 = updatePropertiesV2(dataV2)
+	dataV2 = updatePropertiesSimplifiedChart(dataV2)
 	fmt.Println(string(dataV2))
 
 	// write the whole body at once

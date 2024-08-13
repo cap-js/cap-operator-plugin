@@ -26,6 +26,8 @@ btp:
 # -- Image pull secrets
 imagePullSecrets: []
 
+hanaInstanceId:
+
 workloads:
   server:
     image:
