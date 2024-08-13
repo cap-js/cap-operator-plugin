@@ -61,7 +61,7 @@ async function generateRuntimeValues(option, inputYamlPath) {
 
     let answerStruct = {}
     const { appName, appDescription } = getAppDetails()
-    const isFlexibleTemplateChart = isFlexibleTemplateChart('chart')
+    const isFlexTemplateChart = isFlexibleTemplateChart('chart')
 
     if (option === '--with-input-yaml' && inputYamlPath) {
 
@@ -101,10 +101,10 @@ async function generateRuntimeValues(option, inputYamlPath) {
     if (!answerStruct['imagePullSecret'])
         delete runtimeValuesYaml['imagePullSecrets']
 
-    if (isFlexibleTemplateChart && answerStruct['hanaInstanceId'])
+    if (isFlexTemplateChart && answerStruct['hanaInstanceId'])
         runtimeValuesYaml['hanaInstanceId'] = answerStruct['hanaInstanceId']
 
-    if (!isFlexibleTemplateChart)
+    if (!isFlexTemplateChart)
         updateWorkloadEnv(runtimeValuesYaml, valuesYaml, answerStruct)
 
     await cds.utils.write(yaml.stringify(runtimeValuesYaml)).to(cds.utils.path.join(cds.root, 'chart/runtime-values.yaml'))
