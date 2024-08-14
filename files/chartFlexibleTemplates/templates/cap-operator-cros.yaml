@@ -13,7 +13,7 @@ spec:
       {{- end }}
     {{- end }}
     istioIngressGatewayLabels:
-    {{- range $k, $v := .Values.ingressGatewayLabels }}
+    {{- range $k, $v := .Values.app.istioIngressGatewayLabels }}
     - name: {{ $k }}
       value: {{ $v | default "invalidValue"}}
     {{ end }}
@@ -79,11 +79,14 @@ spec:
     consumedBTPServices:
     - {{ include "originalAppName" $ }}-uaa-bind
     - {{ include "originalAppName" $ }}-saas-registry-bind
-    {{- if eq (include "hasServiceOfferingName" (dict "si" .Values.serviceInstances "offeringName" "destination")) "true" }}
+    {{- if eq (include "hasService" (dict "si" .Values.serviceInstances "offeringName" "destination" "planName" "lite")) "true" }}
     - {{ include "originalAppName" $ }}-destination-bind
     {{- end}}
-    {{- if eq (include "hasServiceOfferingName" (dict "si" .Values.serviceInstances "offeringName" "html5-apps-repo")) "true" }}
+    {{- if eq (include "hasService" (dict "si" .Values.serviceInstances "offeringName" "html5-apps-repo" "planName" "app-runtime")) "true" }}
     - {{ include "originalAppName" $ }}-html5-repo-runtime-bind
+    {{- end }}
+    {{- if eq (include "hasService" (dict "si" .Values.serviceInstances "offeringName" "portal" "planName" "standard")) "true" }}
+    - {{ include "originalAppName" $ }}-portal-bind
     {{- end }}
     deploymentDefinition:
       type: Router
@@ -115,8 +118,14 @@ spec:
     consumedBTPServices:
     - {{ include "originalAppName" $ }}-uaa-bind
     - {{ include "originalAppName" $ }}-saas-registry-bind
-    {{- if eq (include "hasServiceOfferingName" (dict "si" .Values.serviceInstances "offeringName" "html5-apps-repo")) "true" }}
-    - {{ include "originalAppName" $ }}-html5-repo-runtime-bind
+    {{- if eq (include "hasService" (dict "si" .Values.serviceInstances "offeringName" "html5-apps-repo" "planName" "app-host")) "true" }}
+    - {{ include "originalAppName" $ }}-html5-repo-host-bind
+    {{- end }}
+    {{- if eq (include "hasService" (dict "si" .Values.serviceInstances "offeringName" "portal" "planName" "standard")) "true" }}
+    - {{ include "originalAppName" $ }}-portal-bind
+    {{- end }}
+    {{- if eq (include "hasService" (dict "si" .Values.serviceInstances "offeringName" "content-agent" "planName" "application")) "true" }}
+    - {{ include "originalAppName" $ }}-content-agent-bind
     {{- end }}
     jobDefinition:
       type: Content
