@@ -14,7 +14,7 @@ describe('cds add cap-operator', () => {
         await tempUtil.cleanUp()
         temp = await tempUtil.mkTempFolder()
         bookshop = join(temp, 'bookshop')
-        execSync(`cds init bookshop --add multitenancy,approuter,xsuaa,html5-repo`, { cwd: temp })
+        execSync(`cds init bookshop --add multitenancy,approuter,xsuaa,html5-repo,destination`, { cwd: temp })
         updateDependency(bookshop)
         execSync(`npm install`, { cwd: bookshop })
         setupHack(bookshop)
@@ -58,7 +58,7 @@ describe('cds add cap-operator', () => {
     })
 
     it('Chart folder already added by `cds add helm` ', async () => {
-        execSync(`cds add helm`, { cwd: bookshop })
+        execSync(`cds add helm --y`, { cwd: bookshop })
         expect(() => execSync(`cds add cap-operator`, { cwd: bookshop })).to.throw('Existing \'chart\' folder is not a CAP Operator helm chart. Run \'cds add cap-operator --force\' to overwrite.')
     })
 
