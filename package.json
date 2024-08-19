@@ -1,6 +1,6 @@
 {
   "name": "@cap-js/cap-operator-plugin",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Add/Build Plugin for CAP Operator",
   "homepage": "https://github.com/cap-js/cap-operator-plugin/blob/main/README.md",
   "repository": {
