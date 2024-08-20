@@ -98,7 +98,7 @@ func updateProperties(data []byte) []byte {
 	return data
 }
 
-func updatePropertiesSimplifiedChart(data []byte) []byte {
+func updatePropertiesFlexibleChart(data []byte) []byte {
 
 	m := map[string]interface{}{}
 
@@ -155,7 +155,7 @@ func main() {
 		panic(errV2.Error())
 	}
 
-	dataV2 = updatePropertiesSimplifiedChart(dataV2)
+	dataV2 = updatePropertiesFlexibleChart(dataV2)
 	fmt.Println(string(dataV2))
 
 	// write the whole body at once

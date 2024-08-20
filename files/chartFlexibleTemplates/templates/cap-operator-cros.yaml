@@ -85,9 +85,6 @@ spec:
     {{- if eq (include "hasService" (dict "si" .Values.serviceInstances "offeringName" "html5-apps-repo" "planName" "app-runtime")) "true" }}
     - {{ include "originalAppName" $ }}-html5-repo-runtime-bind
     {{- end }}
-    {{- if eq (include "hasService" (dict "si" .Values.serviceInstances "offeringName" "portal" "planName" "standard")) "true" }}
-    - {{ include "originalAppName" $ }}-portal-bind
-    {{- end }}
     deploymentDefinition:
       type: Router
       image: {{ .Values.workloads.appRouter.image }}
@@ -120,9 +117,6 @@ spec:
     - {{ include "originalAppName" $ }}-saas-registry-bind
     {{- if eq (include "hasService" (dict "si" .Values.serviceInstances "offeringName" "html5-apps-repo" "planName" "app-host")) "true" }}
     - {{ include "originalAppName" $ }}-html5-repo-host-bind
-    {{- end }}
-    {{- if eq (include "hasService" (dict "si" .Values.serviceInstances "offeringName" "portal" "planName" "standard")) "true" }}
-    - {{ include "originalAppName" $ }}-portal-bind
     {{- end }}
     {{- if eq (include "hasService" (dict "si" .Values.serviceInstances "offeringName" "content-agent" "planName" "application")) "true" }}
     - {{ include "originalAppName" $ }}-content-agent-bind
