@@ -7,9 +7,7 @@ function getFolderHash(folder) {
     const hashes = []
 
     files.forEach(file => {
-        const data = fs.readFileSync(file)
-        const hash = crypto.createHash('md5').update(data).digest('hex')
-        hashes.push(hash)
+        hashes.push(getFileHash(file))
     })
 
     // Combine all hashes to generate a unique hash for the folder
@@ -18,8 +16,9 @@ function getFolderHash(folder) {
 }
 
 function getFileHash(file){
-    const data = fs.readFileSync(file)
-    const hash = crypto.createHash('md5').update(data).digest('hex')
+    const data = fs.readFileSync(file, 'utf8')
+    const normalizedData = data.replace(/\r\n/g, '\n')  // Normalize line endings
+    const hash = crypto.createHash('md5').update(normalizedData).digest('hex')
     return hash
 }
 
