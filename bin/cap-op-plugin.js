@@ -6,10 +6,11 @@ const cds = require('@sap/cds-dk')
 const yaml = require('@sap/cds-foss').yaml
 const Mustache = require('mustache')
 const { spawn } = require('child_process')
+const fs = require('fs')
 
 const { ask, mergeObj, isCAPOperatorChart, isFlexibleTemplateChart } = require('../lib/util')
 
-const SUPPORTED = { 'generate-runtime-values': ['--with-input-yaml'] }
+const SUPPORTED = { 'generate-runtime-values': ['--with-input-yaml'], 'convert-to-flexible-template-chart': [] }
 
 async function capOperatorPlugin(cmd, option, inputYamlPath) {
     try {
@@ -47,10 +48,14 @@ COMMANDS
 
     generate-runtime-values [--with-input-yaml <input-yaml-path>]   Generate runtime-values.yaml file for the cap-operator chart
 
+    convert-to-flexible-template-chart  Convert existing chart to flexible template chart
+
 EXAMPLES
 
     cap-op-plugin generate-runtime-values
     cap-op-plugin generate-runtime-values --with-input-yaml /path/to/input.yaml
+
+    cap-op-plugin convert-to-flexible-template-chart
 `
     )
 }
@@ -61,10 +66,10 @@ async function convertToFlexibleTemplateChart(option) {
     }
 
     // Copy templates
-    await this.copy(cds.utils.path.join(__dirname, '../files/chartFlexibleTemplates/templates')).to(cds.utils.path.join(cds.root,'chart','templates'))
+    await cds.utils.copy(cds.utils.path.join(__dirname, '../files/chartFlexibleTemplates/templates')).to(cds.utils.path.join(cds.root,'chart','templates'))
 
     // Copy values.schema.json
-    await this.copy(cds.utils.path.join(__dirname, '../files/chartFlexibleTemplates/values.schema.json')).to(cds.utils.path.join(cds.root,'chart'))
+    await cds.utils.copy(cds.utils.path.join(__dirname, '../files/chartFlexibleTemplates/values.schema.json')).to(cds.utils.path.join(cds.root,'chart', 'values.schema.json'))
 
     // Add annotation to chart.yaml
     const chartYaml = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, 'chart/Chart.yaml')))
@@ -76,23 +81,38 @@ async function convertToFlexibleTemplateChart(option) {
 }
 
 async function populateFromValuesYaml() {
-    const valuesYaml = fs.readFileSync(cds.utils.path.join(cds.root, 'chart/values.yaml'), 'utf8')
+    const valuesYaml = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, 'chart/values.yaml')))
     const capOpCROYaml = fs.readFileSync(cds.utils.path.join(cds.root, 'chart/templates/cap-operator-cros.yaml'), 'utf8')
+
+    let workloadArray = []
+    for (const [workloadKey, workloadDetails] of Object.entries(valuesYaml.workloads))
+        workloadArray.push(workloadDetails)
+
+    let updatedCapOpCROObj = { 'workloads': workloadArray }
+
+    // if (valuesYaml['tenantOperations'])
+    //     updatedCapOpCROObj['tenantOperations'] = valuesYaml['tenantOperations']
+
+    // if (valuesYaml['contentJobs'])
+    //     updatedCapOpCROObj['contentJobs'] = valuesYaml['contentJobs']
 
     const updatedCapOpCROYaml = capOpCROYaml.replace(
         /workloads:\n(.*\n)*?(?=\n\s{2,}- name|spec:|$)/gm,
-        valuesYaml['workloads'].toString()
+        yaml.stringify(updatedCapOpCROObj, { indent: 2 })
     )
 
     fs.writeFileSync(cds.utils.path.join(cds.root, 'chart/templates/cap-operator-cros.yaml'), updatedCapOpCROYaml)
 
-    if (valuesYaml['tenantOperations'])
-        fs.appendFileSync(cds.utils.path.join(cds.root, 'chart/templates/cap-operator-cros.yaml'), valuesYaml['tenantOperations'].toString())
-        //updatedCapOpCROYaml = updatedCapOpCROYaml + '\n' + valuesYaml['tenantOperations'].toString()
+    // transform values.yaml
+    let newWorkloadObj = {}
+    for (const [workloadKey, workloadDetails] of Object.entries(valuesYaml.workloads)) {
+        newWorkloadObj[workloadKey] = {
+            "image": workloadDetails.deploymentDefinition ? workloadDetails.deploymentDefinition.image : workloadDetails.jobDefinition.image
+        }
+    }
+    valuesYaml['workloads'] = newWorkloadObj
 
-    if (valuesYaml['contentJobs'])
-        fs.appendFileSync(cds.utils.path.join(cds.root, 'chart/templates/cap-operator-cros.yaml'), valuesYaml['contentJobs'].toString())
-        //updatedCapOpCROYaml = updatedCapOpCROYaml + '\n' + valuesYaml['contentJobs'].toString()
+    await cds.utils.write(yaml.stringify(valuesYaml)).to(cds.utils.path.join(cds.root, 'chart/values.yaml'))
 }
 
 async function generateRuntimeValues(option, inputYamlPath) {
