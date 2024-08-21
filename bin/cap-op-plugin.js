@@ -19,6 +19,7 @@ async function capOperatorPlugin(cmd, option, inputYamlPath) {
         if (option === '--with-input-yaml' && !inputYamlPath) return _usage(`Input yaml path is missing.`)
 
         if (cmd === 'generate-runtime-values') await generateRuntimeValues(option, inputYamlPath)
+        else if (cmd === 'convert-to-flexible-template-chart') await convertToFlexibleTemplateChart(option)
     } catch (e) {
         if (isCli) {
             console.error(e.message)
@@ -52,6 +53,46 @@ EXAMPLES
     cap-op-plugin generate-runtime-values --with-input-yaml /path/to/input.yaml
 `
     )
+}
+
+async function convertToFlexibleTemplateChart(option) {
+    if (!((cds.utils.exists('chart') && isCAPOperatorChart(cds.utils.path.join(cds.root,'chart'))))) {
+        throw new Error("No CAP Operator chart found in the project. Please run 'cds add cap-operator --force' to add the CAP Operator chart folder.")
+    }
+
+    // Copy templates
+    await this.copy(cds.utils.path.join(__dirname, '../files/chartFlexibleTemplates/templates')).to(cds.utils.path.join(cds.root,'chart','templates'))
+
+    // Copy values.schema.json
+    await this.copy(cds.utils.path.join(__dirname, '../files/chartFlexibleTemplates/values.schema.json')).to(cds.utils.path.join(cds.root,'chart'))
+
+    // Add annotation to chart.yaml
+    const chartYaml = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, 'chart/Chart.yaml')))
+    chartYaml['annotations']['app.kubernetes.io/part-of'] = 'cap-operator-flexible-templates'
+    await cds.utils.write(yaml.stringify(chartYaml)).to(cds.utils.path.join(cds.root, 'chart/Chart.yaml'))
+
+    // Transform
+    await populateFromValuesYaml()
+}
+
+async function populateFromValuesYaml() {
+    const valuesYaml = fs.readFileSync(cds.utils.path.join(cds.root, 'chart/values.yaml'), 'utf8')
+    const capOpCROYaml = fs.readFileSync(cds.utils.path.join(cds.root, 'chart/templates/cap-operator-cros.yaml'), 'utf8')
+
+    const updatedCapOpCROYaml = capOpCROYaml.replace(
+        /workloads:\n(.*\n)*?(?=\n\s{2,}- name|spec:|$)/gm,
+        valuesYaml['workloads'].toString()
+    )
+
+    fs.writeFileSync(cds.utils.path.join(cds.root, 'chart/templates/cap-operator-cros.yaml'), updatedCapOpCROYaml)
+
+    if (valuesYaml['tenantOperations'])
+        fs.appendFileSync(cds.utils.path.join(cds.root, 'chart/templates/cap-operator-cros.yaml'), valuesYaml['tenantOperations'].toString())
+        //updatedCapOpCROYaml = updatedCapOpCROYaml + '\n' + valuesYaml['tenantOperations'].toString()
+
+    if (valuesYaml['contentJobs'])
+        fs.appendFileSync(cds.utils.path.join(cds.root, 'chart/templates/cap-operator-cros.yaml'), valuesYaml['contentJobs'].toString())
+        //updatedCapOpCROYaml = updatedCapOpCROYaml + '\n' + valuesYaml['contentJobs'].toString()
 }
 
 async function generateRuntimeValues(option, inputYamlPath) {
