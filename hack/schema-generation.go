@@ -139,12 +139,6 @@ func main() {
 		panic(err)
 	}
 
-	// write the whole body at once
-	err = os.WriteFile("../test/files/expectedChart/values.schema.json", data, 0644)
-	if err != nil {
-		panic(err)
-	}
-
 	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 	sV2 := jsonschema.Reflect(&flexibleChartValue{})
@@ -161,11 +155,4 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	// // write the whole body at once
-	// err = os.WriteFile("../test/files/expectedChart/values.schema.json", data, 0644)
-	// if err != nil {
-	// 	panic(err)
-	// }
-
 }

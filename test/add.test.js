@@ -33,7 +33,7 @@ describe('cds add cap-operator', () => {
         execSync(`cds add cap-operator`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname,'files/expectedChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))
-        expect(getFileHash(join(__dirname,'files/expectedChart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))
+        expect(getFileHash(join(__dirname,'../files/chart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))
         expect(getFileHash(join(__dirname,'files/expectedChart/values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
 
         // Check changes to xs-security.json
@@ -44,7 +44,7 @@ describe('cds add cap-operator', () => {
         execSync(`cds add cap-operator --force`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname,'files/expectedChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))
-        expect(getFileHash(join(__dirname,'files/expectedChart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))
+        expect(getFileHash(join(__dirname,'../files/chart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))
         expect(getFileHash(join(__dirname,'files/expectedChart/values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
     })
 
@@ -53,8 +53,10 @@ describe('cds add cap-operator', () => {
         execSync(`cds add cap-operator --with-templates`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname,'files/expectedChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))
-        expect(getFileHash(join(__dirname,'files/expectedChart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))
+        expect(getFileHash(join(__dirname,'../files/chart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))
         expect(getFileHash(join(__dirname,'files/expectedChart/values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
+
+        expect(getFolderHash(join(__dirname,'../files/chart/templates'))).to.equal(getFolderHash(join(bookshop, 'chart/templates')))
     })
 
     it('Chart folder already added by `cds add helm` ', async () => {
@@ -77,9 +79,9 @@ describe('cds add cap-operator', () => {
         execSync(`cds add cap-operator --with-templates`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname,'files/expectedChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))
-        expect(getFileHash(join(__dirname,'files/expectedChart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))
+        expect(getFileHash(join(__dirname,'../files/chart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))
         expect(getFileHash(join(__dirname,'files/expectedChart/values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
-        expect(getFolderHash(join(__dirname,'files/expectedChart/templates'))).to.equal(getFolderHash(join(bookshop, 'chart/templates')))
+        expect(getFolderHash(join(__dirname,'../files/chart/templates'))).to.equal(getFolderHash(join(bookshop, 'chart/templates')))
     })
 
     it('Add cap-operator chart with mta but mta.yaml is not present', async () => {
@@ -97,7 +99,7 @@ describe('cds add cap-operator', () => {
         execSync(`cds add cap-operator --with-mta mta.yaml --with-mta-extensions corrected_xsappname.mtaext`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname,'files/expectedChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))
-        expect(getFileHash(join(__dirname,'files/expectedChart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))
+        expect(getFileHash(join(__dirname,'../files/chart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))
         expect(getFileHash(join(__dirname,'files/expectedChart/valuesWithMTA.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
     })
 
@@ -106,7 +108,7 @@ describe('cds add cap-operator', () => {
         execSync(`cds add destination`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname,'files/expectedChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))
-        expect(getFileHash(join(__dirname,'files/expectedChart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))
+        expect(getFileHash(join(__dirname,'../files/chart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))
         expect(getFileHash(join(__dirname,'files/expectedChart/valuesWithDestination.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
     })
 })

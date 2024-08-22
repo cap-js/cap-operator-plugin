@@ -64,7 +64,7 @@ COMMANDS
 
     generate-runtime-values [--with-input-yaml <input-yaml-path>]   Generate runtime-values.yaml file for the cap-operator chart
 
-    convert-to-flexible-template-chart  Convert existing chart to flexible template chart
+    convert-to-flexible-template-chart [--with-runtime-yaml <runtime-yaml-path>]  Convert existing chart to flexible template chart
 
 EXAMPLES
 
@@ -72,6 +72,7 @@ EXAMPLES
     cap-op-plugin generate-runtime-values --with-input-yaml /path/to/input.yaml
 
     cap-op-plugin convert-to-flexible-template-chart
+    cap-op-plugin convert-to-flexible-template-chart --with-runtime-yaml /path/to/runtime.yaml
 `)
     })
 
