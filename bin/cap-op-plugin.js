@@ -61,8 +61,12 @@ EXAMPLES
 }
 
 async function convertToFlexibleTemplateChart(option) {
-    if (!((cds.utils.exists('chart') && isCAPOperatorChart(cds.utils.path.join(cds.root,'chart'))))) {
+    if (!((cds.utils.exists('chart') && isCAPOperatorChart(cds.utils.path.join(cds.root,'chart')))))
         throw new Error("No CAP Operator chart found in the project. Please run 'cds add cap-operator --force' to add the CAP Operator chart folder.")
+
+    if (isFlexibleTemplateChart(cds.utils.path.join(cds.root,'chart'))){
+        console.log("Exisiting chart is already a flexible chart. No need for conversion. Exiting...")
+        return
     }
 
     // Copy templates
@@ -84,17 +88,18 @@ async function populateFromValuesYaml() {
     const valuesYaml = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, 'chart/values.yaml')))
     const capOpCROYaml = fs.readFileSync(cds.utils.path.join(cds.root, 'chart/templates/cap-operator-cros.yaml'), 'utf8')
 
+    // Update cap-operator-cro.yaml with existing values
     let workloadArray = []
     for (const [workloadKey, workloadDetails] of Object.entries(valuesYaml.workloads))
         workloadArray.push(workloadDetails)
 
     let updatedCapOpCROObj = { 'workloads': workloadArray }
 
-    // if (valuesYaml['tenantOperations'])
-    //     updatedCapOpCROObj['tenantOperations'] = valuesYaml['tenantOperations']
+    if (valuesYaml['tenantOperations'])
+        updatedCapOpCROObj['tenantOperations'] = valuesYaml['tenantOperations']
 
-    // if (valuesYaml['contentJobs'])
-    //     updatedCapOpCROObj['contentJobs'] = valuesYaml['contentJobs']
+    if (valuesYaml['contentJobs'])
+        updatedCapOpCROObj['contentJobs'] = valuesYaml['contentJobs']
 
     const updatedCapOpCROYaml = capOpCROYaml.replace(
         /workloads:\n(.*\n)*?(?=\n\s{2,}- name|spec:|$)/gm,
@@ -105,12 +110,24 @@ async function populateFromValuesYaml() {
 
     // transform values.yaml
     let newWorkloadObj = {}
+    let serverEnv = []
     for (const [workloadKey, workloadDetails] of Object.entries(valuesYaml.workloads)) {
         newWorkloadObj[workloadKey] = {
-            "image": workloadDetails.deploymentDefinition ? workloadDetails.deploymentDefinition.image : workloadDetails.jobDefinition.image
+            "image": workloadDetails.deploymentDefinition ? workloadDetails.deploymentDefinition.image ?? null : workloadDetails.jobDefinition.image ?? null
         }
+
+        if (workloadDetails?.deploymentDefinition?.type === 'CAP')
+            serverEnv = workloadDetails.deploymentDefinition?.env
     }
     valuesYaml['workloads'] = newWorkloadObj
+
+    // extract hanaInstanceId from serverEnv
+    for (const i in serverEnv) {
+        if (serverEnv[i].name = 'CDS_CONFIG') {
+            const envValueJson = JSON.parse(serverEnv[i].value)
+            valuesYaml['hanaInstanceId'] = envValueJson?.requires['cds.xt.DeploymentService']?.hdi?.create?.database_id
+        }
+    }
 
     await cds.utils.write(yaml.stringify(valuesYaml)).to(cds.utils.path.join(cds.root, 'chart/values.yaml'))
 }

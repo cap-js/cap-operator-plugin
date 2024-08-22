@@ -16,7 +16,7 @@ spec:
     {{- range $k, $v := .Values.app.istioIngressGatewayLabels }}
     - name: {{ $k }}
       value: {{ $v | default "invalidValue"}}
-    {{ end }}
+    {{- end }}
   btpAppName: {{ include "appName" $ }}
   globalAccountId: {{.Values.btp.globalAccountId}}
   provider:
@@ -124,11 +124,3 @@ spec:
     jobDefinition:
       type: Content
       image: {{ .Values.workloads.contentDeploy.image }}
-
-  {{- if .Values.tenantOperations }}
-  tenantOperations : {{ .Values.tenantOperations }}
-  {{- end}}
-
-  {{- if .Values.contentJobs }}
-  contentJobs : {{ .Values.contentJobs }}
-  {{- end}}

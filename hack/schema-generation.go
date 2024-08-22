@@ -58,7 +58,7 @@ type workloadDefinition struct {
 	Image string `json:"image"`
 }
 
-type chartValueSimplified struct {
+type flexibleChartValue struct {
 	App              app                           `json:"app"`
 	Btp              btp                           `json:"btp"`
 	ImagePullSecrets []string                      `json:"imagePullSecrets,omitempty"`
@@ -66,8 +66,6 @@ type chartValueSimplified struct {
 	ServiceInstances map[string]serviceInstanceExt `json:"serviceInstances"`
 	ServiceBindings  map[string]serviceBindingExt  `json:"serviceBindings"`
 	Workloads        map[string]workloadDefinition `json:"workloads"`
-	TenantOperations v1alpha1.TenantOperations     `json:"tenantOperations,omitempty"`
-	ContentJobs      []string                      `json:"contentJobs,omitempty"`
 }
 
 func updateProperties(data []byte) []byte {
@@ -115,9 +113,9 @@ func updatePropertiesFlexibleChart(data []byte) []byte {
 	workloadDefinition["additionalProperties"] = true
 	m["$defs"].(map[string]interface{})["workloadDefinition"] = workloadDefinition
 
-	chartValueSimplified := m["$defs"].(map[string]interface{})["chartValueSimplified"].(map[string]interface{})
-	chartValueSimplified["additionalProperties"] = true
-	m["$defs"].(map[string]interface{})["chartValueSimplified"] = chartValueSimplified
+	flexibleChartValue := m["$defs"].(map[string]interface{})["flexibleChartValue"].(map[string]interface{})
+	flexibleChartValue["additionalProperties"] = true
+	m["$defs"].(map[string]interface{})["flexibleChartValue"] = flexibleChartValue
 
 	data, _ = json.Marshal(m)
 
@@ -149,7 +147,7 @@ func main() {
 
 	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-	sV2 := jsonschema.Reflect(&chartValueSimplified{})
+	sV2 := jsonschema.Reflect(&flexibleChartValue{})
 	dataV2, errV2 := json.MarshalIndent(sV2, "", "  ")
 	if errV2 != nil {
 		panic(errV2.Error())

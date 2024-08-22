@@ -73,45 +73,6 @@
             ],
             "type": "object"
         },
-        "TenantOperationWorkloadReference": {
-            "additionalProperties": false,
-            "properties": {
-                "continueOnFailure": {
-                    "type": "boolean"
-                },
-                "workloadName": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "workloadName"
-            ],
-            "type": "object"
-        },
-        "TenantOperations": {
-            "additionalProperties": false,
-            "properties": {
-                "deprovisioning": {
-                    "items": {
-                        "$ref": "#/$defs/TenantOperationWorkloadReference"
-                    },
-                    "type": "array"
-                },
-                "provisioning": {
-                    "items": {
-                        "$ref": "#/$defs/TenantOperationWorkloadReference"
-                    },
-                    "type": "array"
-                },
-                "upgrade": {
-                    "items": {
-                        "$ref": "#/$defs/TenantOperationWorkloadReference"
-                    },
-                    "type": "array"
-                }
-            },
-            "type": "object"
-        },
         "UserInfo": {
             "additionalProperties": false,
             "properties": {
@@ -171,7 +132,7 @@
             ],
             "type": "object"
         },
-        "chartValueSimplified": {
+        "flexibleChartValue": {
             "additionalProperties": true,
             "properties": {
                 "app": {
@@ -179,12 +140,6 @@
                 },
                 "btp": {
                     "$ref": "#/$defs/btp"
-                },
-                "contentJobs": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
                 },
                 "hanaInstanceId": {
                     "type": "string"
@@ -206,9 +161,6 @@
                         "$ref": "#/$defs/serviceInstanceExt"
                     },
                     "type": "object"
-                },
-                "tenantOperations": {
-                    "$ref": "#/$defs/TenantOperations"
                 },
                 "workloads": {
                     "additionalProperties": {
@@ -361,6 +313,6 @@
             "type": "object"
         }
     },
-    "$ref": "#/$defs/chartValueSimplified",
+    "$ref": "#/$defs/flexibleChartValue",
     "$schema": "https://json-schema.org/draft/2020-12/schema"
 }
