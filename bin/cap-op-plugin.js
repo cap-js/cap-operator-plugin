@@ -95,16 +95,26 @@ async function populateFromValuesYaml() {
 
     let updatedCapOpCROObj = { 'workloads': workloadArray }
 
-    if (valuesYaml['tenantOperations'])
-        updatedCapOpCROObj['tenantOperations'] = valuesYaml['tenantOperations']
-
-    if (valuesYaml['contentJobs'])
-        updatedCapOpCROObj['contentJobs'] = valuesYaml['contentJobs']
-
-    const updatedCapOpCROYaml = capOpCROYaml.replace(
+    let updatedCapOpCROYaml = capOpCROYaml.replace(
         /workloads:\n(.*\n)*?(?=\n\s{2,}- name|spec:|$)/gm,
         yaml.stringify(updatedCapOpCROObj, { indent: 2 })
     )
+
+    if (valuesYaml['tenantOperations']){
+        updatedCapOpCROYaml = updatedCapOpCROYaml.replace(
+            /spec:\n((?:.*\n)*?)(\n[^ ]|$)/gm,
+            (match, p1, p2) => `spec:\n${p1}  ${yaml.stringify({ 'tenantOperations': valuesYaml['tenantOperations'] }, { indent: 4 })}${p2}`
+        )
+        delete valuesYaml['tenantOperations']
+    }
+
+    if (valuesYaml['contentJobs']){
+        updatedCapOpCROYaml = updatedCapOpCROYaml.replace(
+            /spec:\n((?:.*\n)*?)(\n[^ ]|$)/gm,
+            (match, p1, p2) => `spec:\n${p1}  ${yaml.stringify({ 'contentJobs': valuesYaml['contentJobs'] }, { indent: 2 })}${p2}`
+        )
+        delete valuesYaml['contentJobs']
+    }
 
     fs.writeFileSync(cds.utils.path.join(cds.root, 'chart/templates/cap-operator-cros.yaml'), updatedCapOpCROYaml)
 
