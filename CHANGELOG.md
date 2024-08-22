@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## Version 0.2.0 - 21-August-2024
+
+### Added
+
+- Updated to CDS v8
+- Updated `values.schema.json` to allow additional properties on `values.yaml`
+- Removed unused variables from templates
+- Unit test enhancements
+  
 ## Version 0.1.0 - 25-July-2024
 
 ### Added
