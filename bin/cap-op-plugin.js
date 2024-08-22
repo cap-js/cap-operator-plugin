@@ -10,17 +10,27 @@ const fs = require('fs')
 
 const { ask, mergeObj, isCAPOperatorChart, isFlexibleTemplateChart } = require('../lib/util')
 
-const SUPPORTED = { 'generate-runtime-values': ['--with-input-yaml'], 'convert-to-flexible-template-chart': [] }
+const SUPPORTED = { 'generate-runtime-values': ['--with-input-yaml'], 'convert-to-flexible-template-chart': ['--with-runtime-yaml'] }
 
-async function capOperatorPlugin(cmd, option, inputYamlPath) {
+async function capOperatorPlugin(cmd, option, yamlPath) {
     try {
         if (!cmd) return _usage()
         if (!Object.keys(SUPPORTED).includes(cmd)) return _usage(`Unknown command ${cmd}.`)
         if (option && !SUPPORTED[cmd].includes(option)) return _usage(`Invalid option ${option}.`)
-        if (option === '--with-input-yaml' && !inputYamlPath) return _usage(`Input yaml path is missing.`)
 
-        if (cmd === 'generate-runtime-values') await generateRuntimeValues(option, inputYamlPath)
-        else if (cmd === 'convert-to-flexible-template-chart') await convertToFlexibleTemplateChart(option)
+        if (cmd === 'generate-runtime-values') {
+            if (option === '--with-input-yaml' && !yamlPath)
+                return _usage(`Input yaml path is missing.`)
+
+            await generateRuntimeValues(option, yamlPath)
+        }
+
+        if (cmd === 'convert-to-flexible-template-chart') {
+            if (option === '--with-runtime-yaml' && !yamlPath)
+                return _usage(`Input runtime yaml path is missing.`)
+
+            await convertToFlexibleTemplateChart(option, yamlPath)
+        }
     } catch (e) {
         if (isCli) {
             console.error(e.message)
@@ -48,7 +58,7 @@ COMMANDS
 
     generate-runtime-values [--with-input-yaml <input-yaml-path>]   Generate runtime-values.yaml file for the cap-operator chart
 
-    convert-to-flexible-template-chart  Convert existing chart to flexible template chart
+    convert-to-flexible-template-chart [--with-runtime-yaml <runtime-yaml-path>]  Convert existing chart to flexible template chart
 
 EXAMPLES
 
@@ -56,11 +66,12 @@ EXAMPLES
     cap-op-plugin generate-runtime-values --with-input-yaml /path/to/input.yaml
 
     cap-op-plugin convert-to-flexible-template-chart
+    cap-op-plugin convert-to-flexible-template-chart --with-runtime-yaml /path/to/runtime.yaml
 `
     )
 }
 
-async function convertToFlexibleTemplateChart(option) {
+async function convertToFlexibleTemplateChart(option, runtimeYamlPath) {
     if (!((cds.utils.exists('chart') && isCAPOperatorChart(cds.utils.path.join(cds.root,'chart')))))
         throw new Error("No CAP Operator chart found in the project. Please run 'cds add cap-operator --force' to add the CAP Operator chart folder.")
 
@@ -68,6 +79,8 @@ async function convertToFlexibleTemplateChart(option) {
         console.log("Exisiting chart is already a flexible chart. No need for conversion. Exiting...")
         return
     }
+
+    console.log('Converting chart '+cds.utils.path.join(cds.root,'chart')+' to flexible template chart')
 
     // Copy templates
     await cds.utils.copy(cds.utils.path.join(__dirname, '../files/chartFlexibleTemplates/templates')).to(cds.utils.path.join(cds.root,'chart','templates'))
@@ -82,6 +95,23 @@ async function convertToFlexibleTemplateChart(option) {
 
     // Transform
     await populateFromValuesYaml()
+
+    if (option === '--with-runtime-yaml' && runtimeYamlPath) {
+        console.log('Transforming runtime file '+ cds.utils.path.join(cds.root,runtimeYamlPath))
+
+        runtimeYaml = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, runtimeYamlPath)))
+        if (runtimeYaml?.workloads?.server?.deploymentDefinition?.env) {
+            const index = runtimeYaml.workloads.server.deploymentDefinition.env.findIndex(e => e.name === 'CDS_CONFIG')
+            if (index > -1) {
+                const cdsConfigValueJson = JSON.parse(runtimeYaml.workloads.server.deploymentDefinition.env[index].value)
+                if (cdsConfigValueJson?.requires?.['cds.xt.DeploymentService']?.hdi?.create?.database_id){
+                    runtimeYaml['hanaInstanceId'] = cdsConfigValueJson.requires['cds.xt.DeploymentService'].hdi.create.database_id
+                    delete runtimeYaml['workloads']
+                    await cds.utils.write(yaml.stringify(runtimeYaml)).to(cds.utils.path.join(cds.root, runtimeYamlPath))
+                }
+            }
+        }
+    }
 }
 
 async function populateFromValuesYaml() {
@@ -90,14 +120,42 @@ async function populateFromValuesYaml() {
 
     // Update cap-operator-cro.yaml with existing values
     let workloadArray = []
-    for (const [workloadKey, workloadDetails] of Object.entries(valuesYaml.workloads))
+    for (const [workloadKey, workloadDetails] of Object.entries(valuesYaml.workloads)) {
+        if (workloadDetails?.deploymentDefinition?.type === 'Router') {
+            if (!workloadDetails.deploymentDefinition.env) {
+                workloadDetails.deploymentDefinition['env'] = [{ name: 'TENANT_HOST_PATTERN', value: '^(.*).{{ template "domainPatterns" . }}' }]
+            } else {
+                const index = workloadDetails.deploymentDefinition.env.findIndex(e => e.name === 'TENANT_HOST_PATTERN')
+                if (index == -1)
+                    workloadDetails.deploymentDefinition['env'].push({ name: 'TENANT_HOST_PATTERN', value: '^(.*).{{ template "domainPatterns" . }}' })
+            }
+        } else if (workloadDetails?.deploymentDefinition?.type === 'CAP' && workloadDetails.deploymentDefinition.env) {
+            const index = workloadDetails.deploymentDefinition.env.findIndex(e => e.name === 'CDS_CONFIG')
+            if (index > -1) {
+                const cdsConfigValueJson = JSON.parse(workloadDetails.deploymentDefinition.env[index].value)
+                if (cdsConfigValueJson?.requires?.['cds.xt.DeploymentService']?.hdi?.create?.database_id) {
+                    valuesYaml['hanaInstanceId'] = cdsConfigValueJson.requires['cds.xt.DeploymentService'].hdi.create.database_id
+                    cdsConfigValueJson.requires['cds.xt.DeploymentService'].hdi.create.database_id = '{{.Values.hanaInstanceId}}'
+                    workloadDetails.deploymentDefinition.env[index].value = JSON.stringify(cdsConfigValueJson)
+                }
+            }
+        } else if (workloadDetails?.jobDefinition?.type === 'TenantOperation' && workloadDetails.jobDefinition.env) {
+            const index = workloadDetails.jobDefinition.env.findIndex(e => e.name === 'CDS_CONFIG')
+            if (index > -1) {
+                const cdsConfigValueJson = JSON.parse(workloadDetails.jobDefinition.env[index].value)
+                if (cdsConfigValueJson?.requires?.['cds.xt.DeploymentService']?.hdi?.create?.database_id) {
+                    valuesYaml['hanaInstanceId'] = cdsConfigValueJson.requires['cds.xt.DeploymentService'].hdi.create.database_id
+                    cdsConfigValueJson.requires['cds.xt.DeploymentService'].hdi.create.database_id = '{{.Values.hanaInstanceId}}'
+                    workloadDetails.jobDefinition.env[index].value = JSON.stringify(cdsConfigValueJson)
+                }
+            }
+        }
         workloadArray.push(workloadDetails)
-
-    let updatedCapOpCROObj = { 'workloads': workloadArray }
+    }
 
     let updatedCapOpCROYaml = capOpCROYaml.replace(
         /workloads:\n(.*\n)*?(?=\n\s{2,}- name|spec:|$)/gm,
-        yaml.stringify(updatedCapOpCROObj, { indent: 2 })
+        yaml.stringify({ 'workloads': workloadArray }, { indent: 2 })
     )
 
     if (valuesYaml['tenantOperations']){
@@ -120,24 +178,12 @@ async function populateFromValuesYaml() {
 
     // transform values.yaml
     let newWorkloadObj = {}
-    let serverEnv = []
     for (const [workloadKey, workloadDetails] of Object.entries(valuesYaml.workloads)) {
         newWorkloadObj[workloadKey] = {
             "image": workloadDetails.deploymentDefinition ? workloadDetails.deploymentDefinition.image ?? null : workloadDetails.jobDefinition.image ?? null
         }
-
-        if (workloadDetails?.deploymentDefinition?.type === 'CAP')
-            serverEnv = workloadDetails.deploymentDefinition?.env
     }
     valuesYaml['workloads'] = newWorkloadObj
-
-    // extract hanaInstanceId from serverEnv
-    for (const i in serverEnv) {
-        if (serverEnv[i].name = 'CDS_CONFIG') {
-            const envValueJson = JSON.parse(serverEnv[i].value)
-            valuesYaml['hanaInstanceId'] = envValueJson?.requires['cds.xt.DeploymentService']?.hdi?.create?.database_id
-        }
-    }
 
     await cds.utils.write(yaml.stringify(valuesYaml)).to(cds.utils.path.join(cds.root, 'chart/values.yaml'))
 }
@@ -278,8 +324,8 @@ async function getShootDomain() {
 }
 
 if (isCli) {
-    const [, , cmd, option, inputYamlPath] = process.argv;
-    (async () => await capOperatorPlugin(cmd, option, inputYamlPath ?? undefined))()
+    const [, , cmd, option, yamlPath] = process.argv;
+    (async () => await capOperatorPlugin(cmd, option, yamlPath ?? undefined))()
 }
 
 module.exports = { capOperatorPlugin }
