@@ -98,11 +98,63 @@ btp:
 imagePullSecrets: []
 workloads:
   app-router:
-    image: gcr.io/test/app-router
+    name: app-router
+    labels:
+      sme.sap.com/app-type: bookshop
+    consumedBTPServices:
+      - bookshop-uaa-bind
+      - bookshop-destination-bind
+      - bookshop-html5-repo-runtime-bind
+      - bookshop-saas-registry-bind
+    deploymentDefinition:
+      type: Router
+      image: gcr.io/test/app-router
+    ports:
+        - name: router-port
+          port: 5000
   server:
-    image: gcr.io/test/server
+    name: server
+    labels:
+      sme.sap.com/app-type: bookshop
+    consumedBTPServices:
+      - bookshop-uaa-bind
+      - bookshop-saas-registry-bind
+      - bookshop-service-manager-bind
+    deploymentDefinition:
+      type: CAP
+      image: gcr.io/test/server
+      env:
+      - name: CDS_CONFIG
+        value: '{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"abcd"}}}}}'
   content-deploy:
-    image: gcr.io/test/content-deploy
+    name: content-deploy
+    labels:
+      sme.sap.com/app-type: bookshop
+    consumedBTPServices:
+      - bookshop-uaa-bind
+      - bookshop-saas-registry-bind
+      - bookshop-html5-repo-host-bind
+    jobDefinition:
+      type: Content
+      image: gcr.io/test/content-deploy
   tenant-job:
-    image: gcr.io/test/tenant-job
-hanaInstanceId: abcd
+    name: tenant-job
+    labels:
+      sme.sap.com/app-type: bookshop
+    consumedBTPServices:
+      - bookshop-uaa-bind
+      - bookshop-saas-registry-bind
+      - bookshop-service-manager-bind
+    jobDefinition:
+      type: TenantOperation
+      image: gcr.io/test/tenant-job
+      env:
+      - name: CDS_CONFIG
+        value: '{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"abcd"}}}}}'
+tenantOperations:
+  provisioning:
+  - workloadName: tenant-job
+  upgrade:
+  - workloadName: tenant-job
+contentJobs:
+- content-deploy

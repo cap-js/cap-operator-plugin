@@ -69,12 +69,12 @@ spec:
     deploymentDefinition:
       type: Router
       image: "{{.Values.workloads.app-router.image}}"
-      ports:
-        - name: router-port
-          port: 5000
       env:
         - name: TENANT_HOST_PATTERN
           value: ^(.*).{{ template "domainPatterns" . }}
+    ports:
+      - name: router-port
+        port: 5000
   - name: server
     labels:
       sme.sap.com/app-type: bookshop
@@ -85,6 +85,9 @@ spec:
     deploymentDefinition:
       type: CAP
       image: "{{.Values.workloads.server.image}}"
+      env:
+        - name: CDS_CONFIG
+          value: '{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"{{.Values.hanaInstanceId}}"}}}}}'
   - name: content-deploy
     labels:
       sme.sap.com/app-type: bookshop
@@ -105,3 +108,13 @@ spec:
     jobDefinition:
       type: TenantOperation
       image: "{{.Values.workloads.tenant-job.image}}"
+      env:
+        - name: CDS_CONFIG
+          value: '{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"{{.Values.hanaInstanceId}}"}}}}}'
+  tenantOperations:
+    provisioning:
+        - workloadName: tenant-job
+    upgrade:
+        - workloadName: tenant-job
+  contentJobs:
+  - content-deploy
