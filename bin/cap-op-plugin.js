@@ -6,7 +6,6 @@ const cds = require('@sap/cds-dk')
 const yaml = require('@sap/cds-foss').yaml
 const Mustache = require('mustache')
 const { spawn } = require('child_process')
-const fs = require('fs')
 
 const { ask, mergeObj, isCAPOperatorChart, isFlexibleTemplateChart } = require('../lib/util')
 
@@ -115,11 +114,12 @@ async function convertToFlexibleTemplateChart(option, runtimeYamlPath) {
 }
 
 async function populateFromValuesYaml() {
-    const valuesYaml = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, 'chart/values.yaml')))
-    const capOpCROYaml = fs.readFileSync(cds.utils.path.join(cds.root, 'chart/templates/cap-operator-cros.yaml'), 'utf8')
+    let valuesYaml = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, 'chart/values.yaml')))
+    const capOpCROYaml = cds.utils.fs.readFileSync(cds.utils.path.join(cds.root, 'chart/templates/cap-operator-cros.yaml'), 'utf8')
 
     // Update cap-operator-cro.yaml with existing values
     let workloadArray = []
+    let newWorkloadObj = {}
     for (const [workloadKey, workloadDetails] of Object.entries(valuesYaml.workloads)) {
         if (workloadDetails?.deploymentDefinition?.type === 'Router') {
             if (!workloadDetails.deploymentDefinition.env) {
@@ -150,6 +150,15 @@ async function populateFromValuesYaml() {
                 }
             }
         }
+
+        if (workloadDetails.deploymentDefinition) {
+            newWorkloadObj[workloadKey] = { "image": workloadDetails.deploymentDefinition.image }
+            workloadDetails.deploymentDefinition.image = '{{.Values.workloads.'+ workloadKey +'.image}}'
+        } else {
+            newWorkloadObj[workloadKey] = { "image": workloadDetails.jobDefinition.image }
+            workloadDetails.jobDefinition.image = '{{.Values.workloads.'+ workloadKey +'.image}}'
+        }
+
         workloadArray.push(workloadDetails)
     }
 
@@ -174,17 +183,9 @@ async function populateFromValuesYaml() {
         delete valuesYaml['contentJobs']
     }
 
-    fs.writeFileSync(cds.utils.path.join(cds.root, 'chart/templates/cap-operator-cros.yaml'), updatedCapOpCROYaml)
+    cds.utils.fs.writeFileSync(cds.utils.path.join(cds.root, 'chart/templates/cap-operator-cros.yaml'), updatedCapOpCROYaml)
 
-    // transform values.yaml
-    let newWorkloadObj = {}
-    for (const [workloadKey, workloadDetails] of Object.entries(valuesYaml.workloads)) {
-        newWorkloadObj[workloadKey] = {
-            "image": workloadDetails.deploymentDefinition ? workloadDetails.deploymentDefinition.image ?? null : workloadDetails.jobDefinition.image ?? null
-        }
-    }
     valuesYaml['workloads'] = newWorkloadObj
-
     await cds.utils.write(yaml.stringify(valuesYaml)).to(cds.utils.path.join(cds.root, 'chart/values.yaml'))
 }
 
@@ -195,7 +196,7 @@ async function generateRuntimeValues(option, inputYamlPath) {
 
     let answerStruct = {}
     const { appName, appDescription } = getAppDetails()
-    const isFlexTemplateChart = isFlexibleTemplateChart('chart')
+    const isFlexTemplateChart = isFlexibleTemplateChart(cds.utils.path.join(cds.root,'chart'))
 
     if (option === '--with-input-yaml' && inputYamlPath) {
 

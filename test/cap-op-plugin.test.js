@@ -97,9 +97,43 @@ EXAMPLES
 
         cds.root = bookshop
         await capOperatorPlugin('generate-runtime-values')
+        sinon.restore()
 
         expect(getFileHash(join(__dirname, 'files/expectedChart/runtime-values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
+    })
 
+    it('Convert existing chart to flexible template chart', async () => {
+        execSync(`cds add cap-operator`, { cwd: bookshop })
+
+        execSync(`npx cap-op-plugin convert-to-flexible-template-chart`, { cwd: bookshop })
+
+        expect(getFileHash(join(__dirname,'files/expectedChartFlexibleTemplates/templates/cap-operator-cros-modified.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cap-operator-cros.yaml')))
+        expect(getFileHash(join(__dirname,'files/expectedChartFlexibleTemplates/values-modified.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
+    })
+
+    it('Generate runtime-values via prompts for flexible template chart', async () => {
+        execSync(`cds add cap-operator-with-flexible-templates`, { cwd: bookshop })
+
+        rlQuestion = sinon.stub()
+        rlInterface = {
+            question: rlQuestion,
+            close: sinon.stub()
+        }
+        sinon.stub(readline, 'createInterface').returns(rlInterface)
+
+        rlQuestion.onFirstCall().callsArgWith(1, 'bkshop')
+        rlQuestion.onSecondCall().callsArgWith(1, '')
+        rlQuestion.onThirdCall().callsArgWith(1, 'c-abc.kyma.ondemand.com')
+        rlQuestion.onCall(3).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
+        rlQuestion.onCall(4).callsArgWith(1, 'bem-aad-sadad-123456789012')
+        rlQuestion.onCall(5).callsArgWith(1, 'dasdsd-1234-1234-1234-123456789012')
+        rlQuestion.onCall(6).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
+        rlQuestion.onCall(7).callsArgWith(1, 'regcred')
+
+        cds.root = bookshop
+        await capOperatorPlugin('generate-runtime-values')
         sinon.restore()
+
+        expect(getFileHash(join(__dirname, 'files/expectedChartFlexibleTemplates/runtime-values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
 })
