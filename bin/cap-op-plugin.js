@@ -95,6 +95,10 @@ async function generateRuntimeValues(option, inputYamlPath) {
 
     const valuesYaml = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, 'chart/values.yaml')))
 
+     //get saas-registry and xsuaa service keys
+     answerStruct['saasRegistryKeyName'] = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'saas-registry') || 'saas-registry'
+     answerStruct['xsuaaKeyName'] = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'xsuaa') || 'xsuaa'
+
     let runtimeValuesYaml = yaml.parse(Mustache.render(await cds.utils.read(cds.utils.path.join(__dirname, '../files/runtime-values.yaml.hbs')), answerStruct))
 
     if (!answerStruct['imagePullSecret'])
@@ -138,6 +142,14 @@ async function generateRuntimeValues(option, inputYamlPath) {
 
     await cds.utils.write(yaml.stringify(runtimeValuesYaml)).to(cds.utils.path.join(cds.root, 'chart/runtime-values.yaml'))
     console.log("Generated 'runtime-values.yaml' file in the 'chart' folder.")
+}
+
+function getServiceInstanceKeyName(serviceInstances, offeringName) {
+    for (const key in serviceInstances) {
+        if (serviceInstances[key].serviceOfferingName === offeringName)
+            return key
+    }
+    return null
 }
 
 function updateCdsConfigEnv(runtimeValuesYaml, workloadKey, workloadDefintion, cdsConfigHana) {
