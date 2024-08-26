@@ -111,4 +111,51 @@ describe('cds add cap-operator', () => {
         expect(getFileHash(join(__dirname,'../files/chart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))
         expect(getFileHash(join(__dirname,'files/expectedChart/valuesWithDestination.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
     })
+
+    it('Add cap-operator configurable template chart', async () => {
+        execSync(`cds add cap-operator --with-configurable-templates`, { cwd: bookshop })
+
+        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))
+        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
+        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/templates/_helpers.tpl'))).to.equal(getFileHash(join(bookshop, 'chart/templates/_helpers.tpl')))
+
+        expect(getFileHash(join(__dirname,'../files/configurableTemplatesChart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))
+        expect(getFileHash(join(__dirname,'../files/configurableTemplatesChart/templates/cap-operator-cros.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cap-operator-cros.yaml')))
+        expect(getFileHash(join(__dirname,'../files/configurableTemplatesChart/templates/service-instance.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/service-instance.yaml')))
+        expect(getFileHash(join(__dirname,'../files/configurableTemplatesChart/templates/service-binding.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/service-binding.yaml')))
+
+         // Check changes to xs-security.json
+         expect(getFileHash(join(__dirname,'files/xs-security.json'))).to.equal(getFileHash(join(bookshop, 'xs-security.json')))
+    })
+
+    it('Add cap-operator configurable template chart with cap-operator chart already present', async () => {
+        execSync(`cds add cap-operator`, { cwd: bookshop })
+
+        const log = execSync(`cds add cap-operator --with-configurable-templates`, { cwd: bookshop }).toString()
+        expect(log).to.include("CAP Operator chart already present. If you want to convert the existing chart to a configurable template chart, run 'npx cap-op-plugin convert-to-configurable-template-chart'")
+
+    })
+
+    it('Chart folder already added but values.schema.json changed ', async () => {
+        execSync(`cds add cap-operator --with-configurable-templates`, { cwd: bookshop })
+
+        // Copying a dummy change to mimic a difference. In real scenario, the chart/values.schema.json inside the plugin repo will be updated.
+        // We dont expect users to change the values.schema.json file manually.
+        await cds.utils.copy(join('test/files', 'updatedValues.schema.json'), join(bookshop, 'chart/values.schema.json'))
+
+        const log = execSync(`cds add cap-operator --with-configurable-templates`, { cwd: bookshop }).toString()
+        expect(log).to.include('⚠️  \'values.schema.json\' file is outdated. Run with \'--force\' to overwrite the file and accept the new changes.')
+    })
+
+    it('Add cap-operator configurable template chart with mta and mtaExtensions', async () => {
+        await cds.utils.copy(join('test/files', 'mta.yaml'), join(bookshop, 'mta.yaml'))
+        await cds.utils.copy(join('test/files', 'corrected_xsappname.mtaext'), join(bookshop, 'corrected_xsappname.mtaext'))
+
+        execSync(`cds add cap-operator --with-mta mta.yaml --with-mta-extensions corrected_xsappname.mtaext --with-configurable-templates`, { cwd: bookshop })
+
+        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))
+        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/valuesWithMTA.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
+        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/templates/cap-operator-cros-mta.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cap-operator-cros.yaml')))
+        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/templates/_helpers.tpl'))).to.equal(getFileHash(join(bookshop, 'chart/templates/_helpers.tpl')))
+    })
 })

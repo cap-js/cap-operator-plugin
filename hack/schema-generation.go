@@ -58,7 +58,7 @@ type workloadDefinition struct {
 	Image string `json:"image"`
 }
 
-type flexibleChartValue struct {
+type configurableChartValue struct {
 	App              app                           `json:"app"`
 	Btp              btp                           `json:"btp"`
 	ImagePullSecrets []string                      `json:"imagePullSecrets,omitempty"`
@@ -96,7 +96,7 @@ func updateProperties(data []byte) []byte {
 	return data
 }
 
-func updatePropertiesFlexibleChart(data []byte) []byte {
+func updatePropertiesconfigurableChart(data []byte) []byte {
 
 	m := map[string]interface{}{}
 
@@ -113,9 +113,9 @@ func updatePropertiesFlexibleChart(data []byte) []byte {
 	workloadDefinition["additionalProperties"] = true
 	m["$defs"].(map[string]interface{})["workloadDefinition"] = workloadDefinition
 
-	flexibleChartValue := m["$defs"].(map[string]interface{})["flexibleChartValue"].(map[string]interface{})
-	flexibleChartValue["additionalProperties"] = true
-	m["$defs"].(map[string]interface{})["flexibleChartValue"] = flexibleChartValue
+	configurableChartValue := m["$defs"].(map[string]interface{})["configurableChartValue"].(map[string]interface{})
+	configurableChartValue["additionalProperties"] = true
+	m["$defs"].(map[string]interface{})["configurableChartValue"] = configurableChartValue
 
 	data, _ = json.Marshal(m)
 
@@ -141,17 +141,17 @@ func main() {
 
 	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-	sV2 := jsonschema.Reflect(&flexibleChartValue{})
+	sV2 := jsonschema.Reflect(&configurableChartValue{})
 	dataV2, errV2 := json.MarshalIndent(sV2, "", "  ")
 	if errV2 != nil {
 		panic(errV2.Error())
 	}
 
-	dataV2 = updatePropertiesFlexibleChart(dataV2)
+	dataV2 = updatePropertiesconfigurableChart(dataV2)
 	fmt.Println(string(dataV2))
 
 	// write the whole body at once
-	err = os.WriteFile("../files/chartFlexibleTemplates/values.schema.json", dataV2, 0644)
+	err = os.WriteFile("../files/configurableTemplatesChart/values.schema.json", dataV2, 0644)
 	if err != nil {
 		panic(err)
 	}

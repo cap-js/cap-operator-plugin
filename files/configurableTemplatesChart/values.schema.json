@@ -132,7 +132,7 @@
             ],
             "type": "object"
         },
-        "flexibleChartValue": {
+        "configurableChartValue": {
             "additionalProperties": true,
             "properties": {
                 "app": {
@@ -313,6 +313,6 @@
             "type": "object"
         }
     },
-    "$ref": "#/$defs/flexibleChartValue",
+    "$ref": "#/$defs/configurableChartValue",
     "$schema": "https://json-schema.org/draft/2020-12/schema"
 }

@@ -64,15 +64,15 @@ COMMANDS
 
     generate-runtime-values [--with-input-yaml <input-yaml-path>]   Generate runtime-values.yaml file for the cap-operator chart
 
-    convert-to-flexible-template-chart [--with-runtime-yaml <runtime-yaml-path>]  Convert existing chart to flexible template chart
+    convert-to-configurable-template-chart [--with-runtime-yaml <runtime-yaml-path>]  Convert existing chart to configurable template chart
 
 EXAMPLES
 
     cap-op-plugin generate-runtime-values
     cap-op-plugin generate-runtime-values --with-input-yaml /path/to/input.yaml
 
-    cap-op-plugin convert-to-flexible-template-chart
-    cap-op-plugin convert-to-flexible-template-chart --with-runtime-yaml /path/to/runtime.yaml
+    cap-op-plugin convert-to-configurable-template-chart
+    cap-op-plugin convert-to-configurable-template-chart --with-runtime-yaml /path/to/runtime.yaml
 `)
     })
 
@@ -102,19 +102,19 @@ EXAMPLES
         expect(getFileHash(join(__dirname, 'files/expectedChart/runtime-values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
 
-    it('Convert existing chart to flexible template chart', async () => {
+    it('Convert existing chart to configurable template chart', async () => {
         execSync(`cds add cap-operator`, { cwd: bookshop })
 
         // Copy filled values.yaml
         await cds.utils.copy(join(__dirname, 'files', 'values-of-simple-chart-filled.yaml'), join(bookshop, 'chart/values.yaml'))
-        execSync(`npx cap-op-plugin convert-to-flexible-template-chart`, { cwd: bookshop })
+        execSync(`npx cap-op-plugin convert-to-configurable-template-chart`, { cwd: bookshop })
 
-        expect(getFileHash(join(__dirname,'files/expectedChartFlexibleTemplates/templates/cap-operator-cros-modified.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cap-operator-cros.yaml')))
-        expect(getFileHash(join(__dirname,'files/expectedChartFlexibleTemplates/values-modified.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
+        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/templates/cap-operator-cros-modified.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cap-operator-cros.yaml')))
+        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/values-modified.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
     })
 
-    it('Generate runtime-values via prompts for flexible template chart', async () => {
-        execSync(`cds add cap-operator-with-flexible-templates`, { cwd: bookshop })
+    it('Generate runtime-values via prompts for configurable template chart', async () => {
+        execSync(`cds add cap-operator --with-configurable-templates`, { cwd: bookshop })
 
         rlQuestion = sinon.stub()
         rlInterface = {
@@ -136,19 +136,19 @@ EXAMPLES
         await capOperatorPlugin('generate-runtime-values')
         sinon.restore()
 
-        expect(getFileHash(join(__dirname, 'files/expectedChartFlexibleTemplates/runtime-values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
+        expect(getFileHash(join(__dirname, 'files/expectedConfigurableTemplatesChart/runtime-values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
 
-    it('Convert existing chart to flexible template chart with runtime.yaml', async () => {
+    it('Convert existing chart to configurable template chart with runtime.yaml', async () => {
         execSync(`cds add cap-operator`, { cwd: bookshop })
 
         // Copy filled values.yaml
         await cds.utils.copy(join(__dirname, 'files', 'values-of-simple-chart-filled.yaml'), join(bookshop, 'chart/values.yaml'))
         await cds.utils.copy(join(__dirname, 'files', 'runtime-values-of-simple-chart.yaml'), join(bookshop, 'chart/runtime-values.yaml'))
-        execSync(`npx cap-op-plugin convert-to-flexible-template-chart --with-runtime-yaml chart/runtime-values.yaml`, { cwd: bookshop })
+        execSync(`npx cap-op-plugin convert-to-configurable-template-chart --with-runtime-yaml chart/runtime-values.yaml`, { cwd: bookshop })
 
-        expect(getFileHash(join(__dirname,'files/expectedChartFlexibleTemplates/templates/cap-operator-cros-modified.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cap-operator-cros.yaml')))
-        expect(getFileHash(join(__dirname,'files/expectedChartFlexibleTemplates/values-modified.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
-        expect(getFileHash(join(__dirname,'files/expectedChartFlexibleTemplates/runtime-values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
+        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/templates/cap-operator-cros-modified.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cap-operator-cros.yaml')))
+        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/values-modified.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
+        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/runtime-values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
 })

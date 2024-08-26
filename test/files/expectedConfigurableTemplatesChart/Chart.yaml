@@ -6,4 +6,4 @@ version: 0.0.1
 appVersion: 1.0.0
 annotations:
   app.kubernetes.io/managed-by: cap-operator-plugin
-  app.kubernetes.io/part-of: cap-operator-flexible-templates
+  app.kubernetes.io/part-of: cap-operator-configurable-templates

@@ -8,5 +8,3 @@ const cds = require('@sap/cds')
 cds.build?.register?.('cap-operator', require('./lib/build.js'))
 
 cds.add?.register?.('cap-operator', require('./lib/add.js'))
-
-cds.add?.register?.('cap-operator-with-flexible-templates', require('./lib/addFlexibleTemplates.js'))
