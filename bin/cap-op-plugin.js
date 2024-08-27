@@ -70,16 +70,43 @@ EXAMPLES
     )
 }
 
+async function transformRuntimeValues(runtimeYamlPath) {
+    console.log('Transforming runtime values file '+ cds.utils.path.join(cds.root,runtimeYamlPath) + ' to the configurable template chart format.')
+    runtimeYaml = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, runtimeYamlPath)))
+    if (runtimeYaml?.workloads?.server?.deploymentDefinition?.env) {
+        const index = runtimeYaml.workloads.server.deploymentDefinition.env.findIndex(e => e.name === 'CDS_CONFIG')
+        if (index > -1) {
+            const cdsConfigValueJson = JSON.parse(runtimeYaml.workloads.server.deploymentDefinition.env[index].value)
+            if (cdsConfigValueJson?.requires?.['cds.xt.DeploymentService']?.hdi?.create?.database_id){
+                runtimeYaml['hanaInstanceId'] = cdsConfigValueJson.requires['cds.xt.DeploymentService'].hdi.create.database_id
+                delete runtimeYaml['workloads']
+                await cds.utils.write(yaml.stringify(runtimeYaml)).to(cds.utils.path.join(cds.root, runtimeYamlPath))
+            }
+        }
+    }
+}
+
+async function isRuntimeValueAlreadyTransformed(runtimeYamlPath) {
+    runtimeYaml = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, runtimeYamlPath)))
+    if (runtimeYaml['hanaInstanceId'])
+        return true
+    return false
+}
+
 async function convertToconfigurableTemplateChart(option, runtimeYamlPath) {
     if (!((cds.utils.exists('chart') && isCAPOperatorChart(cds.utils.path.join(cds.root,'chart')))))
         throw new Error("No CAP Operator chart found in the project. Please run 'cds add cap-operator --force' to add the CAP Operator chart folder.")
 
     if (isConfigurableTemplateChart(cds.utils.path.join(cds.root,'chart'))){
-        console.log("Exisiting chart is already a configurable template chart. No need for conversion. Exiting...")
+        console.log("Exisiting chart is already a configurable template chart. No need for conversion.")
+        if (option === '--with-runtime-yaml' && runtimeYamlPath && !(await isRuntimeValueAlreadyTransformed(runtimeYamlPath)))
+            await transformRuntimeValues(runtimeYamlPath)
+        else
+            console.log('Runtime values file '+ cds.utils.path.join(cds.root,runtimeYamlPath) + ' already in the configurable template chart format.')
         return
     }
 
-    console.log('Converting chart '+cds.utils.path.join(cds.root,'chart')+' to configurable template chart')
+    console.log('Converting chart '+cds.utils.path.join(cds.root,'chart')+' to configurable template chart.')
 
     // Copy templates
     await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/templates')).to(cds.utils.path.join(cds.root,'chart','templates'))
@@ -96,20 +123,7 @@ async function convertToconfigurableTemplateChart(option, runtimeYamlPath) {
     await transformValuesAndFillCapOpCroYaml()
 
     if (option === '--with-runtime-yaml' && runtimeYamlPath) {
-        console.log('Transforming runtime file '+ cds.utils.path.join(cds.root,runtimeYamlPath))
-
-        runtimeYaml = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, runtimeYamlPath)))
-        if (runtimeYaml?.workloads?.server?.deploymentDefinition?.env) {
-            const index = runtimeYaml.workloads.server.deploymentDefinition.env.findIndex(e => e.name === 'CDS_CONFIG')
-            if (index > -1) {
-                const cdsConfigValueJson = JSON.parse(runtimeYaml.workloads.server.deploymentDefinition.env[index].value)
-                if (cdsConfigValueJson?.requires?.['cds.xt.DeploymentService']?.hdi?.create?.database_id){
-                    runtimeYaml['hanaInstanceId'] = cdsConfigValueJson.requires['cds.xt.DeploymentService'].hdi.create.database_id
-                    delete runtimeYaml['workloads']
-                    await cds.utils.write(yaml.stringify(runtimeYaml)).to(cds.utils.path.join(cds.root, runtimeYamlPath))
-                }
-            }
-        }
+        await transformRuntimeValues(runtimeYamlPath)
     }
 }
 
