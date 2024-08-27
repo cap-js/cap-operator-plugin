@@ -1,5 +1,5 @@
 serviceInstances:
-    saasRegistry:
+    {{saasRegistryKeyName}}:
         parameters:
             xsappname: {{appName}}
             appName: {{appName}}
@@ -8,7 +8,7 @@ serviceInstances:
             appUrls:
                 getDependencies: "https://{{providerSubdomain}}.{{appName}}.{{clusterDomain}}/callback/v1.0/dependencies"
                 onSubscription: "https://{{capOperatorSubdomain}}.{{clusterDomain}}/provision/tenants/{tenantId}"
-    xsuaa:
+    {{xsuaaKeyName}}:
         parameters:
             xsappname: {{appName}}
             oauth2-configuration:
