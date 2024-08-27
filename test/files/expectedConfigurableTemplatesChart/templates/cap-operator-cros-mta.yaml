@@ -67,7 +67,7 @@ spec:
       - author-readings-html5-runtime-bind
     deploymentDefinition:
       type: Router
-      image: "{{.Values.workloads.author-readings-approuter.image}}"
+      image: "{{.Values.workloads.authorReadingsApprouter.image}}"
       env:
         - name: TENANT_HOST_PATTERN
           value: ^(.*).${org}-${space}.${domain}
@@ -85,7 +85,7 @@ spec:
       - author-readings-registry-bind
     deploymentDefinition:
       type: null
-      image: "{{.Values.workloads.author-readings-srv.image}}"
+      image: "{{.Values.workloads.authorReadingsSrv.image}}"
       env:
         - name: OTLP_TRACE_URL
           value: http://telemetry-otlp-traces.kyma-system:4318
@@ -102,7 +102,7 @@ spec:
       - author-readings-logging-bind
     deploymentDefinition:
       type: null
-      image: "{{.Values.workloads.author-readings-mtx-srv.image}}"
+      image: "{{.Values.workloads.authorReadingsMtxSrv.image}}"
       env: []
   - name: author-readings-app-deployer
     consumedBTPServices:
@@ -110,7 +110,7 @@ spec:
       - author-readings-uaa-bind
     jobDefinition:
       type: Content
-      image: "{{.Values.workloads.author-readings-app-deployer.image}}"
+      image: "{{.Values.workloads.authorReadingsAppDeployer.image}}"
       env: []
   - name: author-readings-mtx
     consumedBTPServices:
@@ -120,7 +120,7 @@ spec:
       - author-readings-uaa-bind
     jobDefinition:
       type: TenantOperation
-      image: "{{.Values.workloads.author-readings-mtx.image}}"
+      image: "{{.Values.workloads.authorReadingsMtx.image}}"
       env: []
   - name: author-readings
     consumedBTPServices:
@@ -128,7 +128,7 @@ spec:
       - author-readings-logging-bind
     deploymentDefinition:
       type: null
-      image: "{{.Values.workloads.author-readings.image}}"
+      image: "{{.Values.workloads.authorReadings.image}}"
       env:
         - name: TENANT_HOST_PATTERN
           value: ^(.*)-${default-uri}

@@ -1,5 +1,5 @@
 serviceInstances:
-  saas-registry:
+  saasRegistry:
     parameters:
       xsappname: bkshop
       appName: bkshop

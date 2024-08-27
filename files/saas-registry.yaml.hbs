@@ -1,5 +1,5 @@
 serviceInstances:
-  saas-registry:
+  saasRegistry:
     name: {{appName}}-saas-registry
     serviceOfferingName: saas-registry
     servicePlanName: application
@@ -16,7 +16,7 @@ serviceInstances:
       category: "CAP"
 
 serviceBindings:
-  saas-registry:
+  saasRegistry:
     name: {{appName}}-saas-registry-bind
     serviceInstanceName: {{appName}}-saas-registry
     secretName: {{appName}}-saas-registry-bind-secret

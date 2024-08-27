@@ -26,7 +26,7 @@ serviceInstances:
         credential-types:
           - binding-secret
         redirect-uris: []
-  saas-registry:
+  saasRegistry:
     name: bookshop-saas-registry
     serviceOfferingName: saas-registry
     servicePlanName: application
@@ -41,7 +41,7 @@ serviceInstances:
         onSubscriptionAsync: true
         onUnSubscriptionAsync: true
       category: CAP
-  service-manager:
+  serviceManager:
     name: bookshop-service-manager
     serviceOfferingName: service-manager
     servicePlanName: container
@@ -71,13 +71,13 @@ serviceBindings:
     secretName: bookshop-uaa-bind-secret
     secretKey: credentials
     parameters: {}
-  saas-registry:
+  saasRegistry:
     name: bookshop-saas-registry-bind
     serviceInstanceName: bookshop-saas-registry
     secretName: bookshop-saas-registry-bind-secret
     secretKey: credentials
     parameters: {}
-  service-manager:
+  serviceManager:
     name: bookshop-service-manager-bind
     serviceInstanceName: bookshop-service-manager
     secretName: bookshop-service-manager-bind-secret
@@ -97,12 +97,12 @@ btp:
     tenantId: null
 imagePullSecrets: []
 workloads:
-  app-router:
+  appRouter:
     image: gcr.io/test/app-router
   server:
     image: gcr.io/test/server
-  content-deploy:
+  contentDeploy:
     image: gcr.io/test/content-deploy
-  tenant-job:
+  tenantJob:
     image: gcr.io/test/tenant-job
 hanaInstanceId: abcd

@@ -68,7 +68,7 @@ spec:
       - bookshop-saas-registry-bind
     deploymentDefinition:
       type: Router
-      image: "{{.Values.workloads.app-router.image}}"
+      image: "{{.Values.workloads.appRouter.image}}"
       env:
         - name: TENANT_HOST_PATTERN
           value: ^(.*).{{ template "domainPatterns" . }}
@@ -97,7 +97,7 @@ spec:
       - bookshop-html5-repo-host-bind
     jobDefinition:
       type: Content
-      image: "{{.Values.workloads.content-deploy.image}}"
+      image: "{{.Values.workloads.contentDeploy.image}}"
   - name: tenant-job
     labels:
       sme.sap.com/app-type: bookshop
@@ -107,7 +107,7 @@ spec:
       - bookshop-service-manager-bind
     jobDefinition:
       type: TenantOperation
-      image: "{{.Values.workloads.tenant-job.image}}"
+      image: "{{.Values.workloads.tenantJob.image}}"
       env:
         - name: CDS_CONFIG
           value: '{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"{{.Values.hanaInstanceId}}"}}}}}'

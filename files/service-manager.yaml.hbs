@@ -1,12 +1,12 @@
 serviceInstances:
-  service-manager:
+  serviceManager:
     name: {{appName}}-service-manager
     serviceOfferingName: service-manager
     servicePlanName: container
     parameters: {}
 
 serviceBindings:
-  service-manager:
+  serviceManager:
     name: {{appName}}-service-manager-bind
     serviceInstanceName: {{appName}}-service-manager
     secretName: {{appName}}-service-manager-bind-secret
