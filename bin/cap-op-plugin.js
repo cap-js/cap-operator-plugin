@@ -21,12 +21,18 @@ async function capOperatorPlugin(cmd, option, yamlPath) {
             if (option === '--with-input-yaml' && !yamlPath)
                 return _usage(`Input yaml path is missing.`)
 
+            if (option === '--with-input-yaml' && !yamlPath && cds.utils.exists(cds.utils.path.join(cds.root,yamlPath)))
+                return _usage(`Input yaml path ${yamlPath} does not exist.`)
+
             await generateRuntimeValues(option, yamlPath)
         }
 
         if (cmd === 'convert-to-configurable-template-chart') {
             if (option === '--with-runtime-yaml' && !yamlPath)
                 return _usage(`Input runtime yaml path is missing.`)
+
+            if (option === '--with-runtime-yaml' && !yamlPath && cds.utils.exists(cds.utils.path.join(cds.root,yamlPath)))
+                return _usage(`Input runtime yaml path ${yamlPath} does not exist.`)
 
             await convertToconfigurableTemplateChart(option, yamlPath)
         }
@@ -72,7 +78,7 @@ EXAMPLES
 
 async function transformRuntimeValues(runtimeYamlPath) {
     console.log('Transforming runtime values file '+ cds.utils.path.join(cds.root,runtimeYamlPath) + ' to the configurable template chart format.')
-    runtimeYaml = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, runtimeYamlPath)))
+    let runtimeYaml = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, runtimeYamlPath)))
     if (runtimeYaml?.workloads?.server?.deploymentDefinition?.env) {
         const index = runtimeYaml.workloads.server.deploymentDefinition.env.findIndex(e => e.name === 'CDS_CONFIG')
         if (index > -1) {
@@ -87,10 +93,8 @@ async function transformRuntimeValues(runtimeYamlPath) {
 }
 
 async function isRuntimeValueAlreadyTransformed(runtimeYamlPath) {
-    runtimeYaml = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, runtimeYamlPath)))
-    if (runtimeYaml['hanaInstanceId'])
-        return true
-    return false
+    let runtimeYaml = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, runtimeYamlPath)))
+    return !!runtimeYaml['hanaInstanceId']
 }
 
 async function convertToconfigurableTemplateChart(option, runtimeYamlPath) {
