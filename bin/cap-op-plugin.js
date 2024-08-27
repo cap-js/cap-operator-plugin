@@ -220,11 +220,7 @@ function updateWorkloadEnv(runtimeValuesYaml, valuesYaml, answerStruct) {
 
     // remove workload definition where env is empty
     for (const [workloadKey, workloadDetails] of Object.entries(runtimeValuesYaml.workloads)) {
-        if (workloadDetails?.deploymentDefinition?.env.length === 0) {
-            delete runtimeValuesYaml['workloads'][workloadKey]
-        }
-
-        if (workloadDetails?.jobDefinition?.env.length === 0) {
+        if (workloadDetails?.deploymentDefinition?.env.length === 0 || workloadDetails?.jobDefinition?.env.length === 0) {
             delete runtimeValuesYaml['workloads'][workloadKey]
         }
     }
