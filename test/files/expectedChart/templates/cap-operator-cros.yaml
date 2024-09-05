@@ -59,7 +59,7 @@ spec:
     {{- end }}
   workloads:
   {{- range $k, $v := .Values.workloads }}
-  - name: {{ $k }}
+  - name: {{ $v.name }}
 
     {{- if $v.labels }}
     labels: {{- toYaml $v.labels | trim | nindent 6 }}
