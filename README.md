@@ -6,7 +6,7 @@ The CAP Operator Plugin offers a simple method for generating [CAP Operator](htt
 
 ## Before You Start
 
-The CAP Operator plugin requires `@sap/cds-dk: ">=8.1.0"`. If you've installed @sap/cds-dk  globally, ensure that the installed version is `8.1.0` or higher.
+The CAP Operator plugin requires `@sap/cds-dk: ">=8.2.1"`. If you've installed @sap/cds-dk  globally, ensure that the installed version is `8.2.1` or higher.
 
 ## Set Up the Plugin
 
