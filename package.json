@@ -24,7 +24,7 @@
   ],
   "peerDependencies": {
     "@sap/cds": ">=8",
-    "@sap/cds-dk": ">=8.1.0",
+    "@sap/cds-dk": ">=8.2.1",
     "@sap/cds-foss": ">=5"
   },
   "dependencies": {
