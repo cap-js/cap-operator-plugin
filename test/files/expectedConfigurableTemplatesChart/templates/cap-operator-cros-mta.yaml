@@ -2,7 +2,7 @@
 apiVersion: sme.sap.com/v1alpha1
 kind: CAPApplication
 metadata:
-  name: cap-{{ include "appName" $ }}
+  name: {{ include "appName" $ }}
 spec:
   domains:
     primary: {{.Values.app.domains.primary}}
@@ -51,8 +51,8 @@ metadata:
     helm.sh/resource-policy: keep
   name: {{ include "capApplicationVersionName" $ }}
 spec:
-  capApplicationInstance: cap-{{ include "appName" $ }}
-  version: "{{ .Release.Revision }}"
+  capApplicationInstance: {{ include "appName" $ }}
+  version: {{ .Release.Revision }}
   registrySecrets:
     {{- range .Values.imagePullSecrets }}
     - {{.}}
