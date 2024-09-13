@@ -23,7 +23,7 @@ describe('cds add cap-operator', () => {
     })
 
     afterEach(async () => {
-        execSync(`rm -r chart`, { cwd: bookshop })
+        if (cds.utils.exists(join(bookshop, 'chart'))) execSync(`rm -r chart`, { cwd: bookshop })
     })
 
     after(async () => {
