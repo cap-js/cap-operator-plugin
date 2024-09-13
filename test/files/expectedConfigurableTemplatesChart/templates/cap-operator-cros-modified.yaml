@@ -1,0 +1,120 @@
+---
+apiVersion: sme.sap.com/v1alpha1
+kind: CAPApplication
+metadata:
+  name: {{ include "appName" $ }}
+spec:
+  domains:
+    primary: {{.Values.app.domains.primary}}
+    {{- if .Values.app.domains.secondary }}
+    secondary:
+      {{- range .Values.app.domains.secondary }}
+      - {{.}}
+      {{- end }}
+    {{- end }}
+    istioIngressGatewayLabels:
+    {{- range $k, $v := .Values.app.istioIngressGatewayLabels }}
+    - name: {{ $k }}
+      value: {{ $v | default "invalidValue"}}
+    {{- end }}
+  btpAppName: {{ include "appName" $ }}
+  globalAccountId: {{.Values.btp.globalAccountId}}
+  provider:
+    subDomain: {{.Values.btp.provider.subdomain}}
+    tenantId: {{.Values.btp.provider.tenantId}}
+  btp:
+    services:
+    {{- $serviceInstances := .Values.serviceInstances }}
+    {{- range $k, $v := .Values.serviceBindings }}
+    {{- $serviceInstance := dict }}
+    {{- range $sik, $siv := $serviceInstances }}
+      {{- if eq $siv.name $v.serviceInstanceName }}
+        {{- $serviceInstance = $siv }}
+      {{- end }}
+    {{- end }}
+    {{- if hasKey $serviceInstance "serviceOfferingName" }}
+    - class: {{ get $serviceInstance "serviceOfferingName" | default "invalidValue" }}
+      {{- if $v.externalName }}
+      name: {{ $v.externalName | default "invalidValue" }}
+      {{- else }}
+      name: {{ $v.name | default "invalidValue" }}
+      {{- end }}
+      secret: {{ $v.secretName | default "invalidValue" }}
+    {{- end }}
+    {{- end }}
+---
+apiVersion: sme.sap.com/v1alpha1
+kind: CAPApplicationVersion
+metadata:
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/resource-policy: keep
+  name: {{ include "capApplicationVersionName" $ }}
+spec:
+  capApplicationInstance: {{ include "appName" $ }}
+  version: {{ .Release.Revision }}
+  registrySecrets:
+    {{- range .Values.imagePullSecrets }}
+    - {{.}}
+    {{- end }}
+  workloads:
+  - name: app-router
+    labels:
+      sme.sap.com/app-type: bookshop
+    consumedBTPServices:
+      - bookshop-uaa-bind
+      - bookshop-destination-bind
+      - bookshop-html5-repo-runtime-bind
+      - bookshop-saas-registry-bind
+    deploymentDefinition:
+      type: Router
+      image: "{{.Values.workloads.appRouter.image}}"
+      env:
+        - name: TENANT_HOST_PATTERN
+          value: ^(.*).{{ template "domainPatterns" . }}
+    ports:
+      - name: router-port
+        port: 5000
+  - name: server
+    labels:
+      sme.sap.com/app-type: bookshop
+    consumedBTPServices:
+      - bookshop-uaa-bind
+      - bookshop-saas-registry-bind
+      - bookshop-service-manager-bind
+    deploymentDefinition:
+      type: CAP
+      image: "{{.Values.workloads.server.image}}"
+      env:
+        - name: CDS_CONFIG
+          value: '{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"{{.Values.hanaInstanceId}}"}}}}}'
+  - name: content-deploy
+    labels:
+      sme.sap.com/app-type: bookshop
+    consumedBTPServices:
+      - bookshop-uaa-bind
+      - bookshop-saas-registry-bind
+      - bookshop-html5-repo-host-bind
+    jobDefinition:
+      type: Content
+      image: "{{.Values.workloads.contentDeploy.image}}"
+  - name: tenant-job
+    labels:
+      sme.sap.com/app-type: bookshop
+    consumedBTPServices:
+      - bookshop-uaa-bind
+      - bookshop-saas-registry-bind
+      - bookshop-service-manager-bind
+    jobDefinition:
+      type: TenantOperation
+      image: "{{.Values.workloads.tenantJob.image}}"
+      env:
+        - name: CDS_CONFIG
+          value: '{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"{{.Values.hanaInstanceId}}"}}}}}'
+  tenantOperations:
+    provisioning:
+        - workloadName: tenant-job
+    upgrade:
+        - workloadName: tenant-job
+  contentJobs:
+  - content-deploy

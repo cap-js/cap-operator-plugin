@@ -1,0 +1,140 @@
+serviceInstances:
+  serviceManagerContainer:
+    name: author-readings-service-manager
+    serviceOfferingName: service-manager
+    servicePlanName: container
+    parameters: {}
+  destinationLite:
+    name: author-readings-destination-service
+    serviceOfferingName: destination
+    servicePlanName: lite
+    parameters:
+      HTML5Runtime_enabled: true
+  xsuaaBroker:
+    name: author-readings-uaa
+    serviceOfferingName: xsuaa
+    servicePlanName: broker
+    parameters:
+      tenant-mode: shared
+      xsappname: partner-refapp-ph2
+  auditlogOauth2:
+    name: author-readings-auditlog
+    serviceOfferingName: auditlog
+    servicePlanName: oauth2
+    parameters: {}
+  saasRegistryApplication:
+    name: author-readings-registry
+    serviceOfferingName: saas-registry
+    servicePlanName: application
+    parameters:
+      xsappname: partner-refapp-ph2
+      appName: partner-refapp-ph2
+      displayName: SME Partner Reference Sample Application
+      description: SME Partner Reference Sample Application
+      category: Category
+      appUrls:
+        getDependencies: ~{approuter-binding/app-url}/callback/v1.0/dependencies
+        onSubscription: ~{mtx-binding/app-url}/-/cds/saas-provisioning/tenant/{tenantId}
+        callbackTimeoutMillis: 300000
+        onSubscriptionAsync: true
+        onUnSubscriptionAsync: true
+        onUpdateDependenciesAsync: true
+  html5AppsRepoAppRuntime:
+    name: author-readings-html5-runtime
+    serviceOfferingName: html5-apps-repo
+    servicePlanName: app-runtime
+    parameters: {}
+  html5AppsRepoAppHost:
+    name: author-readings-html5-repo-host
+    serviceOfferingName: html5-apps-repo
+    servicePlanName: app-host
+    parameters:
+      sizeLimit: 10
+  applicationLogsStandard:
+    name: author-readings-logging
+    serviceOfferingName: application-logs
+    servicePlanName: standard
+    parameters: {}
+serviceBindings:
+  authorReadingsUaaBind:
+    name: author-readings-uaa-bind
+    parameters: {}
+    secretKey: credentials
+    secretName: author-readings-uaa-bind-secret
+    serviceInstanceName: author-readings-uaa
+  authorReadingsDestinationServiceBind:
+    name: author-readings-destination-service-bind
+    parameters: {}
+    secretKey: credentials
+    secretName: author-readings-destination-service-bind-secret
+    serviceInstanceName: author-readings-destination-service
+  authorReadingsAuditlogBind:
+    name: author-readings-auditlog-bind
+    parameters: {}
+    secretKey: credentials
+    secretName: author-readings-auditlog-bind-secret
+    serviceInstanceName: author-readings-auditlog
+  authorReadingsRegistryBind:
+    name: author-readings-registry-bind
+    parameters: {}
+    secretKey: credentials
+    secretName: author-readings-registry-bind-secret
+    serviceInstanceName: author-readings-registry
+  authorReadingsHtml5RuntimeBind:
+    name: author-readings-html5-runtime-bind
+    parameters: {}
+    secretKey: credentials
+    secretName: author-readings-html5-runtime-bind-secret
+    serviceInstanceName: author-readings-html5-runtime
+  authorReadingsServiceManagerBind:
+    name: author-readings-service-manager-bind
+    parameters: {}
+    secretKey: credentials
+    secretName: author-readings-service-manager-bind-secret
+    serviceInstanceName: author-readings-service-manager
+  authorReadingsServiceManagerAuthorReadingsMtxSrvBind:
+    name: author-readings-service-manager-author-readings-mtx-srv-bind
+    parameters:
+      SUBSCRIPTION_URL: ${protocol}://\${tenant_subdomain}.${org}-${space}.${domain}/authorreadingmanager
+    secretKey: credentials
+    secretName: author-readings-service-manager-author-readings-mtx-srv-bind-secret
+    serviceInstanceName: author-readings-service-manager
+  authorReadingsLoggingBind:
+    name: author-readings-logging-bind
+    parameters: {}
+    secretKey: credentials
+    secretName: author-readings-logging-bind-secret
+    serviceInstanceName: author-readings-logging
+  authorReadingsHtml5RepoHostBind:
+    name: author-readings-html5-repo-host-bind
+    parameters: {}
+    secretKey: credentials
+    secretName: author-readings-html5-repo-host-bind-secret
+    serviceInstanceName: author-readings-html5-repo-host
+app:
+  domains:
+    primary: null
+    secondary: []
+  istioIngressGatewayLabels:
+    istio: ingressgateway
+    app: istio-ingressgateway
+btp:
+  globalAccountId: null
+  provider:
+    subdomain: null
+    tenantId: null
+imagePullSecrets: []
+hanaInstanceId: null
+workloads:
+  authorReadingsApprouter:
+    image: null
+  authorReadingsSrv:
+    image: null
+  authorReadingsMtxSrv:
+    image: null
+  authorReadingsAppDeployer:
+    image: null
+  authorReadingsMtx:
+    image: null
+  authorReadings:
+    image: null

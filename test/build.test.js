@@ -35,9 +35,9 @@ describe('cds build', () => {
         execSync(`cds build`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname,'files/expectedChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'gen/chart/Chart.yaml')))
-        expect(getFileHash(join(__dirname,'files/expectedChart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'gen/chart/values.schema.json')))
+        expect(getFileHash(join(__dirname,'../files/chart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'gen/chart/values.schema.json')))
         expect(getFileHash(join(__dirname,'files/expectedChart/values.yaml'))).to.equal(getFileHash(join(bookshop, 'gen/chart/values.yaml')))
-        expect(getFolderHash(join(__dirname,'files/expectedChart/templates'))).to.equal(getFolderHash(join(bookshop, 'gen/chart/templates')))
+        expect(getFolderHash(join(__dirname,'../files/chart/templates'))).to.equal(getFolderHash(join(bookshop, 'gen/chart/templates')))
     })
 
     it('Build cap-operator chart with modified templates', async () => {
@@ -49,8 +49,8 @@ describe('cds build', () => {
         execSync(`cds build`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname,'files/expectedChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'gen/chart/Chart.yaml')))
-        expect(getFileHash(join(__dirname,'files/expectedChart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'gen/chart/values.schema.json')))
+        expect(getFileHash(join(__dirname,'../files/chart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'gen/chart/values.schema.json')))
         expect(getFileHash(join(__dirname,'files/expectedChart/values.yaml'))).to.equal(getFileHash(join(bookshop, 'gen/chart/values.yaml')))
-        expect(getFolderHash(join(__dirname,'files/expectedChart/templates'))).to.not.equal(getFolderHash(join(bookshop, 'gen/chart/templates')))
+        expect(getFolderHash(join(__dirname,'../files/chart/templates'))).to.not.equal(getFolderHash(join(bookshop, 'gen/chart/templates')))
     })
 })

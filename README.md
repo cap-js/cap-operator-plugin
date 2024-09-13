@@ -39,6 +39,17 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
         ```
         ![](.images/cds-add-cap-operator-with-templates.gif)
 
+    * `--with-configurable-templates`
+
+        With this option, the plugin adds a chart with configurable templates. This is required when applications need to utilize template functions in the CAP Operator resources. In this version of the chart, all the CAP Operator resource configurations are defined in `templates/cap-operator-cros.yaml`. If you choose this option, you can skip the `cds build` step since the chart already contains the `templates` folder.
+
+        ```sh
+        cds add cap-operator --with-configurable-templates
+        ```
+        ![](.images/cds-add-cap-operator-with-configurable-templates.gif)
+
+        > If you have already added your chart and want to switch to `--with-configurable-templates`, you can use the plugin to convert the existing chart. For more information, see the [Converting to Configurable Templates](#converting-to-configurable-templates-chart) section.
+
     * `--force`
 
         This option allows you to overwrite the existing chart folder.
@@ -73,18 +84,23 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
 
 3. Once you've executed the command above, the basic chart folder or chart folder with templates is added to your project directory, depending on your choice.
 
-## Configure the Plugin
+## Configure Your Chart
 
 The generated `chart/values.yaml` contains two types of information:
 
    * Design-time deployment
-        - [serviceInstances](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-instance)
-        - [serviceBindings](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-binding)
-        - workloads - There are two types of workloads:
-            - [Deployment definition](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#workloads-with-deploymentdefinition)
-            - [Job definition](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#workloads-with-jobdefinition)
-        - [tenantOperations](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#sequencing-tenant-operations)
-        - [contentJobs](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#sequencing-content-jobs)
+        * Without option `--with-configurable-templates`
+            - [serviceInstances](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-instance)
+            - [serviceBindings](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-binding)
+            - workloads - There are two types of workloads:
+                - [Deployment definition](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#workloads-with-deploymentdefinition)
+                - [Job definition](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#workloads-with-jobdefinition)
+            - [tenantOperations](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#sequencing-tenant-operations)
+            - [contentJobs](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#sequencing-content-jobs)
+        * With option `--with-configurable-templates`
+            - [serviceInstances](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-instance)
+            - [serviceBindings](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-binding)
+            - workloads - With this option all the workload configuations are maintained in `templates/cap-operator-cros.yaml` and in the `values.yaml` you can only define the images for the workloads.
 
    * Runtime deployment
         - app
@@ -111,7 +127,7 @@ The generated `chart/values.yaml` contains two types of information:
 
    ![](.images/cds-build.gif)
 
-   > If you've already added the `templates` folder during the initial plugin call using `--with-templates` option, you can skip this step as the Helm chart is already complete.
+   > If you've already added the `templates` folder during the initial plugin call using `--with-templates` or `--with-configurable-templates` option, you can skip this step as the Helm chart is already complete.
 
 2. Up to this point, you've only filled in the design time information in the chart. But to deploy the application, you need to create a `runtime-values.yaml` file with all the runtime values, as mentioned in the section on configuration. You can generate the file using the plugin itself.
 
@@ -174,6 +190,21 @@ The generated `chart/values.yaml` contains two types of information:
    ```sh
    helm upgrade -i -n <namespace> <release-name> <project-path>/gen/chart --set-file serviceInstances.xsuaa.jsonParameters=<project-path>/xs-security.json -f <project-path>/chart/runtime-values.yaml
    ```
+
+## Converting to Configurable Templates Chart
+
+If you've already added the basic chart folder and want to switch to configurable templates chart, you can use the plugin to convert the chart. To do so, run the following command:
+
+```sh
+npx cap-op-plugin convert-to-configurable-template-chart
+```
+
+If you want to convert the existing `runtime-values.yaml` as well to the new format, you can do so by passing the `runtime-values.yaml` path via the `--with-runtime-yaml` option:
+
+```sh
+npx cap-op-plugin convert-to-configurable-template-chart --with-runtime-yaml <project-path>/chart/runtime-values.yaml
+```
+![](.images/cap-op-plugin-convert-to-configurable-templates.gif)
 
 ## Example
 

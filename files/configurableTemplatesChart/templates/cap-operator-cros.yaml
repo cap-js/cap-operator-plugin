@@ -1,0 +1,126 @@
+---
+apiVersion: sme.sap.com/v1alpha1
+kind: CAPApplication
+metadata:
+  name: {{ include "appName" $ }}
+spec:
+  domains:
+    primary: {{.Values.app.domains.primary}}
+    {{- if .Values.app.domains.secondary }}
+    secondary:
+      {{- range .Values.app.domains.secondary }}
+      - {{.}}
+      {{- end }}
+    {{- end }}
+    istioIngressGatewayLabels:
+    {{- range $k, $v := .Values.app.istioIngressGatewayLabels }}
+    - name: {{ $k }}
+      value: {{ $v | default "invalidValue"}}
+    {{- end }}
+  btpAppName: {{ include "appName" $ }}
+  globalAccountId: {{.Values.btp.globalAccountId}}
+  provider:
+    subDomain: {{.Values.btp.provider.subdomain}}
+    tenantId: {{.Values.btp.provider.tenantId}}
+  btp:
+    services:
+    {{- $serviceInstances := .Values.serviceInstances }}
+    {{- range $k, $v := .Values.serviceBindings }}
+    {{- $serviceInstance := dict }}
+    {{- range $sik, $siv := $serviceInstances }}
+      {{- if eq $siv.name $v.serviceInstanceName }}
+        {{- $serviceInstance = $siv }}
+      {{- end }}
+    {{- end }}
+    {{- if hasKey $serviceInstance "serviceOfferingName" }}
+    - class: {{ get $serviceInstance "serviceOfferingName" | default "invalidValue" }}
+      {{- if $v.externalName }}
+      name: {{ $v.externalName | default "invalidValue" }}
+      {{- else }}
+      name: {{ $v.name | default "invalidValue" }}
+      {{- end }}
+      secret: {{ $v.secretName | default "invalidValue" }}
+    {{- end }}
+    {{- end }}
+---
+apiVersion: sme.sap.com/v1alpha1
+kind: CAPApplicationVersion
+metadata:
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/resource-policy: keep
+  name: {{ include "capApplicationVersionName" $ }}
+spec:
+  capApplicationInstance: {{ include "appName" $ }}
+  version: {{ .Release.Revision }}
+  registrySecrets:
+    {{- range .Values.imagePullSecrets }}
+    - {{.}}
+    {{- end }}
+  workloads:
+  - name: server
+    labels:
+      sme.sap.com/app-type: {{ include "appName" $ }}
+    consumedBTPServices:
+    - {{ include "originalAppName" $ }}-uaa-bind
+    - {{ include "originalAppName" $ }}-saas-registry-bind
+    - {{ include "originalAppName" $ }}-service-manager-bind
+    deploymentDefinition:
+      type: CAP
+      image: {{ .Values.workloads.server.image }}
+      {{- if .Values.hanaInstanceId }}
+      env:
+      - name: CDS_CONFIG
+        value: '{"requires":{"cds.xt.DeploymentService":{"hdi": { "create": {"database_id": "{{.Values.hanaInstanceId}}"}}}}}'
+      {{- end }}
+  - name: app-router
+    labels:
+      sme.sap.com/app-type: {{ include "appName" $ }}
+    consumedBTPServices:
+    - {{ include "originalAppName" $ }}-uaa-bind
+    - {{ include "originalAppName" $ }}-saas-registry-bind
+    {{- if eq (include "hasService" (dict "si" .Values.serviceInstances "offeringName" "destination" "planName" "lite")) "true" }}
+    - {{ include "originalAppName" $ }}-destination-bind
+    {{- end}}
+    {{- if eq (include "hasService" (dict "si" .Values.serviceInstances "offeringName" "html5-apps-repo" "planName" "app-runtime")) "true" }}
+    - {{ include "originalAppName" $ }}-html5-repo-runtime-bind
+    {{- end }}
+    deploymentDefinition:
+      type: Router
+      image: {{ .Values.workloads.appRouter.image }}
+      env:
+      - name: TENANT_HOST_PATTERN
+        value: ^(.*).{{ template "domainPatterns" . }}
+      ports:
+      - name: router-port
+        port: 5000
+  - name: tenant-job
+    labels:
+      sme.sap.com/app-type: {{ include "appName" $ }}
+    consumedBTPServices:
+    - {{ include "originalAppName" $ }}-uaa-bind
+    - {{ include "originalAppName" $ }}-saas-registry-bind
+    - {{ include "originalAppName" $ }}-service-manager-bind
+    jobDefinition:
+      type: TenantOperation
+      image: {{ .Values.workloads.tenantJob.image }}
+      {{- if .Values.hanaInstanceId }}
+      env:
+      - name: CDS_CONFIG
+        value: '{"requires":{"cds.xt.DeploymentService":{"hdi": { "create": {"database_id": "{{.Values.hanaInstanceId}}"}}}}}'
+      {{- end }}
+  - name: content-deploy
+    labels:
+      sme.sap.com/app-type: {{ include "appName" $ }}
+    consumedBTPServices:
+    - {{ include "originalAppName" $ }}-uaa-bind
+    - {{ include "originalAppName" $ }}-saas-registry-bind
+    {{- if eq (include "hasService" (dict "si" .Values.serviceInstances "offeringName" "html5-apps-repo" "planName" "app-host")) "true" }}
+    - {{ include "originalAppName" $ }}-html5-repo-host-bind
+    {{- end }}
+    {{- if eq (include "hasService" (dict "si" .Values.serviceInstances "offeringName" "content-agent" "planName" "application")) "true" }}
+    - {{ include "originalAppName" $ }}-content-agent-bind
+    {{- end }}
+    jobDefinition:
+      type: Content
+      image: {{ .Values.workloads.contentDeploy.image }}

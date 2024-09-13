@@ -54,6 +54,20 @@ type chartValue struct {
 	ContentJobs      []string                            `json:"contentJobs,omitempty"`
 }
 
+type workloadDefinition struct {
+	Image string `json:"image"`
+}
+
+type configurableChartValue struct {
+	App              app                           `json:"app"`
+	Btp              btp                           `json:"btp"`
+	ImagePullSecrets []string                      `json:"imagePullSecrets,omitempty"`
+	HanaInstanceId   string                        `json:"hanaInstanceId,omitempty"`
+	ServiceInstances map[string]serviceInstanceExt `json:"serviceInstances"`
+	ServiceBindings  map[string]serviceBindingExt  `json:"serviceBindings"`
+	Workloads        map[string]workloadDefinition `json:"workloads"`
+}
+
 func updateProperties(data []byte) []byte {
 
 	m := map[string]interface{}{}
@@ -82,6 +96,32 @@ func updateProperties(data []byte) []byte {
 	return data
 }
 
+func updatePropertiesconfigurableChart(data []byte) []byte {
+
+	m := map[string]interface{}{}
+
+	json.Unmarshal(data, &m)
+
+	rawExt := m["$defs"].(map[string]interface{})["RawExtension"].(map[string]interface{})
+	rawExt["additionalProperties"] = true
+	m["$defs"].(map[string]interface{})["RawExtension"] = rawExt
+
+	serviceBindingSpec := m["$defs"].(map[string]interface{})["serviceBindingExt"].(map[string]interface{})
+	serviceBindingSpec["required"] = []string{"name", "serviceInstanceName", "secretName"}
+
+	workloadDefinition := m["$defs"].(map[string]interface{})["workloadDefinition"].(map[string]interface{})
+	workloadDefinition["additionalProperties"] = true
+	m["$defs"].(map[string]interface{})["workloadDefinition"] = workloadDefinition
+
+	configurableChartValue := m["$defs"].(map[string]interface{})["configurableChartValue"].(map[string]interface{})
+	configurableChartValue["additionalProperties"] = true
+	m["$defs"].(map[string]interface{})["configurableChartValue"] = configurableChartValue
+
+	data, _ = json.Marshal(m)
+
+	return data
+}
+
 func main() {
 
 	s := jsonschema.Reflect(&chartValue{})
@@ -99,10 +139,20 @@ func main() {
 		panic(err)
 	}
 
+	// ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+	sV2 := jsonschema.Reflect(&configurableChartValue{})
+	dataV2, errV2 := json.MarshalIndent(sV2, "", "  ")
+	if errV2 != nil {
+		panic(errV2.Error())
+	}
+
+	dataV2 = updatePropertiesconfigurableChart(dataV2)
+	fmt.Println(string(dataV2))
+
 	// write the whole body at once
-	err = os.WriteFile("../test/files/expectedChart/values.schema.json", data, 0644)
+	err = os.WriteFile("../files/configurableTemplatesChart/values.schema.json", dataV2, 0644)
 	if err != nil {
 		panic(err)
 	}
-
 }

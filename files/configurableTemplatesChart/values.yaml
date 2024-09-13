@@ -1,0 +1,42 @@
+serviceInstances:
+
+serviceBindings:
+
+app:
+  # -- BTP application name (xsappname)
+  domains:
+    # -- primary domain to expose application routes (usually a subdomain of the cluster domain). Ensure this is under 62 chars.
+    primary:
+    # -- Customer specific domains for which dns entries are created (these can be stable and transferred between clusters)
+    secondary: []
+  # -- Labels used to identify the istio ingress-gateway component and its corresponding namespace
+  istioIngressGatewayLabels:
+    istio: ingressgateway
+    app: istio-ingressgateway
+
+btp:
+  # -- BTP Global account identifier where the application is hosted
+  globalAccountId: # mandatory let helm fail if not provided
+  provider:
+    # -- Subdomain of the provider sub-account where application services are created
+    subdomain: # mandatory let helm fail if not provided
+    # -- Tenant identifier for the provider sub-account (usually a guid)
+    tenantId: # mandatory let helm fail if not provided
+
+# -- Image pull secrets
+imagePullSecrets: []
+
+hanaInstanceId:
+
+workloads:
+  server:
+    image:
+
+  appRouter:
+    image:
+
+  tenantJob:
+    image:
+
+  contentDeploy:
+    image:

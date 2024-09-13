@@ -1,0 +1,108 @@
+serviceInstances:
+  destination:
+    name: bookshop-destination
+    serviceOfferingName: destination
+    servicePlanName: lite
+    parameters:
+      HTML5Runtime_enabled: true
+  html5RepoRuntime:
+    name: bookshop-html5-repo-runtime
+    serviceOfferingName: html5-apps-repo
+    servicePlanName: app-runtime
+    parameters: {}
+  html5RepoHost:
+    name: bookshop-html5-repo-host
+    serviceOfferingName: html5-apps-repo
+    servicePlanName: app-host
+    parameters: {}
+  xsuaa:
+    name: bookshop-uaa
+    serviceOfferingName: xsuaa
+    servicePlanName: broker
+    parameters:
+      xsappname: bookshop
+      tenant-mode: shared
+      oauth2-configuration:
+        credential-types:
+          - binding-secret
+        redirect-uris: []
+  saasRegistry:
+    name: bookshop-saas-registry
+    serviceOfferingName: saas-registry
+    servicePlanName: application
+    parameters:
+      plan: general
+      xsappname: bookshop
+      appName: bookshop
+      displayName: (bookshop)
+      description: (A simple CAP project.)
+      appUrls:
+        callbackTimeoutMillis: 300000
+        onSubscriptionAsync: true
+        onUnSubscriptionAsync: true
+      category: CAP
+  serviceManager:
+    name: bookshop-service-manager
+    serviceOfferingName: service-manager
+    servicePlanName: container
+    parameters: {}
+serviceBindings:
+  destination:
+    name: bookshop-destination-bind
+    serviceInstanceName: bookshop-destination
+    secretName: bookshop-destination-bind-secret
+    secretKey: credentials
+    parameters: {}
+  html5RepoRuntime:
+    name: bookshop-html5-repo-runtime-bind
+    serviceInstanceName: bookshop-html5-repo-runtime
+    secretName: bookshop-html5-repo-runtime-bind-secret
+    secretKey: credentials
+    parameters: {}
+  html5RepoHost:
+    name: bookshop-html5-repo-host-bind
+    serviceInstanceName: bookshop-html5-repo-host
+    secretName: bookshop-html5-repo-host-bind-secret
+    secretKey: credentials
+    parameters: {}
+  xsuaa:
+    name: bookshop-uaa-bind
+    serviceInstanceName: bookshop-uaa
+    secretName: bookshop-uaa-bind-secret
+    secretKey: credentials
+    parameters: {}
+  saasRegistry:
+    name: bookshop-saas-registry-bind
+    serviceInstanceName: bookshop-saas-registry
+    secretName: bookshop-saas-registry-bind-secret
+    secretKey: credentials
+    parameters: {}
+  serviceManager:
+    name: bookshop-service-manager-bind
+    serviceInstanceName: bookshop-service-manager
+    secretName: bookshop-service-manager-bind-secret
+    secretKey: credentials
+    parameters: {}
+app:
+  domains:
+    primary: null
+    secondary: []
+  istioIngressGatewayLabels:
+    istio: ingressgateway
+    app: istio-ingressgateway
+btp:
+  globalAccountId: null
+  provider:
+    subdomain: null
+    tenantId: null
+imagePullSecrets: []
+hanaInstanceId: null
+workloads:
+  server:
+    image: null
+  appRouter:
+    image: null
+  tenantJob:
+    image: null
+  contentDeploy:
+    image: null
