@@ -70,7 +70,7 @@ spec:
       image: "{{.Values.workloads.authorReadingsApprouter.image}}"
       env:
         - name: TENANT_HOST_PATTERN
-          value: ^(.*).${org}-${space}.${domain}
+          value: ^(.*).{{ template "domainPatterns" . }}
         - name: httpHeaders
           value: "[{ \"Content-Security-Policy\": \"frame-ancestors 'self'
             https://*.hana.ondemand.com\" }]"
@@ -103,7 +103,6 @@ spec:
     deploymentDefinition:
       type: null
       image: "{{.Values.workloads.authorReadingsMtxSrv.image}}"
-      env: []
   - name: author-readings-app-deployer
     consumedBTPServices:
       - author-readings-html5-repo-host-bind
@@ -111,7 +110,6 @@ spec:
     jobDefinition:
       type: Content
       image: "{{.Values.workloads.authorReadingsAppDeployer.image}}"
-      env: []
   - name: author-readings-mtx
     consumedBTPServices:
       - author-readings-registry-bind
@@ -121,7 +119,6 @@ spec:
     jobDefinition:
       type: TenantOperation
       image: "{{.Values.workloads.authorReadingsMtx.image}}"
-      env: []
   - name: author-readings
     consumedBTPServices:
       - author-readings-uaa-bind

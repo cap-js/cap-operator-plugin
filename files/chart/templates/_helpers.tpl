@@ -3,6 +3,10 @@
 {{- end -}}
 
 {{- define "appName" -}}
-{{- $xsuaa := index .Values.serviceInstances "xsuaa" -}}
-{{ printf "%s" $xsuaa.parameters.xsappname }}
+{{- range $sik, $siv := .Values.serviceInstances}}
+    {{- if and (eq (get $siv "serviceOfferingName") "xsuaa") (eq (get $siv "servicePlanName") "broker") -}}
+        {{ printf "%s" $siv.parameters.xsappname }}
+        {{- break -}}
+    {{- end -}}
+{{- end -}}
 {{- end -}}

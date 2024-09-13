@@ -138,7 +138,7 @@ workloads:
       image: null
       env:
         - name: TENANT_HOST_PATTERN
-          value: ^(.*).${org}-${space}.${domain}
+          value: ^(.*).{{ template "domainPatterns" . }}
         - name: httpHeaders
           value: "[{ \"Content-Security-Policy\": \"frame-ancestors 'self'
             https://*.hana.ondemand.com\" }]"
@@ -173,7 +173,6 @@ workloads:
     deploymentDefinition:
       type: null
       image: null
-      env: []
   authorReadingsAppDeployer:
     name: author-readings-app-deployer
     consumedBTPServices:
@@ -182,7 +181,6 @@ workloads:
     jobDefinition:
       type: Content
       image: null
-      env: []
   authorReadingsMtx:
     name: author-readings-mtx
     consumedBTPServices:
@@ -193,7 +191,6 @@ workloads:
     jobDefinition:
       type: TenantOperation
       image: null
-      env: []
   authorReadings:
     name: author-readings
     consumedBTPServices:
