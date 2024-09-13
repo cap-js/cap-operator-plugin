@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## Version 0.3.0 - 13-September-2024
+
+### Added
+
+- New helm chart variant with configurable templates
+- CLI tool to convert existing basic chart to configurable templates chart
+- Updated @sap/cds-dk to version `8.2.1` for the CLI option parsing issue fix
+- Support for dynamic service instance key name in `runtime-values.yaml` file
+- Changed workload keys in the `values.yaml` to camelcase
+
+### Fixed
+
+- Removed empty `env` from workloads during mta transformation
+- App name derivation fix in template function
+
 ## Version 0.2.0 - 21-August-2024
 
 ### Added
@@ -10,7 +25,7 @@ All notable changes to this project will be documented in this file. This projec
 - Updated `values.schema.json` to allow additional properties on `values.yaml`
 - Removed unused variables from templates
 - Unit test enhancements
-  
+
 ## Version 0.1.0 - 25-July-2024
 
 ### Added
