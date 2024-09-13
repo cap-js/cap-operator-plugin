@@ -1,6 +1,7 @@
 const { join } = require('path')
 const { execSync } = require('child_process')
 const { expect } = require("chai")
+const fs = require('fs')
 
 const TempUtil = require('./tempUtil')
 const tempUtil = new TempUtil(__filename, { local: true })
@@ -8,7 +9,7 @@ const tempUtil = new TempUtil(__filename, { local: true })
 const { getFolderHash, getFileHash, updateDependency, setupHack, undoSetupHack } = require('./util')
 
 describe('cds add cap-operator', () => {
-    let temp, bookshop
+    let temp, bookshop, orignalXsSecurityJson
 
     before(async () => {
         await tempUtil.cleanUp()
@@ -18,6 +19,7 @@ describe('cds add cap-operator', () => {
         updateDependency(bookshop)
         execSync(`npm install`, { cwd: bookshop })
         setupHack(bookshop)
+        orignalXsSecurityJson = fs.readFileSync(bookshop+"/xs-security.json", 'utf8')
     })
 
     afterEach(async () => {
@@ -95,12 +97,15 @@ describe('cds add cap-operator', () => {
     it('Add cap-operator chart with mta and mtaExtensions', async () => {
         await cds.utils.copy(join('test/files', 'mta.yaml'), join(bookshop, 'mta.yaml'))
         await cds.utils.copy(join('test/files', 'corrected_xsappname.mtaext'), join(bookshop, 'corrected_xsappname.mtaext'))
+        // revert xs-security to original value
+        fs.writeFileSync(bookshop+"/xs-security.json", orignalXsSecurityJson)
 
         execSync(`cds add cap-operator --with-mta mta.yaml --with-mta-extensions corrected_xsappname.mtaext`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname,'files/expectedChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))
         expect(getFileHash(join(__dirname,'../files/chart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))
         expect(getFileHash(join(__dirname,'files/expectedChart/valuesWithMTA.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
+        expect(getFileHash(join(__dirname,'files/xs-security.json'))).to.equal(getFileHash(join(bookshop, 'xs-security.json')))
     })
 
     it('Add cap-operator chart and add destination', async () => {
@@ -113,6 +118,9 @@ describe('cds add cap-operator', () => {
     })
 
     it('Add cap-operator configurable template chart', async () => {
+        // revert xs-security to original value
+        fs.writeFileSync(bookshop+"/xs-security.json", orignalXsSecurityJson)
+
         execSync(`cds add cap-operator --with-configurable-templates`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))
@@ -150,6 +158,8 @@ describe('cds add cap-operator', () => {
     it('Add cap-operator configurable template chart with mta and mtaExtensions', async () => {
         await cds.utils.copy(join('test/files', 'mta.yaml'), join(bookshop, 'mta.yaml'))
         await cds.utils.copy(join('test/files', 'corrected_xsappname.mtaext'), join(bookshop, 'corrected_xsappname.mtaext'))
+        // revert xs-security to original value
+        fs.writeFileSync(bookshop+"/xs-security.json", orignalXsSecurityJson)
 
         execSync(`cds add cap-operator --with-mta mta.yaml --with-mta-extensions corrected_xsappname.mtaext --with-configurable-templates`, { cwd: bookshop })
 
@@ -157,5 +167,6 @@ describe('cds add cap-operator', () => {
         expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/valuesWithMTA.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
         expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/templates/cap-operator-cros-mta.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cap-operator-cros.yaml')))
         expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/templates/_helpers.tpl'))).to.equal(getFileHash(join(bookshop, 'chart/templates/_helpers.tpl')))
+        expect(getFileHash(join(__dirname,'files/xs-security.json'))).to.equal(getFileHash(join(bookshop, 'xs-security.json')))
     })
 })
