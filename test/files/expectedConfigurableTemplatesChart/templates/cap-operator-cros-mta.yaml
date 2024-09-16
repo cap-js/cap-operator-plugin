@@ -52,7 +52,7 @@ metadata:
   name: {{ include "capApplicationVersionName" $ }}
 spec:
   capApplicationInstance: {{ include "appName" $ }}
-  version: {{ .Release.Revision }}
+  version: "{{ .Release.Revision }}"
   registrySecrets:
     {{- range .Values.imagePullSecrets }}
     - {{.}}
@@ -84,7 +84,7 @@ spec:
       - author-readings-auditlog-bind
       - author-readings-registry-bind
     deploymentDefinition:
-      type: null
+      type: CAP
       image: "{{.Values.workloads.authorReadingsSrv.image}}"
       env:
         - name: OTLP_TRACE_URL
@@ -101,7 +101,7 @@ spec:
       - author-readings-service-manager-author-readings-mtx-srv-bind
       - author-readings-logging-bind
     deploymentDefinition:
-      type: null
+      type: Additional
       image: "{{.Values.workloads.authorReadingsMtxSrv.image}}"
   - name: author-readings-app-deployer
     consumedBTPServices:
@@ -124,7 +124,7 @@ spec:
       - author-readings-uaa-bind
       - author-readings-logging-bind
     deploymentDefinition:
-      type: null
+      type: Additional
       image: "{{.Values.workloads.authorReadings.image}}"
       env:
         - name: TENANT_HOST_PATTERN
