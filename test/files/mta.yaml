@@ -88,7 +88,7 @@ modules:
   # Multi Tenancy Service Module (Onboarding, Upgrading)
   - name: author-readings-mtx-srv
     type: nodejs
-    path: gen/srv
+    path: gen/multi-tenancy/srv
     requires:
       - name: author-readings-auditlog
       - name: author-readings-uaa

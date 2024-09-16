@@ -52,7 +52,7 @@ metadata:
   name: {{ include "capApplicationVersionName" $ }}
 spec:
   capApplicationInstance: {{ include "appName" $ }}
-  version: {{ .Release.Revision }}
+  version: "{{ .Release.Revision }}"
   registrySecrets:
     {{- range .Values.imagePullSecrets }}
     - {{.}}
