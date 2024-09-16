@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## Version 0.4.0 - 16-September-2024
+
+### Added
+
+- Added handling for `CAP` and `Additional` workloads in mta transformer
+
+### Fixed
+
+- Fix issue with CAV.Spec.Version being set as a number
+
 ## Version 0.3.0 - 13-September-2024
 
 ### Added
