@@ -450,6 +450,21 @@
             ],
             "type": "object"
         },
+        "DeletionRules": {
+            "additionalProperties": false,
+            "properties": {
+                "expression": {
+                    "type": "string"
+                },
+                "metrics": {
+                    "items": {
+                        "$ref": "#/$defs/MetricRule"
+                    },
+                    "type": "array"
+                }
+            },
+            "type": "object"
+        },
         "DeploymentDetails": {
             "additionalProperties": false,
             "properties": {
@@ -482,6 +497,9 @@
                 },
                 "livenessProbe": {
                     "$ref": "#/$defs/Probe"
+                },
+                "monitoring": {
+                    "$ref": "#/$defs/WorkloadMonitoring"
                 },
                 "nodeName": {
                     "type": "string"
@@ -960,6 +978,18 @@
             ],
             "type": "object"
         },
+        "ImageVolumeSource": {
+            "additionalProperties": false,
+            "properties": {
+                "pullPolicy": {
+                    "type": "string"
+                },
+                "reference": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
         "IntOrString": {
             "additionalProperties": false,
             "properties": {
@@ -1197,6 +1227,51 @@
                     "$ref": "#/$defs/Time"
                 }
             },
+            "type": "object"
+        },
+        "MetricRule": {
+            "additionalProperties": false,
+            "properties": {
+                "calculationPeriod": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "thresholdValue": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "name",
+                "type",
+                "calculationPeriod",
+                "thresholdValue"
+            ],
+            "type": "object"
+        },
+        "MonitoringConfig": {
+            "additionalProperties": false,
+            "properties": {
+                "interval": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "string"
+                },
+                "scrapeTimeout": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "port"
+            ],
             "type": "object"
         },
         "NFSVolumeSource": {
@@ -1594,6 +1669,9 @@
                     },
                     "type": "array"
                 },
+                "supplementalGroupsPolicy": {
+                    "type": "string"
+                },
                 "sysctls": {
                     "items": {
                         "$ref": "#/$defs/Sysctl"
@@ -1797,6 +1875,9 @@
             "additionalProperties": false,
             "properties": {
                 "name": {
+                    "type": "string"
+                },
+                "request": {
                     "type": "string"
                 }
             },
@@ -2354,6 +2435,9 @@
                 "hostPath": {
                     "$ref": "#/$defs/HostPathVolumeSource"
                 },
+                "image": {
+                    "$ref": "#/$defs/ImageVolumeSource"
+                },
                 "iscsi": {
                     "$ref": "#/$defs/ISCSIVolumeSource"
                 },
@@ -2569,6 +2653,18 @@
                 "name",
                 "consumedBTPServices"
             ],
+            "type": "object"
+        },
+        "WorkloadMonitoring": {
+            "additionalProperties": false,
+            "properties": {
+                "deletionRules": {
+                    "$ref": "#/$defs/DeletionRules"
+                },
+                "scrapeConfig": {
+                    "$ref": "#/$defs/MonitoringConfig"
+                }
+            },
             "type": "object"
         },
         "app": {
