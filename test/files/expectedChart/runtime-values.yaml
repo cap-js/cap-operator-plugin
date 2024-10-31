@@ -16,7 +16,7 @@ serviceInstances:
           - https://*bkshop.c-abc.kyma.ondemand.com/**
 app:
   domains:
-    primary: bkshop.c-abc.kyma.ondemand.com
+    primary: primary-sub-domain.c-abc.kyma.ondemand.com
     secondary: []
   istioIngressGatewayLabels:
     istio: ingressgateway
