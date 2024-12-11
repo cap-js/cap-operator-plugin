@@ -155,14 +155,15 @@ async function generateRuntimeValues(option, inputYamlPath) {
             ['Enter your global account ID: ', '', true],
             ['Enter your provider subdomain: ', '', true],
             ['Enter your provider tenant ID: ', '', true],
-            ['Enter your HANA database instance ID: ', '', false],
-            ['Enter your image pull secrets: ', '', false]
+            ['Enter primary subdomain of you application url (Optional): ', '', false],
+            ['Enter your HANA database instance ID (Optional): ', '', false],
+            ['Enter your image pull secrets (Optional): ', '', false]
         ]
 
         const answerKeys = [
             'appName', 'capOperatorSubdomain', 'clusterDomain',
             'globalAccountId', 'providerSubdomain', 'tenantId',
-            'hanaInstanceId', 'imagePullSecret'
+            'primarySubdomain','hanaInstanceId', 'imagePullSecret'
         ]
 
         const answer = await ask(...questions)
@@ -181,6 +182,9 @@ async function generateRuntimeValues(option, inputYamlPath) {
 
     if (!answerStruct['imagePullSecret'])
         delete runtimeValuesYaml['imagePullSecrets']
+
+    if (answerStruct['primarySubdomain'])
+        runtimeValuesYaml['app']['domains']['primary'] = answerStruct['primarySubdomain'] + '.' + answerStruct['clusterDomain']
 
     if (isConfigurableTempChart && answerStruct['hanaInstanceId'])
         runtimeValuesYaml['hanaInstanceId'] = answerStruct['hanaInstanceId']
