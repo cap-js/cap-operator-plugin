@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 /* eslint-disable no-console */
+/*
+SPDX-FileCopyrightText: 2025 SAP SE or an SAP affiliate company and cap-operator-plugin contributors
+SPDX-License-Identifier: Apache-2.0
+*/
 
 const isCli = require.main === module
 const cds = require('@sap/cds-dk')
