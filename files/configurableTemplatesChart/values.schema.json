@@ -291,6 +291,9 @@
                 },
                 "userInfo": {
                     "$ref": "#/$defs/UserInfo"
+                },
+                "watchParametersFromChanges": {
+                    "type": "boolean"
                 }
             },
             "required": [
