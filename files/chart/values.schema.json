@@ -1669,6 +1669,9 @@
                 "runAsUser": {
                     "type": "integer"
                 },
+                "seLinuxChangePolicy": {
+                    "type": "string"
+                },
                 "seLinuxOptions": {
                     "$ref": "#/$defs/SELinuxOptions"
                 },
@@ -2879,6 +2882,9 @@
                 },
                 "userInfo": {
                     "$ref": "#/$defs/UserInfo"
+                },
+                "watchParametersFromChanges": {
+                    "type": "boolean"
                 }
             },
             "required": [
