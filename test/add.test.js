@@ -175,7 +175,7 @@ describe('cds add cap-operator', () => {
         expect(getFileHash(join(__dirname,'files/xs-security.json'))).to.equal(getFileHash(join(bookshop, 'xs-security.json')))
     })
 
-    it.only('Add cap-operator chart with service only', async () => {
+    it('Add cap-operator chart with service only', async () => {
         execSync(`cds add cap-operator --with-service-only`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname,'files/expectedChart/Chart-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))
@@ -183,11 +183,11 @@ describe('cds add cap-operator', () => {
         expect(getFileHash(join(__dirname,'files/expectedChart/values-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
     })
 
-    it.only('Add cap-operator chart with service only and mta', async () => {
+    it('Add cap-operator chart with service only and mta', async () => {
         expect(() => execSync(`cds add cap-operator --with-service-only --with-mta mta.yaml`, { cwd: bookshop })).to.throw('Option \'--with-service-only\' cannot be used with \'--with-mta\' or \'--with-mta-extensions\' options.')
     })
 
-    it.only('Add templates to an existing cap-operator service only chart', async () => {
+    it('Add templates to an existing cap-operator service only chart', async () => {
         execSync(`cds add cap-operator --with-service-only`, { cwd: bookshop })
         execSync(`cds add cap-operator --with-templates`, { cwd: bookshop })
 
