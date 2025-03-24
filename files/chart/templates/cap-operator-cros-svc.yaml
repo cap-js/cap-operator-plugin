@@ -1,0 +1,88 @@
+---
+apiVersion: sme.sap.com/v1alpha1
+kind: CAPApplication
+metadata:
+  name: {{ include "appName" $ }}
+spec:
+  domains:
+    primary: {{.Values.app.domains.primary}}
+    {{- if .Values.app.domains.secondary }}
+    secondary:
+      {{- range .Values.app.domains.secondary }}
+      - {{.}}
+      {{- end }}
+    {{- end }}
+    istioIngressGatewayLabels:
+    {{- range $k, $v := .Values.app.istioIngressGatewayLabels }}
+    - name: {{ $k }}
+      value: {{ $v | default "invalidValue"}}
+    {{- end }}
+  btpAppName: {{ include "appName" $ }}
+  globalAccountId: {{.Values.btp.globalAccountId}}
+  btp:
+    services:
+    {{- $serviceInstances := .Values.serviceInstances }}
+    {{- range $k, $v := .Values.serviceBindings }}
+    {{- $serviceInstance := dict }}
+    {{- range $sik, $siv := $serviceInstances }}
+      {{- if eq $siv.name $v.serviceInstanceName }}
+        {{- $serviceInstance = $siv }}
+      {{- end }}
+    {{- end }}
+    {{- if hasKey $serviceInstance "serviceOfferingName" }}
+    - class: {{ get $serviceInstance "serviceOfferingName" | default "invalidValue" }}
+      {{- if $v.externalName }}
+      name: {{ $v.externalName | default "invalidValue" }}
+      {{- else }}
+      name: {{ $v.name | default "invalidValue" }}
+      {{- end }}
+      secret: {{ $v.secretName | default "invalidValue" }}
+    {{- end }}
+    {{- end }}
+---
+apiVersion: sme.sap.com/v1alpha1
+kind: CAPApplicationVersion
+metadata:
+  annotations:
+    helm.sh/hook: post-install,post-upgrade
+    helm.sh/resource-policy: keep
+  name: {{ include "capApplicationVersionName" $ }}
+spec:
+  capApplicationInstance: {{ include "appName" $ }}
+  version: "{{ .Release.Revision }}"
+  registrySecrets:
+    {{- range .Values.imagePullSecrets }}
+    - {{.}}
+    {{- end }}
+  workloads:
+  {{- range $k, $v := .Values.workloads }}
+  - name: {{ $v.name }}
+
+    {{- if $v.labels }}
+    labels: {{- toYaml $v.labels | trim | nindent 6 }}
+    {{- end }}
+
+    {{- if $v.annotations }}
+    annotations: {{- toYaml $v.annotations | trim | nindent 6 }}
+    {{- end }}
+
+    {{- if $v.consumedBTPServices }}
+    consumedBTPServices: {{- toYaml $v.consumedBTPServices | trim | nindent 4 }}
+    {{- end }}
+
+    {{- if $v.deploymentDefinition }}
+    deploymentDefinition: {{- toYaml $v.deploymentDefinition | trim | nindent 6 }}
+    {{- end }}
+
+    {{- if $v.jobDefinition }}
+    jobDefinition: {{- toYaml $v.jobDefinition | trim | nindent 6 }}
+    {{- end }}
+  {{- end }}
+
+  {{- if .Values.tenantOperations }}
+  tenantOperations: {{- toYaml .Values.tenantOperations | trim | nindent 4 }}
+  {{- end }}
+
+  {{- if .Values.contentJobs }}
+  contentJobs: {{- toYaml .Values.contentJobs | trim | nindent 4 }}
+  {{- end }}

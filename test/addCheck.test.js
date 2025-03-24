@@ -40,4 +40,9 @@ describe('cds add cap-operator canRun method test', () => {
         // TODO: should also log: '❌  multitenancy is not added to this project. Run \'cds add multitenancy\'.'
         expect(() => execSync(`cds add cap-operator`, { cwd: bookshop })).to.throw('cannot run plugin \'cap-operator\'')
     })
+    it('Add cap-operator chart with service only but without mulitenancy', async () => {
+        execSync(`cds add xsuaa`, { cwd: bookshop })
+        execSync(`cds add approuter`, { cwd: bookshop })
+        expect(() => execSync(`cds add cap-operator --with-service-only`, { cwd: bookshop })).to.not.throw()
+    })
 })
