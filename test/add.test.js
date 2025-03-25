@@ -6,7 +6,7 @@ const fs = require('fs')
 const TempUtil = require('./tempUtil')
 const tempUtil = new TempUtil(__filename, { local: true })
 
-const { getFolderHash, getFileHash, updateDependency, setupHack, undoSetupHack } = require('./util')
+const { getFileHash, updateDependency, setupHack, undoSetupHack } = require('./util')
 
 describe('cds add cap-operator', () => {
     let temp, bookshop, orignalXsSecurityJson
@@ -198,5 +198,19 @@ describe('cds add cap-operator', () => {
         expect(getFileHash(join(__dirname,'../files/chart/templates/service-binding.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/service-binding.yaml')))
         expect(getFileHash(join(__dirname,'../files/chart/templates/service-instance.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/service-instance.yaml')))
         expect(getFileHash(join(__dirname,'../files/chart/templates/cap-operator-cros-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cap-operator-cros.yaml')))
+    })
+
+    it('Add cap-operator configurable template chart with service only', async () => {
+
+        execSync(`cds add cap-operator --with-service-only --with-configurable-templates`, { cwd: bookshop })
+
+        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/Chart-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))
+        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/values-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
+        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/templates/_helpers.tpl'))).to.equal(getFileHash(join(bookshop, 'chart/templates/_helpers.tpl')))
+
+        expect(getFileHash(join(__dirname,'../files/configurableTemplatesChart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))
+        expect(getFileHash(join(__dirname,'../files/configurableTemplatesChart/templates/cap-operator-cros-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cap-operator-cros.yaml')))
+        expect(getFileHash(join(__dirname,'../files/configurableTemplatesChart/templates/service-instance.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/service-instance.yaml')))
+        expect(getFileHash(join(__dirname,'../files/configurableTemplatesChart/templates/service-binding.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/service-binding.yaml')))
     })
 })

@@ -1,3 +1,4 @@
+const fs = require('fs')
 const { join } = require('path')
 const { execSync } = require('child_process')
 const { expect } = require("chai")
@@ -5,7 +6,7 @@ const { expect } = require("chai")
 const TempUtil = require('./tempUtil')
 const tempUtil = new TempUtil(__filename, { local: true })
 
-const { getFolderHash, getFileHash, updateDependency, setupHack, undoSetupHack } = require('./util')
+const { getFileHash, updateDependency, setupHack, undoSetupHack } = require('./util')
 
 describe('cds build', () => {
 
@@ -35,9 +36,13 @@ describe('cds build', () => {
         execSync(`cds build`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname,'files/expectedChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'gen/chart/Chart.yaml')))
-        expect(getFileHash(join(__dirname,'../files/chart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'gen/chart/values.schema.json')))
         expect(getFileHash(join(__dirname,'files/expectedChart/values.yaml'))).to.equal(getFileHash(join(bookshop, 'gen/chart/values.yaml')))
-        expect(getFolderHash(join(__dirname,'../files/chart/templates'))).to.equal(getFolderHash(join(bookshop, 'gen/chart/templates')))
+        expect(getFileHash(join(__dirname,'../files/chart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'gen/chart/values.schema.json')))
+        expect(getFileHash(join(__dirname,'../files/chart/templates/_helpers.tpl'))).to.equal(getFileHash(join(bookshop, 'gen/chart/templates/_helpers.tpl')))
+        expect(getFileHash(join(__dirname,'../files/chart/templates/service-binding.yaml'))).to.equal(getFileHash(join(bookshop, 'gen/chart/templates/service-binding.yaml')))
+        expect(getFileHash(join(__dirname,'../files/chart/templates/service-instance.yaml'))).to.equal(getFileHash(join(bookshop, 'gen/chart/templates/service-instance.yaml')))
+
+        expect(getFileHash(join(__dirname,'../files/chart/templates/cap-operator-cros.yaml'))).to.equal(getFileHash(join(bookshop, 'gen/chart/templates/cap-operator-cros.yaml')))
     })
 
     it('Build cap-operator chart with modified templates', async () => {
@@ -49,8 +54,26 @@ describe('cds build', () => {
         execSync(`cds build`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname,'files/expectedChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'gen/chart/Chart.yaml')))
-        expect(getFileHash(join(__dirname,'../files/chart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'gen/chart/values.schema.json')))
         expect(getFileHash(join(__dirname,'files/expectedChart/values.yaml'))).to.equal(getFileHash(join(bookshop, 'gen/chart/values.yaml')))
-        expect(getFolderHash(join(__dirname,'../files/chart/templates'))).to.not.equal(getFolderHash(join(bookshop, 'gen/chart/templates')))
+        expect(getFileHash(join(__dirname,'../files/chart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'gen/chart/values.schema.json')))
+        expect(getFileHash(join(__dirname,'../files/chart/templates/service-binding.yaml'))).to.equal(getFileHash(join(bookshop, 'gen/chart/templates/service-binding.yaml')))
+        expect(getFileHash(join(__dirname,'../files/chart/templates/service-instance.yaml'))).to.equal(getFileHash(join(bookshop, 'gen/chart/templates/service-instance.yaml')))
+        expect(getFileHash(join(__dirname,'../files/chart/templates/cap-operator-cros.yaml'))).to.equal(getFileHash(join(bookshop, 'gen/chart/templates/cap-operator-cros.yaml')))
+
+        expect(fs.existsSync(join(bookshop, 'gen/chart/templates/_helpers.tpl'))).to.equal(false)
+    })
+
+    it('Build cap-operator service only chart', async () => {
+        execSync(`cds add cap-operator --force --with-service-only`, { cwd: bookshop })
+        execSync(`cds build`, { cwd: bookshop })
+
+        expect(getFileHash(join(__dirname,'files/expectedChart/Chart-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'gen/chart/Chart.yaml')))
+        expect(getFileHash(join(__dirname,'files/expectedChart/values-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'gen/chart/values.yaml')))
+        expect(getFileHash(join(__dirname,'../files/chart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'gen/chart/values.schema.json')))
+        expect(getFileHash(join(__dirname,'../files/chart/templates/_helpers.tpl'))).to.equal(getFileHash(join(bookshop, 'gen/chart/templates/_helpers.tpl')))
+        expect(getFileHash(join(__dirname,'../files/chart/templates/service-binding.yaml'))).to.equal(getFileHash(join(bookshop, 'gen/chart/templates/service-binding.yaml')))
+        expect(getFileHash(join(__dirname,'../files/chart/templates/service-instance.yaml'))).to.equal(getFileHash(join(bookshop, 'gen/chart/templates/service-instance.yaml')))
+
+        expect(getFileHash(join(__dirname,'../files/chart/templates/cap-operator-cros-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'gen/chart/templates/cap-operator-cros.yaml')))
     })
 })

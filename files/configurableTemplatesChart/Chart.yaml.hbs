@@ -1,7 +1,12 @@
 apiVersion: v2
 name: {{appName}}
 description: Helm chart to deploy {{appName}} using CAP Operator
+{{#isApp}}
 type: application
+{{/isApp}}
+{{#isService}}
+type: service
+{{/isService}}
 version: 0.0.1
 appVersion: {{appVersion}}
 annotations:
