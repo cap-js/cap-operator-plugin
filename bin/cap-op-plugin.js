@@ -215,8 +215,9 @@ function updateWorkloadEnv(runtimeValuesYaml, valuesYaml, answerStruct) {
 
         const cdsConfigHana = Mustache.render('{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"{{hanaInstanceId}}"}}}}}', answerStruct)
 
-        if (workloadDetails?.deploymentDefinition?.type === 'CAP' && answerStruct['hanaInstanceId'])
+        if ((workloadDetails?.deploymentDefinition?.type === 'CAP' || workloadDetails?.deploymentDefinition?.type === 'service') && answerStruct['hanaInstanceId']) {
             updateCdsConfigEnv(runtimeValuesYaml, workloadKey, 'deploymentDefinition', cdsConfigHana)
+        }
 
         if (workloadDetails?.jobDefinition?.type === 'TenantOperation' && answerStruct['hanaInstanceId']) {
             updateCdsConfigEnv(runtimeValuesYaml, workloadKey, 'jobDefinition', cdsConfigHana)
@@ -236,6 +237,11 @@ function updateWorkloadEnv(runtimeValuesYaml, valuesYaml, answerStruct) {
         if (workloadDetails?.deploymentDefinition?.env.length === 0 || workloadDetails?.jobDefinition?.env.length === 0) {
             delete runtimeValuesYaml['workloads'][workloadKey]
         }
+    }
+
+    // if no workload definition is present, remove workloads key
+    if (Object.keys(runtimeValuesYaml['workloads']).length === 0) {
+        delete runtimeValuesYaml['workloads']
     }
 }
 
