@@ -24,9 +24,11 @@ app:
 
 btp:
     globalAccountId: {{globalAccountId}}
+    {{#isApp}}
     provider:
         subdomain: {{providerSubdomain}}
         tenantId: {{tenantId}}
+    {{/isApp}}
 
 imagePullSecrets:
     - {{imagePullSecret}}
