@@ -201,4 +201,30 @@ EXAMPLES
         expect(log).to.include('Exisiting chart is already a configurable template chart. No need for conversion.')
         expect(log).to.include('already in the configurable template chart format.')
     })
+
+    it('Convert existing service chart to configurable template chart with runtime-values.yaml', async () => {
+        execSync(`cds add cap-operator --with-service-only`, { cwd: bookshop })
+
+        // Copy filled values.yaml
+        await cds.utils.copy(join(__dirname, 'files', 'values-of-simple-service-chart-filled.yaml'), join(bookshop, 'chart/values.yaml'))
+        await cds.utils.copy(join(__dirname, 'files', 'runtime-values-of-simple-service-chart.yaml'), join(bookshop, 'chart/runtime-values.yaml'))
+        execSync(`npx cap-op-plugin convert-to-configurable-template-chart --with-runtime-yaml chart/runtime-values.yaml`, { cwd: bookshop })
+
+        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/templates/cap-operator-cros-modified-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cap-operator-cros.yaml')))
+        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/values-modified-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
+        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/runtime-values-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
+    })
+
+    it('Convert existing service chart to configurable template chart first then transform runtime-values.yaml', async () => {
+        execSync(`cds add cap-operator`, { cwd: bookshop })
+
+        // Copy filled values.yaml
+        await cds.utils.copy(join(__dirname, 'files', 'values-of-simple-service-chart-filled.yaml'), join(bookshop, 'chart/values.yaml'))
+        await cds.utils.copy(join(__dirname, 'files', 'runtime-values-of-simple-service-chart.yaml'), join(bookshop, 'chart/runtime-values.yaml'))
+        execSync(`npx cap-op-plugin convert-to-configurable-template-chart`, { cwd: bookshop })
+
+        const log = execSync(`npx cap-op-plugin convert-to-configurable-template-chart --with-runtime-yaml chart/runtime-values.yaml`, { cwd: bookshop }).toString()
+        expect(log).to.include('Exisiting chart is already a configurable template chart. No need for conversion.')
+        expect(log).to.include('Transforming runtime values file')
+    })
 })

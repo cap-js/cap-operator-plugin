@@ -117,7 +117,11 @@ async function convertToconfigurableTemplateChart(option, runtimeYamlPath) {
     console.log('Converting chart '+cds.utils.path.join(cds.root,'chart')+' to configurable template chart.')
 
     // Copy templates
-    await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/templates')).to(cds.utils.path.join(cds.root,'chart','templates'))
+    await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/templates/_helpers.tpl')).to(cds.utils.path.join(cds.root,'chart/templates/_helpers.tpl'))
+    await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/templates/service-binding.yaml')).to(cds.utils.path.join(cds.root,'chart/templates/service-binding.yaml'))
+    await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/templates/service-instance.yaml')).to(cds.utils.path.join(cds.root,'chart/templates/service-instance.yaml'))
+    isServiceOnlyChart(cds.utils.path.join(cds.root,'chart')) ? await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/templates/cap-operator-cros-svc.yaml')).to(cds.utils.path.join(cds.root,'chart/templates/cap-operator-cros.yaml')) :
+        await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/templates/cap-operator-cros.yaml')).to(cds.utils.path.join(cds.root,'chart/templates/cap-operator-cros.yaml'))
 
     // Copy values.schema.json
     await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/values.schema.json')).to(cds.utils.path.join(cds.root,'chart', 'values.schema.json'))
