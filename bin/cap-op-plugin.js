@@ -190,6 +190,7 @@ async function generateRuntimeValues(option, inputYamlPath) {
     answerStruct['xsuaaKeyName'] = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'xsuaa') || 'xsuaa'
 
     answerStruct['isApp'] = !isServiceOnly
+    answerStruct['isService'] = isServiceOnly
     let runtimeValuesYaml = yaml.parse(Mustache.render(await cds.utils.read(cds.utils.path.join(__dirname, '../files/runtime-values.yaml.hbs')), answerStruct))
 
     if (!answerStruct['imagePullSecret'])
