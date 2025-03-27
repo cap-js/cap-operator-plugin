@@ -79,10 +79,6 @@ spec:
     {{- end }}
   {{- end }}
 
-  {{- if .Values.tenantOperations }}
-  tenantOperations: {{- toYaml .Values.tenantOperations | trim | nindent 4 }}
-  {{- end }}
-
   {{- if .Values.contentJobs }}
   contentJobs: {{- toYaml .Values.contentJobs | trim | nindent 4 }}
   {{- end }}
