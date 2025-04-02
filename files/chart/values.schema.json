@@ -537,6 +537,9 @@
                 "resources": {
                     "$ref": "#/$defs/ResourceRequirements"
                 },
+                "restartPolicy": {
+                    "type": "string"
+                },
                 "securityContext": {
                     "$ref": "#/$defs/SecurityContext"
                 },
@@ -1072,6 +1075,9 @@
                 },
                 "resources": {
                     "$ref": "#/$defs/ResourceRequirements"
+                },
+                "restartPolicy": {
+                    "type": "string"
                 },
                 "securityContext": {
                     "$ref": "#/$defs/SecurityContext"
@@ -1943,6 +1949,25 @@
             },
             "type": "object"
         },
+        "Route": {
+            "additionalProperties": false,
+            "properties": {
+                "path": {
+                    "type": "string"
+                },
+                "port": {
+                    "type": "integer"
+                },
+                "workloadName": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "workloadName",
+                "port"
+            ],
+            "type": "object"
+        },
         "SELinuxOptions": {
             "additionalProperties": false,
             "properties": {
@@ -2159,6 +2184,25 @@
             },
             "required": [
                 "path"
+            ],
+            "type": "object"
+        },
+        "ServiceExposure": {
+            "additionalProperties": false,
+            "properties": {
+                "routes": {
+                    "items": {
+                        "$ref": "#/$defs/Route"
+                    },
+                    "type": "array"
+                },
+                "subDomain": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "subDomain",
+                "routes"
             ],
             "type": "object"
         },
@@ -2743,6 +2787,12 @@
                         "$ref": "#/$defs/serviceBindingExt"
                     },
                     "type": "object"
+                },
+                "serviceExposures": {
+                    "items": {
+                        "$ref": "#/$defs/ServiceExposure"
+                    },
+                    "type": "array"
                 },
                 "serviceInstances": {
                     "additionalProperties": {

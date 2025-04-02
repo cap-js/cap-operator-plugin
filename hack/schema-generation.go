@@ -57,6 +57,7 @@ type chartValue struct {
 	Workloads        map[string]v1alpha1.WorkloadDetails `json:"workloads"`
 	TenantOperations v1alpha1.TenantOperations           `json:"tenantOperations,omitempty"`
 	ContentJobs      []string                            `json:"contentJobs,omitempty"`
+	ServiceExposures []v1alpha1.ServiceExposure          `json:"serviceExposures,omitempty"`
 }
 
 type workloadDefinition struct {

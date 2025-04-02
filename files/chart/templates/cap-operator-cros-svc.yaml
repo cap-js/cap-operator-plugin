@@ -82,3 +82,7 @@ spec:
   {{- if .Values.contentJobs }}
   contentJobs: {{- toYaml .Values.contentJobs | trim | nindent 4 }}
   {{- end }}
+
+  {{- if .Values.serviceExposures }}
+  serviceExposures: {{- toYaml .Values.serviceExposures | trim | nindent 4 }}
+  {{- end }}

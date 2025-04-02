@@ -104,6 +104,10 @@ workloads:
       - bookshop-service-manager-bind
     deploymentDefinition:
       type: service
+      ports:
+        - name: server-port
+          port: 4004
+          appProtocol: http
       image: null
   contentDeploy:
     name: content-deploy
@@ -116,3 +120,8 @@ workloads:
     jobDefinition:
       type: Content
       image: null
+serviceExposures:
+  - subDomain: bookshop
+    routes:
+      - workloadName: server
+        port: 4004

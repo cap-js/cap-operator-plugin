@@ -108,6 +108,10 @@ workloads:
       env:
       - name: CDS_CONFIG
         value: '{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"abcd"}}}}}'
+      ports:
+      - name: server-port
+        port: 4004
+        appProtocol: http
   contentDeploy:
     name: content-deploy
     labels:
@@ -121,3 +125,8 @@ workloads:
       image: gcr.io/test/content-deploy
 contentJobs:
 - content-deploy
+serviceExposures:
+- subDomain: bookshop
+  routes:
+  - workloadName: server
+    port: 4004

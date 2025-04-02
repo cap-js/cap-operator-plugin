@@ -216,7 +216,7 @@ EXAMPLES
     })
 
     it('Convert existing service chart to configurable template chart first then transform runtime-values.yaml', async () => {
-        execSync(`cds add cap-operator`, { cwd: bookshop })
+        execSync(`cds add cap-operator --with-service-only`, { cwd: bookshop })
 
         // Copy filled values.yaml
         await cds.utils.copy(join(__dirname, 'files', 'values-of-simple-service-chart-filled.yaml'), join(bookshop, 'chart/values.yaml'))

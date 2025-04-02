@@ -17,6 +17,10 @@ workloads:
             {{/isApp}}
             {{#isService}}
             type: service
+            ports:
+            - name: server-port
+              port: 4004
+              appProtocol: http
             {{/isService}}
             image:
 
@@ -55,3 +59,10 @@ workloads:
             type: TenantOperation
             image:
     {{/isApp}}
+{{#isService}}
+serviceExposures:
+- subDomain: {{appName}}
+  routes:
+  - workloadName: server
+    port: 4004
+{{/isService}}
