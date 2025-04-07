@@ -31,10 +31,10 @@
     "mustache": "^4.2.0"
   },
   "devDependencies": {
-    "chai": "^4",
+    "chai": "^5",
     "mocha": "^11",
     "nyc": "^17",
-    "sinon": "^19"
+    "sinon": "^20"
   },
   "scripts": {
     "test": "mocha --timeout 20000",
