@@ -1,9 +1,10 @@
 apiVersion: v2
 name: bookshop
 description: Helm chart to deploy bookshop using CAP Operator
-type: service
+type: application
 version: 0.0.1
 appVersion: 1.0.0
 annotations:
   app.kubernetes.io/managed-by: cap-operator-plugin
   app.kubernetes.io/part-of: cap-operator-configurable-templates
+  app.kubernetes.io/component: service-only
