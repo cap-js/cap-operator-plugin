@@ -57,7 +57,7 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
         ```sh
         cds add cap-operator --with-service-only
         ```
-        ![](.images/cds-add-cap-operator-with-templates.gif)
+        ![](.images/cds-add-cap-operator-with-service-only.gif)
 
     * `--force`
 
