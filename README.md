@@ -118,8 +118,8 @@ The generated `chart/values.yaml` contains two types of information:
             - IstioIngressGatewayLabels - Labels used to identify the Istio ingress-gateway component and its corresponding namespace. Usually {“app”:“istio-ingressgateway”,“istio”:“ingressgateway”}
         - btp
             - GlobalAccountId - SAP BTP Global Account Identifier where services are entitled for the current application
-            - Subdomain - Subdomain of the provider subaccount to which you deploy the application. Not required for services only applications.
-            - TenantId - Tenant ID of the provider subaccount to which you deploy the application. Not required for services only applications.
+            - Subdomain - Subdomain of the provider subaccount to which you deploy the application. This is not required for services-only applications.
+            - TenantId - Tenant ID of the provider subaccount to which you deploy the application. This is not required for services-only applications.
         - [imagePullSecrets](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) - Kubernetes secret used to pull the application docker images from a private container image registry or repository.
         - env information inside workloads
 
@@ -149,8 +149,8 @@ The generated `chart/values.yaml` contains two types of information:
         kubectl get gateway -n kyma-system kyma-gateway -o jsonpath='{.spec.servers[0].hosts[0]}'
         ```
     * **Global Account ID (globalAccountId) *[Mandatory]*** - SAP BTP Global Account Identifier where services are entitled for the application.
-    * **Provider subdomain (providerSubdomain) *[Mandatory only for applications; it does not apply to services only scenarios]*** - Subdomain of the provider subaccount to which you deploy the application.
-    * **Tenant ID (tenantId) *[Mandatory only for applications; it does not apply to services only scenarios]*** - Tenant ID of the provider subaccount to which you deploy the application.
+    * **Provider subdomain (providerSubdomain) *[Mandatory for applications; it does not apply to services-only scenarios]*** - Subdomain of the provider subaccount to which you deploy the application.
+    * **Tenant ID (tenantId) *[Mandatory for applications; it does not apply to services-only scenarios]*** - Tenant ID of the provider subaccount to which you deploy the application.
     * **HANA Instance ID (hanaInstanceId) *[Optional]*** - ID of the SAP HANA instance to which the application is deployed. It's only required if there are multiple SAP HANA instances in the subaccount.
     * **Image Pull Secrets (imagePullSecret) *[Optional]*** - Kubernetes secret used to pull the application docker images from a private container image registry or repository.
 
@@ -185,8 +185,9 @@ The generated `chart/values.yaml` contains two types of information:
         imagePullSecret: regcred
         ```
 
-        Similar to the interactive mode, `appName`, `capOperatorSubdomain`, `clusterDomain`, `globalAccountId`, `providerSubdomain`, and `tenantId` are mandatory fields for applications and in case of services only scenarios, `appName`, `capOperatorSubdomain`, `clusterDomain`, and `globalAccountId` are mandatory. If they're not provided in the input YAML, the plugin throws an error.
-    After execution, the `runtime-values.yaml` file is created in the chart folder of your project directory.
+        Similar to the interactive mode, `appName`, `capOperatorSubdomain`, `clusterDomain`, `globalAccountId`, `providerSubdomain`, and `tenantId` are mandatory fields for applications. In case of services-only scenarios, `appName`, `capOperatorSubdomain`, `clusterDomain`, and `globalAccountId` are mandatory. The plugin throws an error if they're not provided in the input YAML.
+
+      After execution, the `runtime-values.yaml` file is created in the chart folder of your project directory.
 
 7. Now, you can deploy the application using the following command:
 
