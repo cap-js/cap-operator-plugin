@@ -37,7 +37,7 @@
     "sinon": "^20"
   },
   "scripts": {
-    "test": "mocha --timeout 20000000",
+    "test": "mocha --timeout 20000",
     "test-coverage-lcov": "nyc mocha --timeout 20000 && nyc --reporter lcov --reporter text --report-dir coverage report"
   }
 }
