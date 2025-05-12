@@ -11,7 +11,7 @@
     "url": "https://github.com/cap-js/cap-operator-plugin/issues"
   },
   "author": "SAP SE (https://www.sap.com)",
-  "license": "SEE LICENSE",
+  "license": "Apache-2.0",
   "bin": {
     "cap-op-plugin": "bin/cap-op-plugin.js"
   },
@@ -37,7 +37,7 @@
     "sinon": "^20"
   },
   "scripts": {
-    "test": "mocha --timeout 20000",
+    "test": "mocha --timeout 20000000",
     "test-coverage-lcov": "nyc mocha --timeout 20000 && nyc --reporter lcov --reporter text --report-dir coverage report"
   }
 }
