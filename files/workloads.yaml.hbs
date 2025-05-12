@@ -12,7 +12,16 @@ workloads:
         - {{appName}}-service-manager-bind
         {{/hasMultitenancy}}
         deploymentDefinition:
+            {{#isApp}}
             type: CAP
+            {{/isApp}}
+            {{#isService}}
+            type: service
+            ports:
+            - name: server-port
+              port: 4004
+              appProtocol: http
+            {{/isService}}
             image:
 
     contentDeploy:
@@ -33,6 +42,7 @@ workloads:
             type: Content
             image:
 
+    {{#isApp}}
     tenantJob:
         name: tenant-job
         labels:
@@ -48,3 +58,11 @@ workloads:
         jobDefinition:
             type: TenantOperation
             image:
+    {{/isApp}}
+{{#isService}}
+serviceExposures:
+- subDomain: {{appName}}
+  routes:
+  - workloadName: server
+    port: 4004
+{{/isService}}

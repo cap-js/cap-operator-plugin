@@ -11,7 +11,7 @@ const yaml = require('@sap/cds-foss').yaml
 const Mustache = require('mustache')
 const { spawn } = require('child_process')
 
-const { ask, mergeObj, isCAPOperatorChart, isConfigurableTemplateChart, transformValuesAndFillCapOpCroYaml } = require('../lib/util')
+const { ask, mergeObj, isCAPOperatorChart, isConfigurableTemplateChart, transformValuesAndFillCapOpCroYaml, isServiceOnlyChart } = require('../lib/util')
 
 const SUPPORTED = { 'generate-runtime-values': ['--with-input-yaml'], 'convert-to-configurable-template-chart': ['--with-runtime-yaml'] }
 
@@ -117,7 +117,11 @@ async function convertToconfigurableTemplateChart(option, runtimeYamlPath) {
     console.log('Converting chart '+cds.utils.path.join(cds.root,'chart')+' to configurable template chart.')
 
     // Copy templates
-    await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/templates')).to(cds.utils.path.join(cds.root,'chart','templates'))
+    await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/templates/_helpers.tpl')).to(cds.utils.path.join(cds.root,'chart/templates/_helpers.tpl'))
+    await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/templates/service-binding.yaml')).to(cds.utils.path.join(cds.root,'chart/templates/service-binding.yaml'))
+    await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/templates/service-instance.yaml')).to(cds.utils.path.join(cds.root,'chart/templates/service-instance.yaml'))
+    isServiceOnlyChart(cds.utils.path.join(cds.root,'chart')) ? await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/templates/cap-operator-cros-svc.yaml')).to(cds.utils.path.join(cds.root,'chart/templates/cap-operator-cros.yaml')) :
+        await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/templates/cap-operator-cros.yaml')).to(cds.utils.path.join(cds.root,'chart/templates/cap-operator-cros.yaml'))
 
     // Copy values.schema.json
     await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/values.schema.json')).to(cds.utils.path.join(cds.root,'chart', 'values.schema.json'))
@@ -143,13 +147,20 @@ async function generateRuntimeValues(option, inputYamlPath) {
     let answerStruct = {}
     const { appName, appDescription } = getAppDetails()
     const isConfigurableTempChart = isConfigurableTemplateChart(cds.utils.path.join(cds.root,'chart'))
+    const isServiceOnly = isServiceOnlyChart(cds.utils.path.join(cds.root,'chart'))
 
     if (option === '--with-input-yaml' && inputYamlPath) {
 
         answerStruct = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, inputYamlPath)))
 
-        if (!answerStruct['appName'] || !answerStruct['capOperatorSubdomain'] || !answerStruct['clusterDomain'] || !answerStruct['globalAccountId'] || !answerStruct['providerSubdomain'] || !answerStruct['tenantId'])
-            throw new Error(`'appName', 'capOperatorSubdomain', 'clusterDomain', 'globalAccountId', 'providerSubdomain' and 'tenantId' are mandatory fields in the input yaml file.`)
+        const requiredFields = isServiceOnly
+            ? ['appName', 'capOperatorSubdomain', 'clusterDomain', 'globalAccountId']
+            : ['appName', 'capOperatorSubdomain', 'clusterDomain', 'globalAccountId', 'providerSubdomain', 'tenantId']
+
+        const missingFields = requiredFields.filter(field => !answerStruct[field])
+        if (missingFields.length) {
+            throw new Error(`Missing mandatory fields in the input yaml file: ${missingFields.join(', ')}`)
+        }
 
     } else {
         const questions = [
@@ -157,15 +168,16 @@ async function generateRuntimeValues(option, inputYamlPath) {
             ['Enter CAP Operator subdomain (In kyma cluster it is "cap-op" by default): ', 'cap-op', true],
             ['Enter your cluster shoot domain: ', await getShootDomain(), true],
             ['Enter your global account ID: ', '', true],
-            ['Enter your provider subdomain: ', '', true],
-            ['Enter your provider tenant ID: ', '', true],
+            ...isServiceOnly ? [] : [['Enter your provider subdomain: ', '', true]],
+            ...isServiceOnly ? [] : [['Enter your provider tenant ID: ', '', true]],
             ['Enter your HANA database instance ID: ', '', false],
             ['Enter your image pull secrets: ', '', false]
         ]
 
         const answerKeys = [
-            'appName', 'capOperatorSubdomain', 'clusterDomain',
-            'globalAccountId', 'providerSubdomain', 'tenantId',
+            'appName', 'capOperatorSubdomain', 'clusterDomain', 'globalAccountId',
+            ...isServiceOnly ? [] : ['providerSubdomain'],
+            ...isServiceOnly ? [] : ['tenantId'],
             'hanaInstanceId', 'imagePullSecret'
         ]
 
@@ -177,10 +189,12 @@ async function generateRuntimeValues(option, inputYamlPath) {
 
     const valuesYaml = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, 'chart/values.yaml')))
 
-     //get saas-registry and xsuaa service keys
-     answerStruct['saasRegistryKeyName'] = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'saas-registry') || 'saas-registry'
-     answerStruct['xsuaaKeyName'] = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'xsuaa') || 'xsuaa'
+    //get saas-registry and xsuaa service keys
+    answerStruct['saasRegistryKeyName'] = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'saas-registry') || 'saas-registry'
+    answerStruct['xsuaaKeyName'] = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'xsuaa') || 'xsuaa'
 
+    answerStruct['isApp'] = !isServiceOnly
+    answerStruct['isService'] = isServiceOnly
     let runtimeValuesYaml = yaml.parse(Mustache.render(await cds.utils.read(cds.utils.path.join(__dirname, '../files/runtime-values.yaml.hbs')), answerStruct))
 
     if (!answerStruct['imagePullSecret'])
@@ -206,8 +220,9 @@ function updateWorkloadEnv(runtimeValuesYaml, valuesYaml, answerStruct) {
 
         const cdsConfigHana = Mustache.render('{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"{{hanaInstanceId}}"}}}}}', answerStruct)
 
-        if (workloadDetails?.deploymentDefinition?.type === 'CAP' && answerStruct['hanaInstanceId'])
+        if ((workloadDetails?.deploymentDefinition?.type === 'CAP' || workloadDetails?.deploymentDefinition?.type === 'service') && answerStruct['hanaInstanceId']) {
             updateCdsConfigEnv(runtimeValuesYaml, workloadKey, 'deploymentDefinition', cdsConfigHana)
+        }
 
         if (workloadDetails?.jobDefinition?.type === 'TenantOperation' && answerStruct['hanaInstanceId']) {
             updateCdsConfigEnv(runtimeValuesYaml, workloadKey, 'jobDefinition', cdsConfigHana)
@@ -227,6 +242,11 @@ function updateWorkloadEnv(runtimeValuesYaml, valuesYaml, answerStruct) {
         if (workloadDetails?.deploymentDefinition?.env.length === 0 || workloadDetails?.jobDefinition?.env.length === 0) {
             delete runtimeValuesYaml['workloads'][workloadKey]
         }
+    }
+
+    // if no workload definition is present, remove workloads key
+    if (Object.keys(runtimeValuesYaml['workloads']).length === 0) {
+        delete runtimeValuesYaml['workloads']
     }
 }
 

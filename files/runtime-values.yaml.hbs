@@ -6,7 +6,12 @@ serviceInstances:
             displayName: {{appName}}
             description: {{appDescription}}
             appUrls:
+                {{#isApp}}
                 getDependencies: "https://{{providerSubdomain}}.{{appName}}.{{clusterDomain}}/callback/v1.0/dependencies"
+                {{/isApp}}
+                {{#isService}}
+                getDependencies: "https://{{appName}}.{{clusterDomain}}/callback/v1.0/dependencies"
+                {{/isService}}
                 onSubscription: "https://{{capOperatorSubdomain}}.{{clusterDomain}}/provision/tenants/{tenantId}"
     {{xsuaaKeyName}}:
         parameters:
@@ -24,9 +29,11 @@ app:
 
 btp:
     globalAccountId: {{globalAccountId}}
+    {{#isApp}}
     provider:
         subdomain: {{providerSubdomain}}
         tenantId: {{tenantId}}
+    {{/isApp}}
 
 imagePullSecrets:
     - {{imagePullSecret}}
