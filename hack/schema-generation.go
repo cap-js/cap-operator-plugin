@@ -15,9 +15,14 @@ import (
 	"github.com/sap/cap-operator/pkg/apis/sme.sap.com/v1alpha1"
 )
 
+type ClusterDomain struct {
+	ClusterDomainName string   `json:"clusterDomainName"`
+	DomainHost        []string `json:"domainHost"`
+}
+
 type Domains struct {
-	Primary   string   `json:"primary"`
-	Secondary []string `json:"secondary"`
+	Primary   string          `json:"primary"`
+	Secondary []ClusterDomain `json:"secondary"`
 }
 
 type provider struct {

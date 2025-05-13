@@ -194,6 +194,25 @@
             ],
             "type": "object"
         },
+        "ClusterDomain": {
+            "additionalProperties": false,
+            "properties": {
+                "clusterDomainName": {
+                    "type": "string"
+                },
+                "domainHost": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                }
+            },
+            "required": [
+                "clusterDomainName",
+                "domainHost"
+            ],
+            "type": "object"
+        },
         "ClusterTrustBundleProjection": {
             "additionalProperties": false,
             "properties": {
@@ -588,7 +607,7 @@
                 },
                 "secondary": {
                     "items": {
-                        "type": "string"
+                        "$ref": "#/$defs/ClusterDomain"
                     },
                     "type": "array"
                 }
@@ -1189,6 +1208,9 @@
                 },
                 "preStop": {
                     "$ref": "#/$defs/LifecycleHandler"
+                },
+                "stopSignal": {
+                    "type": "string"
                 }
             },
             "type": "object"
@@ -1499,6 +1521,9 @@
                     "$ref": "#/$defs/SecretKeyReference"
                 }
             },
+            "required": [
+                "secretKeyRef"
+            ],
             "type": "object"
         },
         "PersistentVolumeClaimSpec": {

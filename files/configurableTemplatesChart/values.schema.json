@@ -1,5 +1,24 @@
 {
     "$defs": {
+        "ClusterDomain": {
+            "additionalProperties": false,
+            "properties": {
+                "clusterDomainName": {
+                    "type": "string"
+                },
+                "domainHost": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                }
+            },
+            "required": [
+                "clusterDomainName",
+                "domainHost"
+            ],
+            "type": "object"
+        },
         "CredentialsRotationPolicy": {
             "additionalProperties": false,
             "properties": {
@@ -26,7 +45,7 @@
                 },
                 "secondary": {
                     "items": {
-                        "type": "string"
+                        "$ref": "#/$defs/ClusterDomain"
                     },
                     "type": "array"
                 }
@@ -50,6 +69,9 @@
                     "$ref": "#/$defs/SecretKeyReference"
                 }
             },
+            "required": [
+                "secretKeyRef"
+            ],
             "type": "object"
         },
         "RawExtension": {
