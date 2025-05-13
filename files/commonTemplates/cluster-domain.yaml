@@ -1,4 +1,4 @@
-{{- range $index, $secondary := .Values.domains.secondary }}
+{{- range $index, $secondary := .Values.app.domains.secondary }}
 apiVersion: sme.sap.com/v1alpha1
 kind: ClusterDomain
 metadata:
@@ -8,6 +8,9 @@ metadata:
 spec:
   dnsMode: Subdomain
   domain: {{ $secondary.domainHost }}
-  ingressSelector: {{.Values.app.istioIngressGatewayLabels }}
+  ingressSelector:
+  {{- range $k, $v := $.Values.app.istioIngressGatewayLabels }}
+    {{ $k }}: {{ $v | default "invalidValue"}}
+  {{- end }}
   tlsMode: Simple
 {{- end }}

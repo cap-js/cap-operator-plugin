@@ -31,7 +31,7 @@
 {{- define "domainPatterns" -}}
     {{- if .Values.app.domains.secondary -}}
         {{- $doms := list .Values.app.domains.primary -}}
-        {{- range $index, $secondary := .Values.domains.secondary }}
+        {{- range $index, $secondary := .Values.app.domains.secondary }}
             {{- $doms = append $doms $secondary.domainHost -}}
         {{- end -}}
         {{- if gt (len $doms) 1 -}}

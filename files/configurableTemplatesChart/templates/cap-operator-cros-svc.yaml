@@ -7,7 +7,7 @@ spec:
   domainRefs:
   - kind: Domain
     name: {{ include "domainName" $ }}
-  {{- range $index, $secondary := .Values.domains.secondary }}
+  {{- range $index, $secondary := .Values.app.domains.secondary }}
   - kind: ClusterDomain
     name: {{ $secondary.clusterDomainName }}
   {{- end }}

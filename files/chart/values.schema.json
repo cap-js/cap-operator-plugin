@@ -201,10 +201,7 @@
                     "type": "string"
                 },
                 "domainHost": {
-                    "items": {
-                        "type": "string"
-                    },
-                    "type": "array"
+                    "type": "string"
                 }
             },
             "required": [

@@ -5,5 +5,8 @@ metadata:
 spec:
   dnsMode: Wildcard
   domain: {{.Values.app.domains.primary}}
-  ingressSelector: {{.Values.app.istioIngressGatewayLabels }}
+  ingressSelector:
+  {{- range $k, $v := $.Values.app.istioIngressGatewayLabels }}
+    {{ $k }}: {{ $v | default "invalidValue"}}
+  {{- end }}
   tlsMode: Simple

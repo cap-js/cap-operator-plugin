@@ -16,8 +16,8 @@ import (
 )
 
 type ClusterDomain struct {
-	ClusterDomainName string   `json:"clusterDomainName"`
-	DomainHost        []string `json:"domainHost"`
+	ClusterDomainName string `json:"clusterDomainName"`
+	DomainHost        string `json:"domainHost"`
 }
 
 type Domains struct {
