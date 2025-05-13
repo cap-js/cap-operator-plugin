@@ -1,4 +1,5 @@
 {{- range $index, $secondary := .Values.app.domains.secondary }}
+---
 apiVersion: sme.sap.com/v1alpha1
 kind: ClusterDomain
 metadata:
