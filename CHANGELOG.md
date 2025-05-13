@@ -2,13 +2,20 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## Version 0.6.0 - 13-May-2025
+
+### Added
+
+- Support for service only helm charts. For more details visit the [Service Only Applications documentation](https://sap.github.io/cap-operator/docs/usage/services-workload/) page.
+- Dependencies updated
+- `values.yaml` schema has been updated to align with the CAP Operator version v0.14.0 and the BTP Service Operator version v0.7.2
+
 ## Version 0.5.0 - 14-January-2025
 
 ### Added
 
 - Dependencies updated
 - `values.yaml` schema has been updated to align with the latest versions of the CAP Operator(v0.11.1) and the BTP Service Operator(v0.7.1)
-
 
 ## Version 0.4.0 - 16-September-2024
 
