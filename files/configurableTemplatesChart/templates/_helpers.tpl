@@ -11,6 +11,10 @@
 {{- end -}}
 {{- end -}}
 
+{{- define "domainName" -}}
+{{ printf "%s-primary" (include "appName" $)}}
+{{- end -}}
+
 {{- define "hasService" -}}
 {{- $found := "false" -}}
 {{- $offeringName := .offeringName -}}
@@ -27,8 +31,8 @@
 {{- define "domainPatterns" -}}
     {{- if .Values.app.domains.secondary -}}
         {{- $doms := list .Values.app.domains.primary -}}
-        {{- range .Values.app.domains.secondary -}}
-            {{- $doms = append $doms . -}}
+        {{- range $index, $secondary := .Values.domains.secondary }}
+            {{- $doms = append $doms $secondary.domainHost -}}
         {{- end -}}
         {{- if gt (len $doms) 1 -}}
             {{- join "|" $doms | printf "(%s)" -}}

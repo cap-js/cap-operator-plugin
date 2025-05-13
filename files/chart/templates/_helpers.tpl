@@ -2,6 +2,10 @@
 {{ printf "%s-%d" (include "appName" $) (.Release.Revision) }}
 {{- end -}}
 
+{{- define "domainName" -}}
+{{ printf "%s-primary" (include "appName" $)}}
+{{- end -}}
+
 {{- define "appName" -}}
 {{- range $sik, $siv := .Values.serviceInstances}}
     {{- if and (eq (get $siv "serviceOfferingName") "xsuaa") (eq (get $siv "servicePlanName") "broker") -}}

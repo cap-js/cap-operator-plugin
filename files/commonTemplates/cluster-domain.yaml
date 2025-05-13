@@ -1,0 +1,13 @@
+{{- range $index, $secondary := .Values.domains.secondary }}
+apiVersion: sme.sap.com/v1alpha1
+kind: ClusterDomain
+metadata:
+  name: {{ $secondary.clusterDomainName }}
+  annotations:
+    helm.sh/resource-policy: keep
+spec:
+  dnsMode: Subdomain
+  domain: {{ $secondary.domainHost }}
+  ingressSelector: {{.Values.app.istioIngressGatewayLabels }}
+  tlsMode: Simple
+{{- end }}

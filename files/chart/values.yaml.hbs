@@ -5,9 +5,9 @@ serviceBindings:
 app:
   # -- BTP application name (xsappname)
   domains:
-    # -- primary domain to expose application routes (usually a subdomain of the cluster domain). Ensure this is under 62 chars.
+    # -- primary domain to expose application routes (usually a subdomain of the cluster domain)
     primary:
-    # -- Customer specific domains for which dns entries are created (these can be stable and transferred between clusters)
+    # -- Customer specific domains (these can be stable and transferred between clusters)
     secondary: []
   # -- Labels used to identify the istio ingress-gateway component and its corresponding namespace
   istioIngressGatewayLabels:
