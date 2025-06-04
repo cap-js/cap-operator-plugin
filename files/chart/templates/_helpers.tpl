@@ -16,42 +16,32 @@
 {{- end -}}
 
 {{- define "domainHostMap" -}}
-  {{- $domainList := list .Values.app.domains.primary }}
-  {{- range $index, $domainRef := .Values.app.domains.additionalDomainRefs }}
-    {{- $apiVersion := "sme.sap.com/v1alpha1" }}
-    {{- $kind := $domainRef.kind }}
-    {{- $namespace := "" }}
-    {{- if eq $kind "Domain" }}
-      {{- $namespace = $.Release.Namespace }}
-    {{- end }}
-    {{- $resource := (lookup $apiVersion $kind $namespace $domainRef.name) }}
-    {{- if and $resource (kindIs "map" $resource) (hasKey $resource "spec") (hasKey $resource.spec "domain") }}
-      {{- $domainList = append $domainList $resource.spec.domain }}
-    {{- end }}
-  {{- end }}
-  {{- $domainMap := dict "domains" $domainList }}
-  {{- toJson $domainMap }}
+  {{- $domains := list .Values.app.domains.primary -}}
+  {{- range .Values.app.domains.additionalDomainRefs }}
+    {{- $apiVersion := "sme.sap.com/v1alpha1" -}}
+    {{- $namespace := (eq .kind "Domain" | ternary $.Release.Namespace "") -}}
+    {{- $resource := (lookup $apiVersion .kind $namespace .name) -}}
+    {{- if and $resource (kindIs "map" $resource) (hasKey $resource "spec") (hasKey $resource.spec "domain") -}}
+      {{- $domains = append $domains $resource.spec.domain -}}
+    {{- end -}}
+  {{- end -}}
+  {{- toJson (dict "domains" $domains) -}}
 {{- end }}
 
 {{- define "redirectUris" -}}
-  {{- $redirectUrisList := list }}
-  {{- $domainMapJson := include "domainHostMap" . | fromJson }}
-  {{- range $i, $domain := $domainMapJson.domains }}
-  {{- $redirectUrisList = append $redirectUrisList (printf "https://*%s/**" $domain) -}}
-  {{- end }}
-  {{- $redirectUrisMap := dict "redirect-uris" $redirectUrisList }}
-  {{- toJson $redirectUrisMap }}
+  {{- $domains := (include "domainHostMap" . | fromJson).domains -}}
+  {{- $redirectUris := list -}}
+  {{- range $domains }}
+    {{- $redirectUris = append $redirectUris (printf "https://*%s/**" .) -}}
+  {{- end -}}
+  {{- toJson (dict "redirect-uris" $redirectUris) -}}
 {{- end }}
 
 {{- define "tenantHostPattern" -}}
-  {{- $domainMapJson := include "domainHostMap" . | fromJson }}
-  {{- $doms := list -}}
-  {{- range $i, $domain := $domainMapJson.domains }}
-      {{- $doms = append $doms $domain -}}
-  {{- end -}}
-  {{- if gt (len $doms) 1 -}}
-      {{- join "|" $doms | printf "^(.*).(%s)" -}}
+  {{- $domains := (include "domainHostMap" . | fromJson).domains -}}
+  {{- if gt (len $domains) 1 -}}
+    {{- printf "^(.*).(%s)" (join "|" $domains) -}}
   {{- else -}}
-      {{- first $doms -}}
+    {{- first $domains -}}
   {{- end -}}
 {{- end }}
