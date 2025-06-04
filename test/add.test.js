@@ -61,7 +61,6 @@ describe('cds add cap-operator', () => {
         expect(getFileHash(join(__dirname,'../files/commonTemplates/service-binding.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/service-binding.yaml')))
         expect(getFileHash(join(__dirname,'../files/commonTemplates/service-instance.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/service-instance.yaml')))
         expect(getFileHash(join(__dirname,'../files/commonTemplates/domain.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/domain.yaml')))
-        expect(getFileHash(join(__dirname,'../files/commonTemplates/cluster-domain.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cluster-domain.yaml')))
         expect(getFileHash(join(__dirname,'../files/chart/templates/cap-operator-cros.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cap-operator-cros.yaml')))
     })
 
@@ -91,7 +90,6 @@ describe('cds add cap-operator', () => {
         expect(getFileHash(join(__dirname,'../files/commonTemplates/service-binding.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/service-binding.yaml')))
         expect(getFileHash(join(__dirname,'../files/commonTemplates/service-instance.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/service-instance.yaml')))
         expect(getFileHash(join(__dirname,'../files/commonTemplates/domain.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/domain.yaml')))
-        expect(getFileHash(join(__dirname,'../files/commonTemplates/cluster-domain.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cluster-domain.yaml')))
         expect(getFileHash(join(__dirname,'../files/chart/templates/cap-operator-cros.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cap-operator-cros.yaml')))
     })
 
@@ -141,7 +139,6 @@ describe('cds add cap-operator', () => {
         expect(getFileHash(join(__dirname,'../files/commonTemplates/service-binding.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/service-binding.yaml')))
         expect(getFileHash(join(__dirname,'../files/commonTemplates/service-instance.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/service-instance.yaml')))
         expect(getFileHash(join(__dirname,'../files/commonTemplates/domain.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/domain.yaml')))
-        expect(getFileHash(join(__dirname,'../files/commonTemplates/cluster-domain.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cluster-domain.yaml')))
 
         // Check changes to xs-security.json
         expect(getFileHash(join(__dirname,'files/xs-security.json'))).to.equal(getFileHash(join(bookshop, 'xs-security.json')))
@@ -204,7 +201,6 @@ describe('cds add cap-operator', () => {
         expect(getFileHash(join(__dirname,'../files/commonTemplates/service-binding.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/service-binding.yaml')))
         expect(getFileHash(join(__dirname,'../files/commonTemplates/service-instance.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/service-instance.yaml')))
         expect(getFileHash(join(__dirname,'../files/commonTemplates/domain.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/domain.yaml')))
-        expect(getFileHash(join(__dirname,'../files/commonTemplates/cluster-domain.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cluster-domain.yaml')))
         expect(getFileHash(join(__dirname,'../files/chart/templates/cap-operator-cros-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cap-operator-cros.yaml')))
     })
 
@@ -221,6 +217,5 @@ describe('cds add cap-operator', () => {
         expect(getFileHash(join(__dirname,'../files/commonTemplates/service-binding.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/service-binding.yaml')))
         expect(getFileHash(join(__dirname,'../files/commonTemplates/service-instance.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/service-instance.yaml')))
         expect(getFileHash(join(__dirname,'../files/commonTemplates/domain.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/domain.yaml')))
-        expect(getFileHash(join(__dirname,'../files/commonTemplates/cluster-domain.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cluster-domain.yaml')))
     })
 })

@@ -28,21 +28,37 @@
 {{- $found -}}
 {{- end -}}
 
-{{- define "domainPatterns" -}}
-    {{- if .Values.app.domains.secondary -}}
-        {{- $doms := list .Values.app.domains.primary -}}
-        {{- range $index, $secondary := .Values.app.domains.secondary }}
-            {{- $doms = append $doms $secondary.domainHost -}}
-        {{- end -}}
-        {{- if gt (len $doms) 1 -}}
-            {{- join "|" $doms | printf "(%s)" -}}
-        {{- else -}}
-            {{- first $doms -}}
-        {{- end -}}
-    {{- else -}}
-        {{- printf "%s" .Values.app.domains.primary -}}
+{{- define "domainHostMap" -}}
+  {{- $domains := list .Values.app.domains.primary -}}
+  {{- range .Values.app.domains.additionalDomainRefs }}
+    {{- $apiVersion := "sme.sap.com/v1alpha1" -}}
+    {{- $namespace := (eq .kind "Domain" | ternary $.Release.Namespace "") -}}
+    {{- $resource := (lookup $apiVersion .kind $namespace .name) -}}
+    {{- if and $resource (kindIs "map" $resource) (hasKey $resource "spec") (hasKey $resource.spec "domain") -}}
+      {{- $domains = append $domains $resource.spec.domain -}}
     {{- end -}}
-{{- end -}}
+  {{- end -}}
+  {{- toJson (dict "domains" $domains) -}}
+{{- end }}
+
+{{- define "redirectUris" -}}
+  {{- $domains := (include "domainHostMap" . | fromJson).domains -}}
+  {{- $redirectUris := list -}}
+  {{- range $domains }}
+    {{- $redirectUris = append $redirectUris (printf "https://*%s/**" .) -}}
+  {{- end -}}
+  {{- toJson (dict "redirect-uris" $redirectUris) -}}
+{{- end }}
+
+{{- define "tenantHostPattern" -}}
+  {{- $domains := (include "domainHostMap" . | fromJson).domains -}}
+  {{- if gt (len $domains) 1 -}}
+    {{- printf "^(.*).(%s)" (join "|" $domains) -}}
+  {{- else -}}
+    {{- first $domains -}}
+  {{- end -}}
+{{- end }}
+
 
 {{- define "originalAppName" -}}
 {{ print "bookshop" }}
