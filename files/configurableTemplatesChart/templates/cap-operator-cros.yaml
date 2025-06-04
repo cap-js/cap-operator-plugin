@@ -7,9 +7,9 @@ spec:
   domainRefs:
   - kind: Domain
     name: {{ include "domainName" $ }}
-  {{- range $index, $secondary := .Values.app.domains.secondary }}
-  - kind: ClusterDomain
-    name: {{ $secondary.clusterDomainName }}
+  {{- range .Values.app.domains.additionalDomainRefs }}
+  - kind: {{ .kind }}
+    name: {{ .name }}
   {{- end }}
   btpAppName: {{ include "appName" $ }}
   globalAccountId: {{.Values.btp.globalAccountId}}
@@ -84,7 +84,7 @@ spec:
       image: {{ .Values.workloads.appRouter.image }}
       env:
       - name: TENANT_HOST_PATTERN
-        value: ^(.*).{{ template "domainPatterns" . }}
+        value: {{ include "tenantHostPattern" . }}
       ports:
       - name: router-port
         port: 5000

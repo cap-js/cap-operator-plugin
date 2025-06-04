@@ -7,9 +7,9 @@ spec:
   domainRefs:
   - kind: Domain
     name: {{ include "domainName" $ }}
-  {{- range $index, $secondary := .Values.app.domains.secondary }}
-  - kind: ClusterDomain
-    name: {{ $secondary.clusterDomainName }}
+  {{- range .Values.app.domains.additionalDomainRefs }}
+  - kind: {{ .kind }}
+    name: {{ .name }}
   {{- end }}
   btpAppName: {{ include "appName" $ }}
   globalAccountId: {{.Values.btp.globalAccountId}}

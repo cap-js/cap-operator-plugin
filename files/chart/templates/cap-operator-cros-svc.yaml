@@ -7,9 +7,9 @@ spec:
   domainRefs:
   - kind: Domain
     name: {{ include "domainName" $ }}
-  {{- range $index, $secondary := .Values.app.domains.secondary }}
-  - kind: ClusterDomain
-    name: {{ $secondary.clusterDomainName }}
+  {{- range .Values.app.domains.additionalDomainRefs }}
+  - kind: {{ .kind }}
+    name: {{ .name }}
   {{- end }}
   btpAppName: {{ include "appName" $ }}
   globalAccountId: {{.Values.btp.globalAccountId}}
@@ -64,7 +64,12 @@ spec:
     consumedBTPServices: {{- toYaml $v.consumedBTPServices | trim | nindent 4 }}
     {{- end }}
 
-    {{- if $v.deploymentDefinition }}
+    {{- if and $v.deploymentDefinition (eq $v.deploymentDefinition.type "Router") }}
+    {{- $thp := include "tenantHostPattern" $ }}
+    {{- $customEnv := list (dict "name" "TENANT_HOST_PATTERN" "value" $thp) }}
+    {{- $modified := merge (dict "env" $customEnv) $v.deploymentDefinition }}
+    deploymentDefinition: {{- toYaml $modified | trim | nindent 6 }}
+    {{- else if $v.deploymentDefinition }}
     deploymentDefinition: {{- toYaml $v.deploymentDefinition | trim | nindent 6 }}
     {{- end }}
 

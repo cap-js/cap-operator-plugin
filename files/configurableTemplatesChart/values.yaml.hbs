@@ -7,8 +7,8 @@ app:
   domains:
     # -- primary domain to expose application routes (usually a subdomain of the cluster domain)
     primary:
-    # -- Customer specific domains (these can be stable and transferred between clusters)
-    secondary: []
+    # -- References to exisiting customer specific domains
+    additionalDomainRefs: []
   # -- Labels used to identify the istio ingress-gateway component and its corresponding namespace
   istioIngressGatewayLabels:
     istio: ingressgateway

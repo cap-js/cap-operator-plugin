@@ -194,22 +194,6 @@
             ],
             "type": "object"
         },
-        "ClusterDomain": {
-            "additionalProperties": false,
-            "properties": {
-                "clusterDomainName": {
-                    "type": "string"
-                },
-                "domainHost": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "clusterDomainName",
-                "domainHost"
-            ],
-            "type": "object"
-        },
         "ClusterTrustBundleProjection": {
             "additionalProperties": false,
             "properties": {
@@ -596,22 +580,38 @@
             ],
             "type": "object"
         },
+        "DomainRef": {
+            "additionalProperties": false,
+            "properties": {
+                "kind": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "kind",
+                "name"
+            ],
+            "type": "object"
+        },
         "Domains": {
             "additionalProperties": false,
             "properties": {
-                "primary": {
-                    "type": "string"
-                },
-                "secondary": {
+                "additionalDomainRefs": {
                     "items": {
-                        "$ref": "#/$defs/ClusterDomain"
+                        "$ref": "#/$defs/DomainRef"
                     },
                     "type": "array"
+                },
+                "primary": {
+                    "type": "string"
                 }
             },
             "required": [
                 "primary",
-                "secondary"
+                "additionalDomainRefs"
             ],
             "type": "object"
         },
