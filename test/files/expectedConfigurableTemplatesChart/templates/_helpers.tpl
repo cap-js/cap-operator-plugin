@@ -55,7 +55,6 @@
   {{- printf "^(.*)\\.(%s)" (join "|" $domains | replace "." "\\.") -}}
 {{- end }}
 
-
 {{- define "originalAppName" -}}
 {{ print "bookshop" }}
 {{- end -}}

@@ -54,4 +54,3 @@
   {{- $domains := (include "domainHostMap" . | fromJson).domains -}}
   {{- printf "^(.*)\\.(%s)" (join "|" $domains | replace "." "\\.") -}}
 {{- end }}
-
