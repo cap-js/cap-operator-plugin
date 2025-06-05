@@ -22,7 +22,7 @@ serviceInstances:
 app:
     domains:
         primary: {{appName}}.{{clusterDomain}}
-        secondary: []
+        additionalDomainRefs: []
     istioIngressGatewayLabels:
         istio: ingressgateway
         app: istio-ingressgateway

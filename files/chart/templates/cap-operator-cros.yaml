@@ -4,19 +4,13 @@ kind: CAPApplication
 metadata:
   name: {{ include "appName" $ }}
 spec:
-  domains:
-    primary: {{.Values.app.domains.primary}}
-    {{- if .Values.app.domains.secondary }}
-    secondary:
-      {{- range .Values.app.domains.secondary }}
-      - {{.}}
-      {{- end }}
-    {{- end }}
-    istioIngressGatewayLabels:
-    {{- range $k, $v := .Values.app.istioIngressGatewayLabels }}
-    - name: {{ $k }}
-      value: {{ $v | default "invalidValue"}}
-    {{- end }}
+  domainRefs:
+  - kind: Domain
+    name: {{ include "domainName" $ }}
+  {{- range .Values.app.domains.additionalDomainRefs }}
+  - kind: {{ .kind }}
+    name: {{ .name }}
+  {{- end }}
   btpAppName: {{ include "appName" $ }}
   globalAccountId: {{.Values.btp.globalAccountId}}
   provider:
@@ -73,7 +67,12 @@ spec:
     consumedBTPServices: {{- toYaml $v.consumedBTPServices | trim | nindent 4 }}
     {{- end }}
 
-    {{- if $v.deploymentDefinition }}
+    {{- if and $v.deploymentDefinition (eq $v.deploymentDefinition.type "Router") }}
+    {{- $thp := include "tenantHostPattern" $ }}
+    {{- $customEnv := list (dict "name" "TENANT_HOST_PATTERN" "value" $thp) }}
+    {{- $modified := merge (dict "env" $customEnv) $v.deploymentDefinition }}
+    deploymentDefinition: {{- toYaml $modified | trim | nindent 6 }}
+    {{- else if $v.deploymentDefinition }}
     deploymentDefinition: {{- toYaml $v.deploymentDefinition | trim | nindent 6 }}
     {{- end }}
 

@@ -114,7 +114,7 @@ serviceBindings:
 app:
   domains:
     primary: null
-    secondary: []
+    additionalDomainRefs: []
   istioIngressGatewayLabels:
     istio: ingressgateway
     app: istio-ingressgateway

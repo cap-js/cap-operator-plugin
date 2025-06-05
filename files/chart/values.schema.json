@@ -580,22 +580,38 @@
             ],
             "type": "object"
         },
+        "DomainRef": {
+            "additionalProperties": false,
+            "properties": {
+                "kind": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "kind",
+                "name"
+            ],
+            "type": "object"
+        },
         "Domains": {
             "additionalProperties": false,
             "properties": {
-                "primary": {
-                    "type": "string"
-                },
-                "secondary": {
+                "additionalDomainRefs": {
                     "items": {
-                        "type": "string"
+                        "$ref": "#/$defs/DomainRef"
                     },
                     "type": "array"
+                },
+                "primary": {
+                    "type": "string"
                 }
             },
             "required": [
                 "primary",
-                "secondary"
+                "additionalDomainRefs"
             ],
             "type": "object"
         },
@@ -1189,6 +1205,9 @@
                 },
                 "preStop": {
                     "$ref": "#/$defs/LifecycleHandler"
+                },
+                "stopSignal": {
+                    "type": "string"
                 }
             },
             "type": "object"
@@ -1499,6 +1518,9 @@
                     "$ref": "#/$defs/SecretKeyReference"
                 }
             },
+            "required": [
+                "secretKeyRef"
+            ],
             "type": "object"
         },
         "PersistentVolumeClaimSpec": {
