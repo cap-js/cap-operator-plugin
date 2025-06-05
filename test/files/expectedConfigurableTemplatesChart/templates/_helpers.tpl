@@ -52,11 +52,7 @@
 
 {{- define "tenantHostPattern" -}}
   {{- $domains := (include "domainHostMap" . | fromJson).domains -}}
-  {{- if gt (len $domains) 1 -}}
-    {{- printf "^(.*)\\.(%s)" (join "|" $domains | replace "." "\\.") -}}
-  {{- else -}}
-    {{- replace (first $domains) "." "\\." -}}
-  {{- end -}}
+  {{- printf "^(.*)\\.(%s)" (join "|" $domains | replace "." "\\.") -}}
 {{- end }}
 
 
