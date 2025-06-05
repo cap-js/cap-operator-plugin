@@ -45,7 +45,7 @@
   {{- $domains := (include "domainHostMap" . | fromJson).domains -}}
   {{- $redirectUris := list -}}
   {{- range $domains }}
-    {{- $redirectUris = append $redirectUris (printf "https://*%s/**" .) -}}
+    {{- $redirectUris = append $redirectUris (printf "https://*.%s/**" .) -}}
   {{- end -}}
   {{- toJson (dict "redirect-uris" $redirectUris) -}}
 {{- end }}
@@ -53,9 +53,9 @@
 {{- define "tenantHostPattern" -}}
   {{- $domains := (include "domainHostMap" . | fromJson).domains -}}
   {{- if gt (len $domains) 1 -}}
-    {{- printf "^(.*).(%s)" (join "|" $domains) -}}
+    {{- printf "^(.*)\\.(%s)" (join "|" $domains | replace "." "\\.") -}}
   {{- else -}}
-    {{- first $domains -}}
+    {{- replace (first $domains) "." "\\." -}}
   {{- end -}}
 {{- end }}
 
