@@ -382,7 +382,7 @@
         "primary": {
           "type": "string"
         },
-        "secondary": {
+        "additionalDomainRefs": {
           "items": {
             "type": "string"
           },
@@ -393,7 +393,7 @@
       "type": "object",
       "required": [
         "primary",
-        "secondary"
+        "additionalDomainRefs"
       ]
     },
     "DownwardAPIProjection": {
