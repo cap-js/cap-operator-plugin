@@ -1,11 +1,12 @@
 # Migration Guide to v0.7.0
 
-With the release of `v0.7.0`, there are breaking changes you need to consider when migrating from earlier versions.
+With the release of `v0.7.0`, there are incompactible changes you need to consider when migrating from earlier versions.
 
-The field `app.domains.secondary` in `values.yaml` has been removed and replaced with `app.domains.additionalDomainRefs`. This change aligns with the enhanced domain management introduced in CAP Operator [`v0.15.0`](https://github.com/SAP/cap-operator/releases/tag/v0.15.0) release.
+> **Use this version only if you are running CAP Operator v0.15.0 or newer.**
+
+The field `app.domains.secondary` in `values.yaml` has been removed and replaced with `app.domains.additionalDomainRefs`. This change aligns with the enhanced domain management introduced in the CAP Operator [`v0.15.0`](https://github.com/SAP/cap-operator/releases/tag/v0.15.0) release.
 
 The new `additionalDomainRefs` field allows you to reference existing `Domain` or `ClusterDomain` resources. This offers enhanced control over CAP applications networking behaviour, including TLS handling, ingress routing, and DNS setup. For details, refer to the [CAP Operator documentation](https://sap.github.io/cap-operator/docs/usage/domain-management).
-
 
 ## Migration steps
 
