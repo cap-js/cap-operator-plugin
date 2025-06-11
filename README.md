@@ -114,7 +114,7 @@ The generated `chart/values.yaml` contains two types of information:
    * Runtime deployment
         - app
             - Primary - Primary application domain is used to generate a wildcard TLS certificate. In clusters managed by project "Gardener", this is (usually) a subdomain of the cluster domain
-            - Secondary - Customer-specific domains to serve application endpoints (optional)
+            - additionalDomainRefs - References to exisiting customer specific `Domains` or `ClusterDomain` resources. For details, refer to the [CAP Operator documentation](https://sap.github.io/cap-operator/docs/usage/domain-management).
             - IstioIngressGatewayLabels - Labels used to identify the Istio ingress-gateway component and its corresponding namespace. Usually {“app”:“istio-ingressgateway”,“istio”:“ingressgateway”}
         - btp
             - GlobalAccountId - SAP BTP Global Account Identifier where services are entitled for the current application
