@@ -1,70 +1,83 @@
 # Migration Guide to v0.7.0
 
-With the release of `v0.7.0`, there are incompactible changes you need to consider when migrating from earlier versions.
+With the release of `v0.7.0`, there are **incompatible changes** you must address when migrating from earlier versions.
 
-> **Use this version only if you are running CAP Operator v0.15.0 or newer.**
+> **Important:** Use this version only if you are running CAP Operator v0.15.0 or newer.
 
-The field `app.domains.secondary` in `values.yaml` has been removed and replaced with `app.domains.additionalDomainRefs`. This change aligns with the enhanced domain management introduced in the CAP Operator [`v0.15.0`](https://github.com/SAP/cap-operator/releases/tag/v0.15.0) release.
+## Key Change: Domain Configuration
 
-The new `additionalDomainRefs` field allows you to reference existing `Domain` or `ClusterDomain` resources. This offers enhanced control over CAP applications networking behaviour, including TLS handling, ingress routing, and DNS setup. For details, refer to the [CAP Operator documentation](https://sap.github.io/cap-operator/docs/usage/domain-management).
+The `app.domains.secondary` field in `values.yaml` has been **removed** and replaced with `app.domains.additionalDomainRefs`. This update aligns with the improved domain management introduced in CAP Operator [`v0.15.0`](https://github.com/SAP/cap-operator/releases/tag/v0.15.0).
 
-## Migration steps
+The new `additionalDomainRefs` field enables you to reference existing `Domain` or `ClusterDomain` resources, providing greater flexibility and control over networking, TLS, ingress routing, and DNS setup. For more details, see the [CAP Operator documentation](https://sap.github.io/cap-operator/docs/usage/domain-management).
 
-To migrate your existing charts to the new version, follow these steps based on your current setup:
+## Migration Steps
 
-### 1. Simple chart with no templates folder
+Follow the steps below based on your current chart setup:
 
-Execute the following command:
+### 1. Simple Chart (No `templates` Folder)
 
-```sh
-cds add cap-operator --force
-```
-- Accept all incoming changes in the `values.schema.json` file.
-
-- Rename `secondary` to `additionalDomainRefs` in the `values.yaml` file.
-
+1. Force update the existing chart:
+    ```sh
+    cds add cap-operator --force
+    ```
+2. Accept all incoming changes in the `values.schema.json` file.
+3. In your `values.yaml`, **rename** the `secondary` field to `additionalDomainRefs`:
     ```yaml
     app:
-        domains:
-            primary: myapp.example.com
-            additionalDomainRefs: []
+      domains:
+        primary: myapp.example.com
+        additionalDomainRefs: []
     ```
-Rebuild the chart by executing `cds build`.
+4. Rebuild your chart:
+    ```sh
+    cds build
+    ```
 
-### 2. Simple chart with templates folders
+### 2. Simple Chart (With `templates` Folder)
 
-Execute the following command:
+1. Force update the existing chart:
+    ```sh
+    cds add cap-operator --with-templates --force
+    ```
+2. Accept all incoming changes in:
+    - `values.schema.json`
+    - `templates/_helpers.tpl`
+    - `templates/domain.yaml`
+    - `templates/cap-operator-cros.yaml`
+    - `templates/service-instance.yaml`
 
-```sh
-cds add cap-operator --with-templates --force
-```
+    > **Note:** If you have customized any of these files, review and merge changes manually to retain your modifications.
 
-- Accept all incoming changes in `values.schema.json`, `templates/_helpers.tpl`, `templates/domain.yaml`, `templates/cap-operator-cros.yaml`, and `templates/service-instance.yaml`. **If you have modified any of these files, review and merge changes manually to preserve your customizations.**
-
-- Rename `secondary` to `additionalDomainRefs` in the `values.yaml` file.
-
+3. In your `values.yaml`, **rename** the `secondary` field to `additionalDomainRefs`:
     ```yaml
     app:
-        domains:
-            primary: myapp.example.com
-            additionalDomainRefs: []
+      domains:
+        primary: myapp.example.com
+        additionalDomainRefs: []
     ```
 
-### 3. Configurable chart
+### 3. Configurable Chart
 
-Execute the following command:
+1. Force update the existing chart:
+    ```sh
+    cds add cap-operator --with-configurable-templates --force
+    ```
+2. Accept all incoming changes in:
+    - `values.schema.json`
+    - `templates/_helpers.tpl`
+    - `templates/domain.yaml`
+    - `templates/cap-operator-cros.yaml`
+    - `templates/service-instance.yaml`
 
-```sh
-cds add cap-operator --with-configurable-templates --force
-```
+    > **Note:** If you have customized any of these files, review and merge changes manually to retain your modifications.
 
-- Accept all incoming changes in `values.schema.json`, `templates/_helpers.tpl`, `templates/domain.yaml`, `templates/cap-operator-cros.yaml`, and `templates/service-instance.yaml`. **If you have modified any of these files, review and merge changes manually to preserve your customizations.**
-
-- Rename `secondary` to `additionalDomainRefs` in the `values.yaml` file.
-
+3. In your `values.yaml`, **rename** the `secondary` field to `additionalDomainRefs`:
     ```yaml
     app:
-        domains:
-            primary: myapp.example.com
-            additionalDomainRefs: []
-    ```
+      domains:
+        primary: myapp.example.com
+        additionalDomainRefs: []
+
+## Support
+
+If you encounter issues or need further assistance, please consult the official documentation or open an issue in the [CAP Operator GitHub repository](https://github.com/SAP/cap-operator/issues).
