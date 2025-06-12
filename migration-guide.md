@@ -1,8 +1,8 @@
 # Migration Guide to v0.7.0
 
-With the release of `v0.7.0`, there are **incompatible changes** you must address when migrating from earlier versions.
+With the release of `v0.7.0`, there are **incompatible changes** you must address when migrating from previous versions.
 
-> **Important:** Use this version only if you are running CAP Operator v0.15.0 or newer.
+> **Important:** This version is intended for use with CAP Operator `v0.15.0` or later. If you are using an older version (`<= v0.6.0`), it will still work seamlessly due to the CAP Operator’s [migration support](https://sap.github.io/cap-operator/docs/usage/domain-management/#migration-support). But to take advantage of the new features and improvements, you should update the plugin to `v0.7.0`.
 
 ## Key Change: Domain Configuration
 
