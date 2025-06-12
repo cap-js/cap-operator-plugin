@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## Version 0.7.0 - 13-June-2025
+
+### Added
+
+- Added support for the new [Domain Management](https://sap.github.io/cap-operator/docs/usage/domain-management) feature introduced in the CAP Operator. This release is compatible with CAP Operator `v0.15.0` or later.
+    > Note: This version includes breaking changes. If you're upgrading from an earlier release, please consult the [migration guide](https://github.com/cap-js/cap-operator-plugin/blob/main/migration-guide.md) to ensure a smooth transition.
+- Dependencies updated
+- `values.yaml` schema has been updated to align with the CAP Operator version v0.15.0 and the BTP Service Operator version v0.7.7.
+
 ## Version 0.6.0 - 13-May-2025
 
 ### Added
