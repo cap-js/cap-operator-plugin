@@ -15,14 +15,9 @@ import (
 	"github.com/sap/cap-operator/pkg/apis/sme.sap.com/v1alpha1"
 )
 
-type DomainRef struct {
-	Kind string `json:"kind"`
-	Name string `json:"name"`
-}
-
 type Domains struct {
-	Primary              string      `json:"primary"`
-	AdditionalDomainRefs []DomainRef `json:"additionalDomainRefs"`
+	Primary              string               `json:"primary"`
+	AdditionalDomainRefs []v1alpha1.DomainRef `json:"additionalDomainRefs"`
 }
 
 type provider struct {
