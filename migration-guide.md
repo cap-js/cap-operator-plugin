@@ -80,4 +80,4 @@ Follow the steps below based on your current chart setup:
 
 ## Support
 
-If you encounter issues or need further assistance, please consult the official documentation or open an issue in the [CAP Operator GitHub repository](https://github.com/SAP/cap-operator/issues).
+If you encounter issues or need further assistance, please consult the official documentation or open an issue in the [CAP Operator Plugin GitHub repository](https://github.com/cap-js/cap-operator-plugin/issues).
