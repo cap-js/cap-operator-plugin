@@ -1,7 +1,9 @@
-[![REUSE status](https://api.reuse.software/badge/github.com/cap-js/cap-operator-plugin)](https://api.reuse.software/info/github.com/cap-js/cap-operator-plugin)
+![NPM Version](https://img.shields.io/npm/v/%40cap-js%2Fcap-operator-plugin)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=cap-js_cap-operator-plugin&metric=alert_status)](https://sonarcloud.io/summary/overall?id=cap-js_cap-operator-plugin)
 [![CodeQL](https://github.com/cap-js/cap-operator-plugin/actions/workflows/github-code-scanning/codeql/badge.svg?branch=main)](https://github.com/cap-js/cap-operator-plugin/actions/workflows/github-code-scanning/codeql)
 [![CI](https://github.com/cap-js/cap-operator-plugin/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/cap-js/cap-operator-plugin/actions/workflows/ci.yml)
+[![REUSE status](https://api.reuse.software/badge/github.com/cap-js/cap-operator-plugin)](https://api.reuse.software/info/github.com/cap-js/cap-operator-plugin)
+
 
 # CAP Operator Plugin
 
