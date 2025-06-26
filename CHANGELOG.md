@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## Version 0.7.1 - 26-June-2025
+
+### Fixed
+
+- User provided env values in router workload getting replaced by the template instead of merging them.
+
 ## Version 0.7.0 - 16-June-2025
 
 ### Added
