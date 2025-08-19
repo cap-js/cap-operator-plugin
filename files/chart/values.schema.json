@@ -1038,6 +1038,9 @@
         "JobDetails": {
             "additionalProperties": false,
             "properties": {
+                "activeDeadlineSeconds": {
+                    "type": "integer"
+                },
                 "affinity": {
                     "$ref": "#/$defs/Affinity"
                 },
