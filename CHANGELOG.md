@@ -8,7 +8,6 @@ All notable changes to this project will be documented in this file. This projec
 
 - Schema update to align with the latest CAP Operator version `v0.19.0`.
 
-
 ## Version 0.7.1 - 26-June-2025
 
 ### Fixed
