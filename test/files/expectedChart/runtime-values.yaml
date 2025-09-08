@@ -11,9 +11,6 @@ serviceInstances:
   xsuaa:
     parameters:
       xsappname: bkshop
-      oauth2-configuration:
-        redirect-uris:
-          - https://*bkshop.c-abc.kyma.ondemand.com/**
 app:
   domains:
     primary: bkshop.c-abc.kyma.ondemand.com
@@ -29,11 +26,6 @@ btp:
 imagePullSecrets:
   - regcred
 workloads:
-  appRouter:
-    deploymentDefinition:
-      env:
-        - name: TENANT_HOST_PATTERN
-          value: ^(.*).bkshop.c-abc.kyma.ondemand.com
   server:
     deploymentDefinition:
       env:

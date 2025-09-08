@@ -16,9 +16,7 @@ serviceInstances:
     {{xsuaaKeyName}}:
         parameters:
             xsappname: {{appName}}
-            oauth2-configuration:
-                redirect-uris:
-                - "https://*{{appName}}.{{clusterDomain}}/**"
+
 app:
     domains:
         primary: {{appName}}.{{clusterDomain}}

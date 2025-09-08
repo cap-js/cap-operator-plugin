@@ -227,14 +227,6 @@ function updateWorkloadEnv(runtimeValuesYaml, valuesYaml, answerStruct) {
         if (workloadDetails?.jobDefinition?.type === 'TenantOperation' && answerStruct['hanaInstanceId']) {
             updateCdsConfigEnv(runtimeValuesYaml, workloadKey, 'jobDefinition', cdsConfigHana)
         }
-
-        if (workloadDetails?.deploymentDefinition?.type === 'Router') {
-            const index = runtimeValuesYaml['workloads'][workloadKey]['deploymentDefinition']['env'].findIndex(e => e.name === 'TENANT_HOST_PATTERN')
-            if (index > -1)
-                runtimeValuesYaml['workloads'][workloadKey]['deploymentDefinition']['env'][index] = { name: 'TENANT_HOST_PATTERN', value: '^(.*).' + answerStruct["appName"] + '.' + answerStruct["clusterDomain"] }
-            else
-                runtimeValuesYaml['workloads'][workloadKey]['deploymentDefinition']['env'].push({ name: 'TENANT_HOST_PATTERN', value: '^(.*).' + answerStruct["appName"] + '.' + answerStruct["clusterDomain"] })
-        }
     }
 
     // remove workload definition where env is empty

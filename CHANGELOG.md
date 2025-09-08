@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## Version 0.9.0 - 08-September-2025
+
+### Fixed
+
+- Removed redundant `oauth2-configuration.redirect-uris` and `TENANT_HOST_PATTERN` from the generated `runtime-values.yaml` file as it is now handled in the corresponding templates.
+
 ## Version 0.8.0 - 20-August-2025
 
 ### Added
