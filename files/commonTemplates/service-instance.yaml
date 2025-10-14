@@ -38,12 +38,20 @@ spec:
 
   {{- if or $serviceSpec.parameters $serviceSpec.jsonParameters }}
   {{- $parameters := $serviceSpec.parameters | default (dict) }}
-  {{- if and (eq $serviceSpec.serviceOfferingName "xsuaa") (or (not (get (get $parameters "oauth2-configuration" | default (dict)) "redirect-uris")) (eq (len (get (get $parameters "oauth2-configuration" | default (dict)) "redirect-uris")) 0)) }}
-    {{- $redirectUris := include "redirectUris" $ | fromJson }}
-    {{- $oauth2Cfg := merge ($redirectUris) (get $parameters "oauth2-configuration" | default (dict)) }}
-    {{- $_ := set $parameters "oauth2-configuration" $oauth2Cfg }}
-  {{- end }}
   {{- $jsonParameters := $serviceSpec.jsonParameters | default "{}" }}
+
+  {{- if or (eq $serviceSpec.serviceOfferingName "xsuaa") (eq $serviceSpec.serviceOfferingName "identity") }}
+    {{- $missingRedirects := or
+          (not (get (get $parameters "oauth2-configuration" | default (dict)) "redirect-uris"))
+          (eq (len (get (get $parameters "oauth2-configuration" | default (dict)) "redirect-uris")) 0)
+    -}}
+
+    {{- if $missingRedirects }}
+      {{- $redirectUris := include "redirectUris" (dict "serviceOfferingName" $serviceSpec.serviceOfferingName "context" $) | fromJson }}
+      {{- $oauth2Cfg := merge $redirectUris (get $parameters "oauth2-configuration" | default (dict)) }}
+      {{- $_ := set $parameters "oauth2-configuration" $oauth2Cfg }}
+    {{- end }}
+  {{- end }}
   parameters: {{- $jsonParameters | fromJson | merge $parameters | toYaml | nindent 4 }}
   {{- end }}
 

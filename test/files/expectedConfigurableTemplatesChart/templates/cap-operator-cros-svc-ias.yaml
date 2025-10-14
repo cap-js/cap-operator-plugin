@@ -51,32 +51,35 @@ spec:
   workloads:
   - name: server
     labels:
-      sme.sap.com/app-type: bookshop
+      sme.sap.com/app-type: {{ include "appName" $ }}
     consumedBTPServices:
-      - bookshop-uaa-bind
+    - {{ include "originalAppName" $ }}-identity-bind
     deploymentDefinition:
       type: Service
-      image: "{{.Values.workloads.server.image}}"
-      env:
-        - name: CDS_CONFIG
-          value: '{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"{{.Values.hanaInstanceId}}"}}}}}'
       ports:
-        - name: server-port
-          port: 4004
-          appProtocol: http
+      - name: server-port
+        port: 4004
+        appProtocol: http
+      image: {{ .Values.workloads.server.image }}
+      {{- if .Values.hanaInstanceId }}
+      env:
+      - name: CDS_CONFIG
+        value: '{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"{{ .Values.hanaInstanceId }}"}}}}}'
+      {{- end }}
   - name: content-deploy
     labels:
-      sme.sap.com/app-type: bookshop
+      sme.sap.com/app-type: {{ include "appName" $ }}
     consumedBTPServices:
-      - bookshop-uaa-bind
-      - bookshop-html5-repo-host-bind
+    {{- if eq (include "hasService" (dict "si" .Values.serviceInstances "offeringName" "content-agent" "planName" "application")) "true" }}
+    - {{ include "originalAppName" $ }}-content-agent-bind
+    {{- end }}
+    - {{ include "originalAppName" $ }}-identity-bind
+    - {{ include "originalAppName" $ }}-html5-repo-host-bind
     jobDefinition:
       type: Content
-      image: "{{.Values.workloads.contentDeploy.image}}"
-  contentJobs:
-  - content-deploy
+      image: {{ .Values.workloads.contentDeploy.image }}
   serviceExposures:
-  - subDomain: bookshop
+  - subDomain: {{ include "appName" $ }}
     routes:
-      - workloadName: server
-        port: 4004
+    - workloadName: server
+      port: 4004

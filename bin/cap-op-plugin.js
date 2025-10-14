@@ -11,7 +11,7 @@ const yaml = require('@sap/cds-foss').yaml
 const Mustache = require('mustache')
 const { spawn } = require('child_process')
 
-const { ask, mergeObj, isCAPOperatorChart, isConfigurableTemplateChart, transformValuesAndFillCapOpCroYaml, isServiceOnlyChart } = require('../lib/util')
+const { ask, mergeObj, isCAPOperatorChart, isConfigurableTemplateChart, transformValuesAndFillCapOpCroYaml, isServiceOnlyChart, getConfigurableCapOpCroYaml } = require('../lib/util')
 
 const SUPPORTED = { 'generate-runtime-values': ['--with-input-yaml'], 'convert-to-configurable-template-chart': ['--with-runtime-yaml'] }
 
@@ -120,8 +120,7 @@ async function convertToconfigurableTemplateChart(option, runtimeYamlPath) {
     await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/templates/_helpers.tpl')).to(cds.utils.path.join(cds.root,'chart/templates/_helpers.tpl'))
     await cds.utils.copy(cds.utils.path.join(__dirname, '../files/commonTemplates/')).to(cds.utils.path.join(cds.root,'chart/templates/'))
 
-    isServiceOnlyChart(cds.utils.path.join(cds.root,'chart')) ? await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/templates/cap-operator-cros-svc.yaml')).to(cds.utils.path.join(cds.root,'chart/templates/cap-operator-cros.yaml')) :
-        await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/templates/cap-operator-cros.yaml')).to(cds.utils.path.join(cds.root,'chart/templates/cap-operator-cros.yaml'))
+    await cds.utils.write(getConfigurableCapOpCroYaml(null, isServiceOnlyChart(cds.utils.path.join(cds.root,'chart')))).to(cds.utils.path.join(cds.root, 'chart/templates/cap-operator-cros.yaml'))
 
     // Copy values.schema.json
     await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/values.schema.json')).to(cds.utils.path.join(cds.root,'chart', 'values.schema.json'))
@@ -190,8 +189,16 @@ async function generateRuntimeValues(option, inputYamlPath) {
     const valuesYaml = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, 'chart/values.yaml')))
 
     //get saas-registry and xsuaa service keys
-    answerStruct['saasRegistryKeyName'] = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'saas-registry') || 'saas-registry'
-    answerStruct['xsuaaKeyName'] = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'xsuaa') || 'xsuaa'
+    const xsuaaServiceInstanceKey = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'xsuaa')
+    if (xsuaaServiceInstanceKey != null) {
+        answerStruct['hasXsuaa'] = true
+        answerStruct['saasRegistryKeyName'] = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'saas-registry') || 'saas-registry'
+        answerStruct['xsuaaKeyName'] = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'xsuaa') || 'xsuaa'
+    } else {
+        answerStruct['hasXsuaa'] = false
+        answerStruct['subscriptionManagerKeyName'] = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'subscription-manager') || 'subscription-manager'
+        answerStruct['identityKeyName'] = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'identity') || 'identity'
+    }
 
     answerStruct['isApp'] = !isServiceOnly
     answerStruct['isService'] = isServiceOnly
@@ -220,7 +227,7 @@ function updateWorkloadEnv(runtimeValuesYaml, valuesYaml, answerStruct) {
 
         const cdsConfigHana = Mustache.render('{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"{{hanaInstanceId}}"}}}}}', answerStruct)
 
-        if ((workloadDetails?.deploymentDefinition?.type === 'CAP' || workloadDetails?.deploymentDefinition?.type === 'service') && answerStruct['hanaInstanceId']) {
+        if ((workloadDetails?.deploymentDefinition?.type === 'CAP' || workloadDetails?.deploymentDefinition?.type === 'Service') && answerStruct['hanaInstanceId']) {
             updateCdsConfigEnv(runtimeValuesYaml, workloadKey, 'deploymentDefinition', cdsConfigHana)
         }
 

@@ -12,7 +12,10 @@ spec:
     name: {{ .name }}
   {{- end }}
   btpAppName: {{ include "appName" $ }}
-  globalAccountId: {{.Values.btp.globalAccountId}}
+  globalAccountId: {{ .Values.btp.globalAccountId }}
+  provider:
+    subDomain: {{ .Values.btp.provider.subdomain }}
+    tenantId: {{ .Values.btp.provider.tenantId }}
   btp:
     services:
     {{- $serviceInstances := .Values.serviceInstances }}
@@ -45,9 +48,9 @@ spec:
   capApplicationInstance: {{ include "appName" $ }}
   version: "{{ .Release.Revision }}"
   registrySecrets:
-    {{- range .Values.imagePullSecrets }}
-    - {{.}}
-    {{- end }}
+  {{- range .Values.imagePullSecrets }}
+  - {{ . }}
+  {{- end }}
   workloads:
   - name: server
     labels:
@@ -57,34 +60,55 @@ spec:
     - {{ include "originalAppName" $ }}-saas-registry-bind
     - {{ include "originalAppName" $ }}-service-manager-bind
     deploymentDefinition:
-      type: service
+      type: CAP
       image: {{ .Values.workloads.server.image }}
       {{- if .Values.hanaInstanceId }}
       env:
       - name: CDS_CONFIG
-        value: '{"requires":{"cds.xt.DeploymentService":{"hdi": { "create": {"database_id": "{{.Values.hanaInstanceId}}"}}}}}'
+        value: '{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"{{ .Values.hanaInstanceId }}"}}}}}'
       {{- end }}
-      ports:
-      - name: server-port
-        port: 4004
-        appProtocol: http
-  - name: content-deploy
+  - name: app-router
     labels:
       sme.sap.com/app-type: {{ include "appName" $ }}
     consumedBTPServices:
     - {{ include "originalAppName" $ }}-uaa-bind
     - {{ include "originalAppName" $ }}-saas-registry-bind
-    {{- if eq (include "hasService" (dict "si" .Values.serviceInstances "offeringName" "html5-apps-repo" "planName" "app-host")) "true" }}
-    - {{ include "originalAppName" $ }}-html5-repo-host-bind
-    {{- end }}
+    - {{ include "originalAppName" $ }}-destination-bind
+    - {{ include "originalAppName" $ }}-html5-repo-runtime-bind
+    deploymentDefinition:
+      type: Router
+      image: {{ .Values.workloads.appRouter.image }}
+      env:
+      - name: TENANT_HOST_PATTERN
+        value: {{ include "tenantHostPattern" . }}
+      ports:
+      - name: router-port
+        port: 5000
+  - name: tenant-job
+    labels:
+      sme.sap.com/app-type: {{ include "appName" $ }}
+    consumedBTPServices:
+    - {{ include "originalAppName" $ }}-uaa-bind
+    - {{ include "originalAppName" $ }}-saas-registry-bind
+    - {{ include "originalAppName" $ }}-service-manager-bind
+    jobDefinition:
+      type: TenantOperation
+      image: {{ .Values.workloads.server.image }}
+      {{- if .Values.hanaInstanceId }}
+      env:
+      - name: CDS_CONFIG
+        value: '{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"{{ .Values.hanaInstanceId }}"}}}}}'
+      {{- end }}
+  - name: content-deploy
+    labels:
+      sme.sap.com/app-type: {{ include "appName" $ }}
+    consumedBTPServices:
     {{- if eq (include "hasService" (dict "si" .Values.serviceInstances "offeringName" "content-agent" "planName" "application")) "true" }}
     - {{ include "originalAppName" $ }}-content-agent-bind
     {{- end }}
+    - {{ include "originalAppName" $ }}-uaa-bind
+    - {{ include "originalAppName" $ }}-saas-registry-bind
+    - {{ include "originalAppName" $ }}-html5-repo-host-bind
     jobDefinition:
       type: Content
       image: {{ .Values.workloads.contentDeploy.image }}
-  serviceExposures:
-  - subDomain: {{ include "originalAppName" $ }}
-    routes:
-    - workloadName: server
-      port: 4004

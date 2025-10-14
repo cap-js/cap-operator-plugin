@@ -15,34 +15,41 @@ serviceInstances:
     serviceOfferingName: html5-apps-repo
     servicePlanName: app-host
     parameters: {}
-  xsuaa:
-    name: bookshop-uaa
-    serviceOfferingName: xsuaa
-    servicePlanName: broker
-    parameters:
-      xsappname: bookshop
-      tenant-mode: shared
-      oauth2-configuration:
-        credential-types:
-          - binding-secret
-        redirect-uris: []
-  saasRegistry:
-    name: bookshop-saas-registry
-    serviceOfferingName: saas-registry
+  identity:
+    name: bookshop-identity
+    serviceOfferingName: identity
     servicePlanName: application
     parameters:
-      plan: general
-      xsappname: bookshop
+      display-name: bookshop
+      multi-tenant: true
+      xsuaa-cross-consumption: true
+      authorization:
+        enabled: true
+      oauth2-configuration:
+        redirect-uris: []
+        post-logout-redirect-uris: []
+      home-url: ""
+  subscriptionManager:
+    name: bookshop-subscription-manager
+    serviceOfferingName: subscription-manager
+    servicePlanName: provider
+    parameters:
+      iasServiceInstanceName: bookshop-identity
+      applicationType: application
       appName: bookshop
+      commercialAppName: bookshop
       displayName: (bookshop)
       description: (A simple CAP project.)
-      appUrls:
-        getDependencies: ""
-        onSubscription: ""
-        callbackTimeoutMillis: 300000
-        onSubscriptionAsync: true
-        onUnSubscriptionAsync: true
       category: CAP
+      appCallbacks:
+        dependenciesCallbacks:
+          url: ""
+        subscriptionCallbacks:
+          url: ""
+          async:
+            subscribeEnable: true
+            unSubscribeEnable: true
+            timeoutInMillis: 300000
   serviceManager:
     name: bookshop-service-manager
     serviceOfferingName: service-manager
@@ -67,16 +74,18 @@ serviceBindings:
     secretName: bookshop-html5-repo-host-bind-secret
     secretKey: credentials
     parameters: {}
-  xsuaa:
-    name: bookshop-uaa-bind
-    serviceInstanceName: bookshop-uaa
-    secretName: bookshop-uaa-bind-secret
+  identity:
+    name: bookshop-identity-bind
+    serviceInstanceName: bookshop-identity
+    secretName: bookshop-identity-bind-secret
     secretKey: credentials
-    parameters: {}
-  saasRegistry:
-    name: bookshop-saas-registry-bind
-    serviceInstanceName: bookshop-saas-registry
-    secretName: bookshop-saas-registry-bind-secret
+    parameters:
+      credential-type: X509_GENERATED
+      app-identifier: bookshop
+  subscriptionManager:
+    name: bookshop-subscription-manager-bind
+    serviceInstanceName: bookshop-subscription-manager
+    secretName: bookshop-subscription-manager-bind-secret
     secretKey: credentials
     parameters: {}
   serviceManager:

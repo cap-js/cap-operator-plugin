@@ -1,4 +1,6 @@
 serviceInstances:
+    {{#hasXsuaa}}
+    {{#isApp}}
     {{saasRegistryKeyName}}:
         parameters:
             xsappname: {{appName}}
@@ -13,10 +15,37 @@ serviceInstances:
                 getDependencies: "https://{{appName}}.{{clusterDomain}}/callback/v1.0/dependencies"
                 {{/isService}}
                 onSubscription: "https://{{capOperatorSubdomain}}.{{clusterDomain}}/provision/tenants/{tenantId}"
+    {{/isApp}}
     {{xsuaaKeyName}}:
         parameters:
             xsappname: {{appName}}
-
+    {{/hasXsuaa}}
+    {{^hasXsuaa}}
+    {{#isApp}}
+    {{subscriptionManagerKeyName}}:
+        parameters:
+            appName: {{appName}}
+            commercialAppName: {{appName}}
+            displayName: ({{appName}})
+            description: ({{appDescription}})
+            category: CAP
+            appCallbacks:
+                dependenciesCallbacks:
+                    url: "https://{{providerSubdomain}}.{{appName}}.{{clusterDomain}}/v1.0/callback/tenants/{app_tid}/dependencies"
+                subscriptionCallbacks:
+                    url: "https://{{capOperatorSubdomain}}.{{clusterDomain}}/sms/provision/tenants/{app_tid}"
+    {{/isApp}}
+    {{identityKeyName}}:
+        parameters:
+            display-name: {{appName}}
+            home-url: "https://{{appName}}.{{clusterDomain}}"
+    {{/hasXsuaa}}
+{{^hasXsuaa}}
+serviceBindings:
+    {{identityKeyName}}:
+        parameters:
+            app-identifier: {{appName}}
+{{/hasXsuaa}}
 app:
     domains:
         primary: {{appName}}.{{clusterDomain}}

@@ -10,10 +10,12 @@ serviceInstances:
       displayName: ({{appName}})
       description: ({{appDescription}})
       appUrls:
+        getDependencies: ""
+        onSubscription: ""
         callbackTimeoutMillis: 300000
         onSubscriptionAsync: true
         onUnSubscriptionAsync: true
-      category: "CAP"
+      category: CAP
 
 serviceBindings:
   saasRegistry:
