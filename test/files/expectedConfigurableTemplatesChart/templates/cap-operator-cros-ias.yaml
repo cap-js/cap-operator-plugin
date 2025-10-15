@@ -3,6 +3,11 @@ apiVersion: sme.sap.com/v1alpha1
 kind: CAPApplication
 metadata:
   name: {{ include "appName" $ }}
+  annotations:
+    sme.sap.com/vs-route-request-header-set: |
+      {
+        "x-forwarded-client-cert": "%DOWNSTREAM_PEER_CERT%"
+      }
 spec:
   domainRefs:
   - kind: Domain
