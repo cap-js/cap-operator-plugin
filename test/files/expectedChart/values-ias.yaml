@@ -141,7 +141,6 @@ workloads:
       sme.sap.com/app-type: bookshop
     consumedBTPServices:
       - bookshop-identity-bind
-      - bookshop-subscription-manager-bind
       - bookshop-html5-repo-host-bind
     jobDefinition:
       type: Content

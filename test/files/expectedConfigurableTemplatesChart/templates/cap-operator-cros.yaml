@@ -107,7 +107,6 @@ spec:
     - {{ include "originalAppName" $ }}-content-agent-bind
     {{- end }}
     - {{ include "originalAppName" $ }}-uaa-bind
-    - {{ include "originalAppName" $ }}-saas-registry-bind
     - {{ include "originalAppName" $ }}-html5-repo-host-bind
     jobDefinition:
       type: Content

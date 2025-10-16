@@ -39,15 +39,9 @@ workloads:
         consumedBTPServices:
         {{#hasXsuaa}}
         - {{appName}}-uaa-bind
-        {{#isApp}}
-        - {{appName}}-saas-registry-bind
-        {{/isApp}}
         {{/hasXsuaa}}
         {{#hasIas}}
         - {{appName}}-identity-bind
-        {{#isApp}}
-        - {{appName}}-subscription-manager-bind
-        {{/isApp}}
         {{/hasIas}}
         {{#hasHtml5Repo}}
         - {{appName}}-html5-repo-host-bind
