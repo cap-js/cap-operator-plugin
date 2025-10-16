@@ -16,9 +16,6 @@ workloads:
         - {{appName}}-subscription-manager-bind
         {{/isApp}}
         {{/hasIas}}
-        {{#isApp}}
-        - {{appName}}-service-manager-bind
-        {{/isApp}}
         {{#hasDestination}}
         - {{appName}}-destination-bind
         {{/hasDestination}}

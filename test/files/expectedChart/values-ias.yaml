@@ -115,7 +115,6 @@ workloads:
     consumedBTPServices:
       - bookshop-identity-bind
       - bookshop-subscription-manager-bind
-      - bookshop-service-manager-bind
       - bookshop-destination-bind
       - bookshop-html5-repo-runtime-bind
     deploymentDefinition:

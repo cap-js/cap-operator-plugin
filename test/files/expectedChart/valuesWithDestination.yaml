@@ -106,7 +106,6 @@ workloads:
     consumedBTPServices:
       - bookshop-uaa-bind
       - bookshop-saas-registry-bind
-      - bookshop-service-manager-bind
       - bookshop-destination-bind
       - bookshop-html5-repo-runtime-bind
     deploymentDefinition:
