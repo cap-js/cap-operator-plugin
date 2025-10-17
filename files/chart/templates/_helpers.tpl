@@ -29,7 +29,9 @@
 {{- end }}
 
 {{- define "redirectUris" -}}
-  {{- $domains := (include "domainHostMap" . | fromJson).domains -}}
+  {{- $ctx := .context -}}
+  {{- $svc := .serviceOfferingName -}}
+  {{- $domains := (include "domainHostMap" $ctx | fromJson).domains -}}
   {{- $redirectUris := list -}}
   {{- range $domains }}
     {{- $redirectUris = append $redirectUris (printf "https://*.%s/**" .) -}}

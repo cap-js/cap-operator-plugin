@@ -42,12 +42,18 @@
 {{- end }}
 
 {{- define "redirectUris" -}}
-  {{- $domains := (include "domainHostMap" . | fromJson).domains -}}
+  {{- $ctx := .context -}}
+  {{- $svc := .serviceOfferingName -}}
+  {{- $domains := (include "domainHostMap" $ctx | fromJson).domains -}}
   {{- $redirectUris := list -}}
   {{- range $domains }}
     {{- $redirectUris = append $redirectUris (printf "https://*.%s/**" .) -}}
   {{- end -}}
-  {{- toJson (dict "redirect-uris" $redirectUris) -}}
+  {{- if eq $svc "identity" }}
+    {{- toJson (dict "redirect-uris" $redirectUris "post-logout-redirect-uris" $redirectUris) -}}
+  {{- else }}
+    {{- toJson (dict "redirect-uris" $redirectUris) -}}
+  {{- end -}}
 {{- end }}
 
 {{- define "tenantHostPattern" -}}
