@@ -31,6 +31,14 @@ workloads:
               appProtocol: http
             {{/isService}}
             image:
+            {{#hasAms}}
+            env:
+            - name: AMS_DCL_ROOT
+              value: ams/dcl
+            securityContext:
+                runAsUser: 1000
+                runAsGroup: 1000
+            {{/hasAms}}
 
     contentDeploy:
         name: content-deploy
@@ -69,6 +77,21 @@ workloads:
             type: TenantOperation
             image:
     {{/isApp}}
+
+    {{#hasAms}}
+    amsDeployer:
+        name: ams-deployer
+        labels:
+            sme.sap.com/app-type: {{appName}}
+        consumedBTPServices:
+        {{#hasIas}}
+        - {{appName}}-identity-bind
+        {{/hasIas}}
+        jobDefinition:
+            type: Content
+            image:
+    {{/hasAms}}
+
 {{#isService}}
 serviceExposures:
 - subDomain: {{appName}}
@@ -76,3 +99,9 @@ serviceExposures:
   - workloadName: server
     port: 4004
 {{/isService}}
+
+{{#hasAms}}
+contentJobs:
+- content-deploy
+- ams-deployer
+{{/hasAms}}

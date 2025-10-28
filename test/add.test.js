@@ -97,6 +97,8 @@ describe('cds add cap-operator', () => {
     })
 
     it('Add cap-operator chart with mta but mta.yaml is not present', async () => {
+        // remove mta.yaml if present
+        if (cds.utils.exists(join(bookshop, 'mta.yaml'))) fs.unlinkSync(join(bookshop, 'mta.yaml'))
         expect(() => execSync(`cds add cap-operator --with-mta mta.yaml`, { cwd: bookshop })).to.throw('mta is not added to this project. Run \'cds add mta\'.')
     })
 
@@ -181,8 +183,8 @@ describe('cds add cap-operator', () => {
         expect(getFileHash(join(__dirname, 'files/xs-security.json'))).to.equal(getFileHash(join(bookshop, 'xs-security.json')))
     })
 
-    it('Add cap-operator chart with IAS', async () => {
-        execSync(`cds add ias`, { cwd: bookshop })
+    it('Add cap-operator chart with IAS & AMS', async () => {
+        execSync(`cds add ias,ams`, { cwd: bookshop })
         execSync(`cds add cap-operator --with-templates`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname, 'files/expectedChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))
@@ -191,8 +193,8 @@ describe('cds add cap-operator', () => {
         expect(getFileHash(join(__dirname,'files/expectedChart/templates/cap-operator-cros-ias.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cap-operator-cros.yaml')))
     })
 
-    it('Add cap-operator configurable template chart with IAS', async () => {
-        execSync(`cds add ias`, { cwd: bookshop })
+    it('Add cap-operator configurable template chart with IAS & AMS', async () => {
+        execSync(`cds add ias,ams`, { cwd: bookshop })
         execSync(`cds add cap-operator --with-configurable-templates`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname, 'files/expectedConfigurableTemplatesChart/Chart.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))

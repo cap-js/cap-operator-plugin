@@ -80,6 +80,12 @@ workloads:
           port: 4004
           appProtocol: http
       image: null
+      env:
+        - name: AMS_DCL_ROOT
+          value: ams/dcl
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
   contentDeploy:
     name: content-deploy
     labels:
@@ -90,8 +96,20 @@ workloads:
     jobDefinition:
       type: Content
       image: null
+  amsDeployer:
+    name: ams-deployer
+    labels:
+      sme.sap.com/app-type: bookshop
+    consumedBTPServices:
+      - bookshop-identity-bind
+    jobDefinition:
+      type: Content
+      image: null
 serviceExposures:
   - subDomain: bookshop
     routes:
       - workloadName: server
         port: 4004
+contentJobs:
+  - content-deploy
+  - ams-deployer

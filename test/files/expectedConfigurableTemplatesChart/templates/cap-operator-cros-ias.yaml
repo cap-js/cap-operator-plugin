@@ -67,11 +67,16 @@ spec:
     deploymentDefinition:
       type: CAP
       image: {{ .Values.workloads.server.image }}
-      {{- if .Values.hanaInstanceId }}
       env:
+      - name: AMS_DCL_ROOT
+        value: ams/dcl
+      {{- if .Values.hanaInstanceId }}
       - name: CDS_CONFIG
         value: '{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"{{ .Values.hanaInstanceId }}"}}}}}'
       {{- end }}
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
   - name: app-router
     labels:
       sme.sap.com/app-type: {{ include "appName" $ }}
@@ -116,3 +121,14 @@ spec:
     jobDefinition:
       type: Content
       image: {{ .Values.workloads.contentDeploy.image }}
+  - name: ams-deployer
+    labels:
+      sme.sap.com/app-type: {{ include "appName" $ }}
+    consumedBTPServices:
+    - {{ include "originalAppName" $ }}-identity-bind
+    jobDefinition:
+      type: Content
+      image: {{ .Values.workloads.amsDeployer.image }}
+  contentJobs:
+  - content-deploy
+  - ams-deployer

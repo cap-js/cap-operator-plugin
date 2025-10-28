@@ -2,17 +2,17 @@
 {{ printf "%s-%d" (include "appName" $) (.Release.Revision) }}
 {{- end -}}
 
-{{- define "appName" -}}
-{{- range $sik, $siv := .Values.serviceInstances}}
-    {{- if and (eq (get $siv "serviceOfferingName") "xsuaa") (eq (get $siv "servicePlanName") "broker") -}}
-        {{ printf "%s" $siv.parameters.xsappname }}
-        {{- break -}}
-    {{- end -}}
-{{- end -}}
-{{- end -}}
-
 {{- define "domainName" -}}
 {{ printf "%s-primary" (include "appName" $)}}
+{{- end -}}
+
+{{- define "appName" -}}
+{{- range $sik, $siv := .Values.serviceInstances }}
+  {{- if and (eq (get $siv "serviceOfferingName") "xsuaa") (eq (get $siv "servicePlanName") "broker") -}}
+    {{ printf "%s" $siv.parameters.xsappname }}
+    {{- break -}}
+  {{- end -}}
+{{- end -}}
 {{- end -}}
 
 {{- define "hasService" -}}
@@ -21,9 +21,9 @@
 {{- $planName := .planName -}}
 {{- $si := .si -}}
 {{- range $sik, $siv := $si}}
-    {{- if and (eq (get $siv "serviceOfferingName") $offeringName) (eq (get $siv "servicePlanName") $planName) -}}
-        {{- $found = "true" -}}
-    {{- end -}}
+  {{- if and (eq (get $siv "serviceOfferingName") $offeringName) (eq (get $siv "servicePlanName") $planName) -}}
+    {{- $found = "true" -}}
+  {{- end -}}
 {{- end -}}
 {{- $found -}}
 {{- end -}}

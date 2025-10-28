@@ -73,8 +73,8 @@ describe('cds add cap-operator', () => {
         expect(getFileHash(join(__dirname,'../files/commonTemplates/service-instance.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/service-instance.yaml')))
     })
 
-    it('Add cap-operator chart with service only and IAS', async () => {
-        execSync(`cds add ias`, { cwd: bookshop })
+    it('Add cap-operator service only chart with IAS & AMS', async () => {
+        execSync(`cds add ias,ams`, { cwd: bookshop })
         execSync(`cds add cap-operator --with-service-only --with-templates`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname,'files/expectedChart/Chart-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))
@@ -83,8 +83,8 @@ describe('cds add cap-operator', () => {
         expect(getFileHash(join(__dirname,'files/expectedChart/templates/cap-operator-cros-svc-ias.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cap-operator-cros.yaml')))
     })
 
-    it('Add cap-operator configurable template chart with service only and IAS', async () => {
-        execSync(`cds add ias`, { cwd: bookshop })
+    it('Add cap-operator configurable template service only chart with IAS & AMS', async () => {
+        execSync(`cds add ias,ams`, { cwd: bookshop })
         execSync(`cds add cap-operator --with-service-only --with-configurable-templates`, { cwd: bookshop })
 
         expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/Chart-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/Chart.yaml')))

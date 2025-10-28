@@ -72,3 +72,5 @@ workloads:
     image: null
   contentDeploy:
     image: null
+  amsDeployer:
+    image: null

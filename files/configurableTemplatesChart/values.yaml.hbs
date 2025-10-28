@@ -41,3 +41,7 @@ workloads:
   {{/isApp}}
   contentDeploy:
     image:
+  {{#hasAms}}
+  amsDeployer:
+    image:
+  {{/hasAms}}

@@ -7,8 +7,10 @@ serviceInstances:
       display-name: {{appName}}
       multi-tenant: true
       xsuaa-cross-consumption: true
+      {{#hasAms}}
       authorization:
         enabled: true
+      {{/hasAms}}
       oauth2-configuration:
         redirect-uris: []
         post-logout-redirect-uris: []
