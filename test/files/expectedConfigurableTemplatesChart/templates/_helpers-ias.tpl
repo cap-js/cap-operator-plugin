@@ -8,10 +8,10 @@
 
 {{- define "appName" -}}
 {{- range $sik, $siv := .Values.serviceInstances }}
-    {{- if and (eq (get $siv "serviceOfferingName") "xsuaa") (eq (get $siv "servicePlanName") "broker") -}}
-        {{ printf "%s" $siv.parameters.xsappname }}
-        {{- break -}}
-    {{- end -}}
+  {{- if and (eq (get $siv "serviceOfferingName") "subscription-manager") (eq (get $siv "servicePlanName") "provider") -}}
+    {{ printf "%s" $siv.parameters.xsappname }}
+    {{- break -}}
+  {{- end -}}
 {{- end -}}
 {{- end -}}
 
@@ -47,3 +47,7 @@
   {{- $domains := (include "domainHostMap" . | fromJson).domains -}}
   {{- printf "^(.*)\\.(%s)" (join "|" $domains | replace "." "\\.") -}}
 {{- end }}
+
+{{- define "originalAppName" -}}
+{{ print "bookshop" }}
+{{- end -}}

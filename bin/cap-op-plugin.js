@@ -20,7 +20,8 @@ const {
     isServiceOnlyChart,
     getServiceInstanceKeyName,
     getConfigurableCapOpCroYaml,
-    getDomainCroYaml
+    getDomainCroYaml,
+    getHelperTpl
 } = require('../lib/util')
 
 const SUPPORTED = { 'generate-runtime-values': ['--with-input-yaml'], 'convert-to-configurable-template-chart': ['--with-runtime-yaml'] }
@@ -127,11 +128,16 @@ async function convertToconfigurableTemplateChart(option, runtimeYamlPath) {
     console.log('Converting chart ' + cds.utils.path.join(cds.root, 'chart') + ' to configurable template chart.')
 
     // Copy templates
-    await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/templates/_helpers.tpl')).to(cds.utils.path.join(cds.root, 'chart/templates/_helpers.tpl'))
     await cds.utils.copy(cds.utils.path.join(__dirname, '../files/commonTemplates/')).to(cds.utils.path.join(cds.root, 'chart/templates/'))
 
     const valuesYaml = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, 'chart/values.yaml')))
     const hasIas = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'identity') != null
+    const hasXsuaa = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'xsuaa') != null
+
+    // Create _helpers.tpl
+    await cds.utils.write(getHelperTpl({
+        hasXsuaa: hasXsuaa
+    }, false)).to(cds.utils.path.join(cds.root, 'chart/templates/_helpers.tpl'))
 
     // Create domain.yaml
     await cds.utils.write(getDomainCroYaml({
@@ -142,7 +148,7 @@ async function convertToconfigurableTemplateChart(option, runtimeYamlPath) {
     // Only filling those fields in the project input struct that are required to create CAPApplication CR
     // Workloads will be filled during transformValuesAndFillCapOpCroYaml function call
     await cds.utils.write(getConfigurableCapOpCroYaml({
-        hasXsuaa: getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'xsuaa') != null,
+        hasXsuaa: hasXsuaa,
         hasIas: hasIas,
         isService: isServiceOnlyChart(cds.utils.path.join(cds.root, 'chart'))
     })).to(cds.utils.path.join(cds.root, 'chart/templates/cap-operator-cros.yaml'))

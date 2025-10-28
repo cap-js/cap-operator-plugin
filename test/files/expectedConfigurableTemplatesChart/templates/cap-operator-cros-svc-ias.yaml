@@ -80,9 +80,6 @@ spec:
     labels:
       sme.sap.com/app-type: {{ include "appName" $ }}
     consumedBTPServices:
-    {{- if eq (include "hasService" (dict "si" .Values.serviceInstances "offeringName" "content-agent" "planName" "application")) "true" }}
-    - {{ include "originalAppName" $ }}-content-agent-bind
-    {{- end }}
     - {{ include "originalAppName" $ }}-identity-bind
     - {{ include "originalAppName" $ }}-html5-repo-host-bind
     jobDefinition:

@@ -15,19 +15,6 @@
 {{- end -}}
 {{- end -}}
 
-{{- define "hasService" -}}
-{{- $found := "false" -}}
-{{- $offeringName := .offeringName -}}
-{{- $planName := .planName -}}
-{{- $si := .si -}}
-{{- range $sik, $siv := $si}}
-  {{- if and (eq (get $siv "serviceOfferingName") $offeringName) (eq (get $siv "servicePlanName") $planName) -}}
-    {{- $found = "true" -}}
-  {{- end -}}
-{{- end -}}
-{{- $found -}}
-{{- end -}}
-
 {{- define "domainHostMap" -}}
   {{- $domains := list .Values.app.domains.primary -}}
   {{- range .Values.app.domains.additionalDomainRefs }}
