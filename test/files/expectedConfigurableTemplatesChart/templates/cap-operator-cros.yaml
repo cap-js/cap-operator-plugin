@@ -93,7 +93,7 @@ spec:
     - {{ include "originalAppName" $ }}-service-manager-bind
     jobDefinition:
       type: TenantOperation
-      image: {{ .Values.workloads.server.image }}
+      image: {{ .Values.workloads.tenantJob.image }}
       {{- if .Values.hanaInstanceId }}
       env:
       - name: CDS_CONFIG
