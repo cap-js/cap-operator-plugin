@@ -38,7 +38,7 @@ serviceInstances:
     {{identityKeyName}}:
         parameters:
             display-name: {{appName}}
-            home-url: "https://{{appName}}.{{clusterDomain}}"
+            home-url: "https://$BTP_SUBDOMAIN.{{appName}}.{{clusterDomain}}"
     {{/hasXsuaa}}
 {{^hasXsuaa}}
 serviceBindings:
