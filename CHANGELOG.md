@@ -6,8 +6,8 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Added
 
-- Added support for SMS, IAS and AMS
-- Template generation refactored to use common template functions for better maintainability
+- Added support for IAS and AMS based subscriptions.
+- Template generation refactored to use common template functions for better maintainability.
 
 ## Version 0.9.0 - 08-September-2025
 
