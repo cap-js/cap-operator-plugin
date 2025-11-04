@@ -15,17 +15,20 @@ serviceInstances:
     serviceOfferingName: html5-apps-repo
     servicePlanName: app-host
     parameters: {}
-  xsuaa:
-    name: bookshop-uaa
-    serviceOfferingName: xsuaa
-    servicePlanName: broker
+  identity:
+    name: bookshop-identity
+    serviceOfferingName: identity
+    servicePlanName: application
     parameters:
-      xsappname: bookshop
-      tenant-mode: shared
+      display-name: bookshop
+      multi-tenant: true
+      xsuaa-cross-consumption: true
+      authorization:
+        enabled: true
       oauth2-configuration:
-        credential-types:
-          - binding-secret
         redirect-uris: []
+        post-logout-redirect-uris: []
+      home-url: ""
 serviceBindings:
   destination:
     name: bookshop-destination-bind
@@ -45,12 +48,14 @@ serviceBindings:
     secretName: bookshop-html5-repo-host-bind-secret
     secretKey: credentials
     parameters: {}
-  xsuaa:
-    name: bookshop-uaa-bind
-    serviceInstanceName: bookshop-uaa
-    secretName: bookshop-uaa-bind-secret
+  identity:
+    name: bookshop-identity-bind
+    serviceInstanceName: bookshop-identity
+    secretName: bookshop-identity-bind-secret
     secretKey: credentials
-    parameters: {}
+    parameters:
+      credential-type: X509_GENERATED
+      app-identifier: bookshop
 app:
   domains:
     primary: null
@@ -67,31 +72,44 @@ workloads:
     labels:
       sme.sap.com/app-type: bookshop
     consumedBTPServices:
-      - bookshop-uaa-bind
+      - bookshop-identity-bind
     deploymentDefinition:
       type: Service
-      image: gcr.io/test/server
-      env:
-      - name: CDS_CONFIG
-        value: '{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"abcd"}}}}}'
       ports:
-      - name: server-port
-        port: 4004
-        appProtocol: http
+        - name: server-port
+          port: 4004
+          appProtocol: http
+      image: null
+      env:
+        - name: AMS_DCL_ROOT
+          value: ams/dcl
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
   contentDeploy:
     name: content-deploy
     labels:
       sme.sap.com/app-type: bookshop
     consumedBTPServices:
-      - bookshop-uaa-bind
+      - bookshop-identity-bind
       - bookshop-html5-repo-host-bind
     jobDefinition:
       type: Content
-      image: gcr.io/test/content-deploy
-contentJobs:
-- content-deploy
+      image: null
+  amsDeployer:
+    name: ams-deployer
+    labels:
+      sme.sap.com/app-type: bookshop
+    consumedBTPServices:
+      - bookshop-identity-bind
+    jobDefinition:
+      type: Content
+      image: null
 serviceExposures:
-- subDomain: bookshop
-  routes:
-  - workloadName: server
-    port: 4004
+  - subDomain: bookshop
+    routes:
+      - workloadName: server
+        port: 4004
+contentJobs:
+  - content-deploy
+  - ams-deployer

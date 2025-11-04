@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## Version 0.10.0 - 03-November-2025
+
+### Added
+
+- Added support for IAS and AMS based subscriptions.
+- Template generation refactored to use common template functions for better maintainability.
+
 ## Version 0.9.0 - 08-September-2025
 
 ### Fixed

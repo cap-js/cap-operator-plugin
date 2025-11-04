@@ -1,0 +1,30 @@
+serviceInstances:
+  subscriptionManager:
+    name: {{appName}}-subscription-manager
+    serviceOfferingName: subscription-manager
+    servicePlanName: provider
+    parameters:
+      iasServiceInstanceName: {{appName}}-identity
+      applicationType: application
+      appName: {{appName}}
+      commercialAppName: {{appName}}
+      displayName: ({{appName}})
+      description: ({{appDescription}})
+      category: CAP
+      appCallbacks:
+        dependenciesCallbacks:
+          url: ""
+        subscriptionCallbacks:
+          url: ""
+          async:
+            subscribeEnable: true
+            unSubscribeEnable: true
+            timeoutInMillis: 300000
+
+serviceBindings:
+  subscriptionManager:
+    name: {{appName}}-subscription-manager-bind
+    serviceInstanceName: {{appName}}-subscription-manager
+    secretName: {{appName}}-subscription-manager-bind-secret
+    secretKey: credentials
+    parameters: {}

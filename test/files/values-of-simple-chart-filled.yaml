@@ -37,6 +37,8 @@ serviceInstances:
       displayName: (bookshop)
       description: (A simple CAP project.)
       appUrls:
+        getDependencies: ""
+        onSubscription: ""
         callbackTimeoutMillis: 300000
         onSubscriptionAsync: true
         onUnSubscriptionAsync: true
@@ -132,7 +134,6 @@ workloads:
       sme.sap.com/app-type: bookshop
     consumedBTPServices:
       - bookshop-uaa-bind
-      - bookshop-saas-registry-bind
       - bookshop-html5-repo-host-bind
     jobDefinition:
       type: Content

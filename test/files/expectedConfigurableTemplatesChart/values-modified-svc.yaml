@@ -26,26 +26,6 @@ serviceInstances:
         credential-types:
           - binding-secret
         redirect-uris: []
-  saasRegistry:
-    name: bookshop-saas-registry
-    serviceOfferingName: saas-registry
-    servicePlanName: application
-    parameters:
-      plan: general
-      xsappname: bookshop
-      appName: bookshop
-      displayName: (bookshop)
-      description: (A simple CAP project.)
-      appUrls:
-        callbackTimeoutMillis: 300000
-        onSubscriptionAsync: true
-        onUnSubscriptionAsync: true
-      category: CAP
-  serviceManager:
-    name: bookshop-service-manager
-    serviceOfferingName: service-manager
-    servicePlanName: container
-    parameters: {}
 serviceBindings:
   destination:
     name: bookshop-destination-bind
@@ -69,18 +49,6 @@ serviceBindings:
     name: bookshop-uaa-bind
     serviceInstanceName: bookshop-uaa
     secretName: bookshop-uaa-bind-secret
-    secretKey: credentials
-    parameters: {}
-  saasRegistry:
-    name: bookshop-saas-registry-bind
-    serviceInstanceName: bookshop-saas-registry
-    secretName: bookshop-saas-registry-bind-secret
-    secretKey: credentials
-    parameters: {}
-  serviceManager:
-    name: bookshop-service-manager-bind
-    serviceInstanceName: bookshop-service-manager
-    secretName: bookshop-service-manager-bind-secret
     secretKey: credentials
     parameters: {}
 app:

@@ -12,10 +12,10 @@ spec:
     name: {{ .name }}
   {{- end }}
   btpAppName: {{ include "appName" $ }}
-  globalAccountId: {{.Values.btp.globalAccountId}}
+  globalAccountId: {{ .Values.btp.globalAccountId }}
   provider:
-    subDomain: {{.Values.btp.provider.subdomain}}
-    tenantId: {{.Values.btp.provider.tenantId}}
+    subDomain: {{ .Values.btp.provider.subdomain }}
+    tenantId: {{ .Values.btp.provider.tenantId }}
   btp:
     services:
     {{- $serviceInstances := .Values.serviceInstances }}
@@ -48,9 +48,9 @@ spec:
   capApplicationInstance: {{ include "appName" $ }}
   version: "{{ .Release.Revision }}"
   registrySecrets:
-    {{- range .Values.imagePullSecrets }}
-    - {{.}}
-    {{- end }}
+  {{- range .Values.imagePullSecrets }}
+  - {{ . }}
+  {{- end }}
   workloads:
   - name: author-readings-approuter
     consumedBTPServices:

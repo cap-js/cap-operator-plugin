@@ -12,7 +12,7 @@ spec:
     name: {{ .name }}
   {{- end }}
   btpAppName: {{ include "appName" $ }}
-  globalAccountId: {{.Values.btp.globalAccountId}}
+  globalAccountId: {{ .Values.btp.globalAccountId }}
   btp:
     services:
     {{- $serviceInstances := .Values.serviceInstances }}
@@ -45,19 +45,17 @@ spec:
   capApplicationInstance: {{ include "appName" $ }}
   version: "{{ .Release.Revision }}"
   registrySecrets:
-    {{- range .Values.imagePullSecrets }}
-    - {{.}}
-    {{- end }}
+  {{- range .Values.imagePullSecrets }}
+  - {{ . }}
+  {{- end }}
   workloads:
   - name: server
     labels:
       sme.sap.com/app-type: bookshop
     consumedBTPServices:
       - bookshop-uaa-bind
-      - bookshop-saas-registry-bind
-      - bookshop-service-manager-bind
     deploymentDefinition:
-      type: service
+      type: Service
       image: "{{.Values.workloads.server.image}}"
       env:
         - name: CDS_CONFIG
@@ -71,7 +69,6 @@ spec:
       sme.sap.com/app-type: bookshop
     consumedBTPServices:
       - bookshop-uaa-bind
-      - bookshop-saas-registry-bind
       - bookshop-html5-repo-host-bind
     jobDefinition:
       type: Content

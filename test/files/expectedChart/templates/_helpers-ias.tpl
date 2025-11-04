@@ -8,10 +8,10 @@
 
 {{- define "appName" -}}
 {{- range $sik, $siv := .Values.serviceInstances }}
-    {{- if and (eq (get $siv "serviceOfferingName") "xsuaa") (eq (get $siv "servicePlanName") "broker") -}}
-        {{ printf "%s" $siv.parameters.xsappname }}
-        {{- break -}}
-    {{- end -}}
+  {{- if and (eq (get $siv "serviceOfferingName") "subscription-manager") (eq (get $siv "servicePlanName") "provider") -}}
+    {{ printf "%s" $siv.parameters.appName }}
+    {{- break -}}
+  {{- end -}}
 {{- end -}}
 {{- end -}}
 
@@ -29,12 +29,18 @@
 {{- end }}
 
 {{- define "redirectUris" -}}
-  {{- $domains := (include "domainHostMap" . | fromJson).domains -}}
+  {{- $ctx := .context -}}
+  {{- $svc := .serviceOfferingName -}}
+  {{- $domains := (include "domainHostMap" $ctx | fromJson).domains -}}
   {{- $redirectUris := list -}}
   {{- range $domains }}
     {{- $redirectUris = append $redirectUris (printf "https://*.%s/**" .) -}}
   {{- end -}}
-  {{- toJson (dict "redirect-uris" $redirectUris) -}}
+  {{- if eq $svc "identity" }}
+    {{- toJson (dict "redirect-uris" $redirectUris "post-logout-redirect-uris" $redirectUris) -}}
+  {{- else }}
+    {{- toJson (dict "redirect-uris" $redirectUris) -}}
+  {{- end -}}
 {{- end }}
 
 {{- define "tenantHostPattern" -}}

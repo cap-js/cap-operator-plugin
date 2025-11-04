@@ -11,7 +11,18 @@ const yaml = require('@sap/cds-foss').yaml
 const Mustache = require('mustache')
 const { spawn } = require('child_process')
 
-const { ask, mergeObj, isCAPOperatorChart, isConfigurableTemplateChart, transformValuesAndFillCapOpCroYaml, isServiceOnlyChart } = require('../lib/util')
+const {
+    ask,
+    mergeObj,
+    isCAPOperatorChart,
+    isConfigurableTemplateChart,
+    transformValuesAndFillCapOpCroYaml,
+    isServiceOnlyChart,
+    getServiceInstanceKeyName,
+    getConfigurableCapOpCroYaml,
+    getDomainCroYaml,
+    getHelperTpl
+} = require('../lib/util')
 
 const SUPPORTED = { 'generate-runtime-values': ['--with-input-yaml'], 'convert-to-configurable-template-chart': ['--with-runtime-yaml'] }
 
@@ -25,7 +36,7 @@ async function capOperatorPlugin(cmd, option, yamlPath) {
             if (option === '--with-input-yaml' && !yamlPath)
                 return _usage(`Input yaml path is missing.`)
 
-            if (option === '--with-input-yaml' && !yamlPath && cds.utils.exists(cds.utils.path.join(cds.root,yamlPath)))
+            if (option === '--with-input-yaml' && !yamlPath && cds.utils.exists(cds.utils.path.join(cds.root, yamlPath)))
                 return _usage(`Input yaml path ${yamlPath} does not exist.`)
 
             await generateRuntimeValues(option, yamlPath)
@@ -35,7 +46,7 @@ async function capOperatorPlugin(cmd, option, yamlPath) {
             if (option === '--with-runtime-yaml' && !yamlPath)
                 return _usage(`Input runtime yaml path is missing.`)
 
-            if (option === '--with-runtime-yaml' && !yamlPath && cds.utils.exists(cds.utils.path.join(cds.root,yamlPath)))
+            if (option === '--with-runtime-yaml' && !yamlPath && cds.utils.exists(cds.utils.path.join(cds.root, yamlPath)))
                 return _usage(`Input runtime yaml path ${yamlPath} does not exist.`)
 
             await convertToconfigurableTemplateChart(option, yamlPath)
@@ -81,13 +92,13 @@ EXAMPLES
 }
 
 async function transformRuntimeValues(runtimeYamlPath) {
-    console.log('Transforming runtime values file '+ cds.utils.path.join(cds.root,runtimeYamlPath) + ' to the configurable template chart format.')
+    console.log('Transforming runtime values file ' + cds.utils.path.join(cds.root, runtimeYamlPath) + ' to the configurable template chart format.')
     let runtimeYaml = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, runtimeYamlPath)))
     if (runtimeYaml?.workloads?.server?.deploymentDefinition?.env) {
         const index = runtimeYaml.workloads.server.deploymentDefinition.env.findIndex(e => e.name === 'CDS_CONFIG')
         if (index > -1) {
             const cdsConfigValueJson = JSON.parse(runtimeYaml.workloads.server.deploymentDefinition.env[index].value)
-            if (cdsConfigValueJson?.requires?.['cds.xt.DeploymentService']?.hdi?.create?.database_id){
+            if (cdsConfigValueJson?.requires?.['cds.xt.DeploymentService']?.hdi?.create?.database_id) {
                 runtimeYaml['hanaInstanceId'] = cdsConfigValueJson.requires['cds.xt.DeploymentService'].hdi.create.database_id
                 delete runtimeYaml['workloads']
                 await cds.utils.write(yaml.stringify(runtimeYaml)).to(cds.utils.path.join(cds.root, runtimeYamlPath))
@@ -102,36 +113,55 @@ async function isRuntimeValueAlreadyTransformed(runtimeYamlPath) {
 }
 
 async function convertToconfigurableTemplateChart(option, runtimeYamlPath) {
-    if (!((cds.utils.exists('chart') && isCAPOperatorChart(cds.utils.path.join(cds.root,'chart')))))
+    if (!((cds.utils.exists('chart') && isCAPOperatorChart(cds.utils.path.join(cds.root, 'chart')))))
         throw new Error("No CAP Operator chart found in the project. Please run 'cds add cap-operator --force' to add the CAP Operator chart folder.")
 
-    if (isConfigurableTemplateChart(cds.utils.path.join(cds.root,'chart'))){
+    if (isConfigurableTemplateChart(cds.utils.path.join(cds.root, 'chart'))) {
         console.log("Exisiting chart is already a configurable template chart. No need for conversion.")
         if (option === '--with-runtime-yaml' && runtimeYamlPath && !(await isRuntimeValueAlreadyTransformed(runtimeYamlPath)))
             await transformRuntimeValues(runtimeYamlPath)
         else
-            console.log('Runtime values file '+ cds.utils.path.join(cds.root,runtimeYamlPath) + ' already in the configurable template chart format.')
+            console.log('Runtime values file ' + cds.utils.path.join(cds.root, runtimeYamlPath) + ' already in the configurable template chart format.')
         return
     }
 
-    console.log('Converting chart '+cds.utils.path.join(cds.root,'chart')+' to configurable template chart.')
+    console.log('Converting chart ' + cds.utils.path.join(cds.root, 'chart') + ' to configurable template chart.')
 
     // Copy templates
-    await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/templates/_helpers.tpl')).to(cds.utils.path.join(cds.root,'chart/templates/_helpers.tpl'))
-    await cds.utils.copy(cds.utils.path.join(__dirname, '../files/commonTemplates/')).to(cds.utils.path.join(cds.root,'chart/templates/'))
+    await cds.utils.copy(cds.utils.path.join(__dirname, '../files/commonTemplates/')).to(cds.utils.path.join(cds.root, 'chart/templates/'))
 
-    isServiceOnlyChart(cds.utils.path.join(cds.root,'chart')) ? await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/templates/cap-operator-cros-svc.yaml')).to(cds.utils.path.join(cds.root,'chart/templates/cap-operator-cros.yaml')) :
-        await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/templates/cap-operator-cros.yaml')).to(cds.utils.path.join(cds.root,'chart/templates/cap-operator-cros.yaml'))
+    const valuesYaml = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, 'chart/values.yaml')))
+    const hasIas = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'identity') != null
+    const hasXsuaa = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'xsuaa') != null
+
+    // Create _helpers.tpl
+    await cds.utils.write(getHelperTpl({
+        hasXsuaa: hasXsuaa
+    }, false)).to(cds.utils.path.join(cds.root, 'chart/templates/_helpers.tpl'))
+
+    // Create domain.yaml
+    await cds.utils.write(getDomainCroYaml({
+        hasIas: hasIas
+    })).to(cds.utils.path.join(cds.root, 'chart/templates/domain.yaml'))
+
+    // Create cap-operator-cros.yaml
+    // Only filling those fields in the project input struct that are required to create CAPApplication CR
+    // Workloads will be filled during transformValuesAndFillCapOpCroYaml function call
+    await cds.utils.write(getConfigurableCapOpCroYaml({
+        hasXsuaa: hasXsuaa,
+        hasIas: hasIas,
+        isService: isServiceOnlyChart(cds.utils.path.join(cds.root, 'chart'))
+    })).to(cds.utils.path.join(cds.root, 'chart/templates/cap-operator-cros.yaml'))
 
     // Copy values.schema.json
-    await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/values.schema.json')).to(cds.utils.path.join(cds.root,'chart', 'values.schema.json'))
+    await cds.utils.copy(cds.utils.path.join(__dirname, '../files/configurableTemplatesChart/values.schema.json')).to(cds.utils.path.join(cds.root, 'chart', 'values.schema.json'))
 
     // Add annotation to chart.yaml
     const chartYaml = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, 'chart/Chart.yaml')))
     chartYaml['annotations']['app.kubernetes.io/part-of'] = 'cap-operator-configurable-templates'
     await cds.utils.write(yaml.stringify(chartYaml)).to(cds.utils.path.join(cds.root, 'chart/Chart.yaml'))
 
-    // Transform
+    // Transform CAPApplicationVersion CR from values.yaml
     await transformValuesAndFillCapOpCroYaml()
 
     if (option === '--with-runtime-yaml' && runtimeYamlPath) {
@@ -140,14 +170,14 @@ async function convertToconfigurableTemplateChart(option, runtimeYamlPath) {
 }
 
 async function generateRuntimeValues(option, inputYamlPath) {
-    if (!((cds.utils.exists('chart') && isCAPOperatorChart(cds.utils.path.join(cds.root,'chart'))))) {
+    if (!((cds.utils.exists('chart') && isCAPOperatorChart(cds.utils.path.join(cds.root, 'chart'))))) {
         throw new Error("No CAP Operator chart found in the project. Please run 'cds add cap-operator --force' to add the CAP Operator chart folder.")
     }
 
     let answerStruct = {}
     const { appName, appDescription } = getAppDetails()
-    const isConfigurableTempChart = isConfigurableTemplateChart(cds.utils.path.join(cds.root,'chart'))
-    const isServiceOnly = isServiceOnlyChart(cds.utils.path.join(cds.root,'chart'))
+    const isConfigurableTempChart = isConfigurableTemplateChart(cds.utils.path.join(cds.root, 'chart'))
+    const isServiceOnly = isServiceOnlyChart(cds.utils.path.join(cds.root, 'chart'))
 
     if (option === '--with-input-yaml' && inputYamlPath) {
 
@@ -190,8 +220,16 @@ async function generateRuntimeValues(option, inputYamlPath) {
     const valuesYaml = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, 'chart/values.yaml')))
 
     //get saas-registry and xsuaa service keys
-    answerStruct['saasRegistryKeyName'] = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'saas-registry') || 'saas-registry'
-    answerStruct['xsuaaKeyName'] = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'xsuaa') || 'xsuaa'
+    const xsuaaServiceInstanceKey = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'xsuaa')
+    if (xsuaaServiceInstanceKey == null) {
+        answerStruct['hasXsuaa'] = false
+        answerStruct['subscriptionManagerKeyName'] = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'subscription-manager') || 'subscription-manager'
+        answerStruct['identityKeyName'] = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'identity') || 'identity'
+    } else {
+        answerStruct['hasXsuaa'] = true
+        answerStruct['saasRegistryKeyName'] = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'saas-registry') || 'saas-registry'
+        answerStruct['xsuaaKeyName'] = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'xsuaa') || 'xsuaa'
+    }
 
     answerStruct['isApp'] = !isServiceOnly
     answerStruct['isService'] = isServiceOnly
@@ -220,7 +258,7 @@ function updateWorkloadEnv(runtimeValuesYaml, valuesYaml, answerStruct) {
 
         const cdsConfigHana = Mustache.render('{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"{{hanaInstanceId}}"}}}}}', answerStruct)
 
-        if ((workloadDetails?.deploymentDefinition?.type === 'CAP' || workloadDetails?.deploymentDefinition?.type === 'service') && answerStruct['hanaInstanceId']) {
+        if ((workloadDetails?.deploymentDefinition?.type === 'CAP' || workloadDetails?.deploymentDefinition?.type === 'Service') && answerStruct['hanaInstanceId']) {
             updateCdsConfigEnv(runtimeValuesYaml, workloadKey, 'deploymentDefinition', cdsConfigHana)
         }
 
@@ -240,14 +278,6 @@ function updateWorkloadEnv(runtimeValuesYaml, valuesYaml, answerStruct) {
     if (Object.keys(runtimeValuesYaml['workloads']).length === 0) {
         delete runtimeValuesYaml['workloads']
     }
-}
-
-function getServiceInstanceKeyName(serviceInstances, offeringName) {
-    for (const key in serviceInstances) {
-        if (serviceInstances[key].serviceOfferingName === offeringName)
-            return key
-    }
-    return null
 }
 
 function updateCdsConfigEnv(runtimeValuesYaml, workloadKey, workloadDefintion, cdsConfigHana) {
@@ -285,7 +315,7 @@ async function getShootDomain() {
 
             kubectl.on('close', () => { resolve() })
         })
-    } catch (error) {}
+    } catch (error) { }
 
     return domain
 }

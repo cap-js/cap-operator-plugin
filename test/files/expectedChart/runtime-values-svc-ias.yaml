@@ -1,7 +1,12 @@
 serviceInstances:
-  xsuaa:
+  identity:
     parameters:
-      xsappname: bkshop
+      display-name: bkshop
+      home-url: https://$BTP_SUBDOMAIN.bkshop.c-abc.kyma.ondemand.com
+serviceBindings:
+  identity:
+    parameters:
+      app-identifier: bkshop
 app:
   domains:
     primary: bkshop.c-abc.kyma.ondemand.com

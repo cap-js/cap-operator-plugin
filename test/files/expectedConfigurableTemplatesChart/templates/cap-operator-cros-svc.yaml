@@ -13,9 +13,6 @@ spec:
   {{- end }}
   btpAppName: {{ include "appName" $ }}
   globalAccountId: {{ .Values.btp.globalAccountId }}
-  provider:
-    subDomain: {{ .Values.btp.provider.subdomain }}
-    tenantId: {{ .Values.btp.provider.tenantId }}
   btp:
     services:
     {{- $serviceInstances := .Values.serviceInstances }}
@@ -52,62 +49,34 @@ spec:
   - {{ . }}
   {{- end }}
   workloads:
-  - name: app-router
-    labels:
-      sme.sap.com/app-type: bookshop
-    consumedBTPServices:
-      - bookshop-uaa-bind
-      - bookshop-destination-bind
-      - bookshop-html5-repo-runtime-bind
-      - bookshop-saas-registry-bind
-    deploymentDefinition:
-      type: Router
-      image: "{{.Values.workloads.appRouter.image}}"
-      env:
-        - name: TENANT_HOST_PATTERN
-          value: '{{ include "tenantHostPattern" . }}'
-    ports:
-      - name: router-port
-        port: 5000
   - name: server
     labels:
-      sme.sap.com/app-type: bookshop
+      sme.sap.com/app-type: {{ include "appName" $ }}
     consumedBTPServices:
-      - bookshop-uaa-bind
-      - bookshop-saas-registry-bind
-      - bookshop-service-manager-bind
+    - {{ include "originalAppName" $ }}-uaa-bind
     deploymentDefinition:
-      type: CAP
-      image: "{{.Values.workloads.server.image}}"
+      type: Service
+      ports:
+      - name: server-port
+        port: 4004
+        appProtocol: http
+      image: {{ .Values.workloads.server.image }}
+      {{- if .Values.hanaInstanceId }}
       env:
-        - name: CDS_CONFIG
-          value: '{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"{{.Values.hanaInstanceId}}"}}}}}'
+      - name: CDS_CONFIG
+        value: '{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"{{ .Values.hanaInstanceId }}"}}}}}'
+      {{- end }}
   - name: content-deploy
     labels:
-      sme.sap.com/app-type: bookshop
+      sme.sap.com/app-type: {{ include "appName" $ }}
     consumedBTPServices:
-      - bookshop-uaa-bind
-      - bookshop-html5-repo-host-bind
+    - {{ include "originalAppName" $ }}-uaa-bind
+    - {{ include "originalAppName" $ }}-html5-repo-host-bind
     jobDefinition:
       type: Content
-      image: "{{.Values.workloads.contentDeploy.image}}"
-  - name: tenant-job
-    labels:
-      sme.sap.com/app-type: bookshop
-    consumedBTPServices:
-      - bookshop-uaa-bind
-      - bookshop-saas-registry-bind
-      - bookshop-service-manager-bind
-    jobDefinition:
-      type: TenantOperation
-      image: "{{.Values.workloads.tenantJob.image}}"
-      env:
-        - name: CDS_CONFIG
-          value: '{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"{{.Values.hanaInstanceId}}"}}}}}'
-  tenantOperations:
-    provisioning:
-        - workloadName: tenant-job
-    upgrade:
-        - workloadName: tenant-job
-  contentJobs:
-  - content-deploy
+      image: {{ .Values.workloads.contentDeploy.image }}
+  serviceExposures:
+  - subDomain: {{ include "appName" $ }}
+    routes:
+    - workloadName: server
+      port: 4004

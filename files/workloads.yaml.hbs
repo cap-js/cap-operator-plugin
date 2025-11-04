@@ -6,23 +6,39 @@ workloads:
         consumedBTPServices:
         {{#hasXsuaa}}
         - {{appName}}-uaa-bind
-        {{/hasXsuaa}}
-        {{#hasMultitenancy}}
+        {{#isApp}}
         - {{appName}}-saas-registry-bind
+        {{/isApp}}
+        {{/hasXsuaa}}
+        {{#hasIas}}
+        - {{appName}}-identity-bind
+        {{#isApp}}
+        - {{appName}}-subscription-manager-bind
+        {{/isApp}}
+        {{/hasIas}}
+        {{#isApp}}
         - {{appName}}-service-manager-bind
-        {{/hasMultitenancy}}
+        {{/isApp}}
         deploymentDefinition:
             {{#isApp}}
             type: CAP
             {{/isApp}}
             {{#isService}}
-            type: service
+            type: Service
             ports:
             - name: server-port
               port: 4004
               appProtocol: http
             {{/isService}}
             image:
+            {{#hasAms}}
+            env:
+            - name: AMS_DCL_ROOT
+              value: ams/dcl
+            securityContext:
+                runAsUser: 1000
+                runAsGroup: 1000
+            {{/hasAms}}
 
     contentDeploy:
         name: content-deploy
@@ -32,9 +48,9 @@ workloads:
         {{#hasXsuaa}}
         - {{appName}}-uaa-bind
         {{/hasXsuaa}}
-        {{#hasMultitenancy}}
-        - {{appName}}-saas-registry-bind
-        {{/hasMultitenancy}}
+        {{#hasIas}}
+        - {{appName}}-identity-bind
+        {{/hasIas}}
         {{#hasHtml5Repo}}
         - {{appName}}-html5-repo-host-bind
         {{/hasHtml5Repo}}
@@ -50,15 +66,32 @@ workloads:
         consumedBTPServices:
         {{#hasXsuaa}}
         - {{appName}}-uaa-bind
-        {{/hasXsuaa}}
-        {{#hasMultitenancy}}
         - {{appName}}-saas-registry-bind
+        {{/hasXsuaa}}
+        {{#hasIas}}
+        - {{appName}}-identity-bind
+        - {{appName}}-subscription-manager-bind
+        {{/hasIas}}
         - {{appName}}-service-manager-bind
-        {{/hasMultitenancy}}
         jobDefinition:
             type: TenantOperation
             image:
     {{/isApp}}
+
+    {{#hasAms}}
+    amsDeployer:
+        name: ams-deployer
+        labels:
+            sme.sap.com/app-type: {{appName}}
+        consumedBTPServices:
+        {{#hasIas}}
+        - {{appName}}-identity-bind
+        {{/hasIas}}
+        jobDefinition:
+            type: Content
+            image:
+    {{/hasAms}}
+
 {{#isService}}
 serviceExposures:
 - subDomain: {{appName}}
@@ -66,3 +99,9 @@ serviceExposures:
   - workloadName: server
     port: 4004
 {{/isService}}
+
+{{#hasAms}}
+contentJobs:
+- content-deploy
+- ams-deployer
+{{/hasAms}}

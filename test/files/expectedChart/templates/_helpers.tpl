@@ -2,30 +2,17 @@
 {{ printf "%s-%d" (include "appName" $) (.Release.Revision) }}
 {{- end -}}
 
-{{- define "appName" -}}
-{{- range $sik, $siv := .Values.serviceInstances}}
-    {{- if and (eq (get $siv "serviceOfferingName") "xsuaa") (eq (get $siv "servicePlanName") "broker") -}}
-        {{ printf "%s" $siv.parameters.xsappname }}
-        {{- break -}}
-    {{- end -}}
-{{- end -}}
-{{- end -}}
-
 {{- define "domainName" -}}
 {{ printf "%s-primary" (include "appName" $)}}
 {{- end -}}
 
-{{- define "hasService" -}}
-{{- $found := "false" -}}
-{{- $offeringName := .offeringName -}}
-{{- $planName := .planName -}}
-{{- $si := .si -}}
-{{- range $sik, $siv := $si}}
-    {{- if and (eq (get $siv "serviceOfferingName") $offeringName) (eq (get $siv "servicePlanName") $planName) -}}
-        {{- $found = "true" -}}
-    {{- end -}}
+{{- define "appName" -}}
+{{- range $sik, $siv := .Values.serviceInstances }}
+  {{- if and (eq (get $siv "serviceOfferingName") "xsuaa") (eq (get $siv "servicePlanName") "broker") -}}
+    {{ printf "%s" $siv.parameters.xsappname }}
+    {{- break -}}
+  {{- end -}}
 {{- end -}}
-{{- $found -}}
 {{- end -}}
 
 {{- define "domainHostMap" -}}
@@ -42,12 +29,18 @@
 {{- end }}
 
 {{- define "redirectUris" -}}
-  {{- $domains := (include "domainHostMap" . | fromJson).domains -}}
+  {{- $ctx := .context -}}
+  {{- $svc := .serviceOfferingName -}}
+  {{- $domains := (include "domainHostMap" $ctx | fromJson).domains -}}
   {{- $redirectUris := list -}}
   {{- range $domains }}
     {{- $redirectUris = append $redirectUris (printf "https://*.%s/**" .) -}}
   {{- end -}}
-  {{- toJson (dict "redirect-uris" $redirectUris) -}}
+  {{- if eq $svc "identity" }}
+    {{- toJson (dict "redirect-uris" $redirectUris "post-logout-redirect-uris" $redirectUris) -}}
+  {{- else }}
+    {{- toJson (dict "redirect-uris" $redirectUris) -}}
+  {{- end -}}
 {{- end }}
 
 {{- define "tenantHostPattern" -}}

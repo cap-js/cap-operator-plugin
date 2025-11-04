@@ -1,0 +1,27 @@
+serviceInstances:
+  identity:
+    name: {{appName}}-identity
+    serviceOfferingName: identity
+    servicePlanName: application
+    parameters:
+      display-name: {{appName}}
+      multi-tenant: true
+      xsuaa-cross-consumption: true
+      {{#hasAms}}
+      authorization:
+        enabled: true
+      {{/hasAms}}
+      oauth2-configuration:
+        redirect-uris: []
+        post-logout-redirect-uris: []
+      home-url: ""
+
+serviceBindings:
+  identity:
+    name: {{appName}}-identity-bind
+    serviceInstanceName: {{appName}}-identity
+    secretName: {{appName}}-identity-bind-secret
+    secretKey: credentials
+    parameters:
+      credential-type: X509_GENERATED
+      app-identifier: {{appName}}

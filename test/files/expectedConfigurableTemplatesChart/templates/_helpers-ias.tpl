@@ -8,8 +8,8 @@
 
 {{- define "appName" -}}
 {{- range $sik, $siv := .Values.serviceInstances }}
-  {{- if and (eq (get $siv "serviceOfferingName") "xsuaa") (eq (get $siv "servicePlanName") "broker") -}}
-    {{ printf "%s" $siv.parameters.xsappname }}
+  {{- if and (eq (get $siv "serviceOfferingName") "subscription-manager") (eq (get $siv "servicePlanName") "provider") -}}
+    {{ printf "%s" $siv.parameters.appName }}
     {{- break -}}
   {{- end -}}
 {{- end -}}
