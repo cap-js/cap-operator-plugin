@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file. This projec
 ### Added
 
 - Updated `values.schema.json` to align with the latest CAP Operator version `v0.23.0` and BTP Service Operator version `v0.9.4`.
+- Dependencies updated.
 
 ## Version 0.10.0 - 03-November-2025
 
