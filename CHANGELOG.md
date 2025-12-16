@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## Version 0.11.0 - 16-December-2025
+
+### Added
+
+- Updated `values.schema.json` to align with the latest CAP Operator version `v0.23.0` and BTP Service Operator version `v0.9.4`.
+- Dependencies updated.
+
 ## Version 0.10.0 - 03-November-2025
 
 ### Added

@@ -350,6 +350,12 @@
                 "restartPolicy": {
                     "type": "string"
                 },
+                "restartPolicyRules": {
+                    "items": {
+                        "$ref": "#/$defs/ContainerRestartRule"
+                    },
+                    "type": "array"
+                },
                 "securityContext": {
                     "$ref": "#/$defs/SecurityContext"
                 },
@@ -430,6 +436,33 @@
                 "resourceName",
                 "restartPolicy"
             ],
+            "type": "object"
+        },
+        "ContainerRestartRule": {
+            "additionalProperties": false,
+            "properties": {
+                "action": {
+                    "type": "string"
+                },
+                "exitCodes": {
+                    "$ref": "#/$defs/ContainerRestartRuleOnExitCodes"
+                }
+            },
+            "type": "object"
+        },
+        "ContainerRestartRuleOnExitCodes": {
+            "additionalProperties": false,
+            "properties": {
+                "operator": {
+                    "type": "string"
+                },
+                "values": {
+                    "items": {
+                        "type": "integer"
+                    },
+                    "type": "array"
+                }
+            },
             "type": "object"
         },
         "CredentialsRotationPolicy": {
@@ -515,6 +548,9 @@
                         "type": "string"
                     },
                     "type": "object"
+                },
+                "podDisruptionBudget": {
+                    "$ref": "#/$defs/PodDisruptionBudgetSpec"
                 },
                 "podSecurityContext": {
                     "$ref": "#/$defs/PodSecurityContext"
@@ -717,6 +753,9 @@
                 "fieldRef": {
                     "$ref": "#/$defs/ObjectFieldSelector"
                 },
+                "fileKeyRef": {
+                    "$ref": "#/$defs/FileKeySelector"
+                },
                 "resourceFieldRef": {
                     "$ref": "#/$defs/ResourceFieldSelector"
                 },
@@ -783,6 +822,29 @@
         "FieldsV1": {
             "additionalProperties": false,
             "properties": {},
+            "type": "object"
+        },
+        "FileKeySelector": {
+            "additionalProperties": false,
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "optional": {
+                    "type": "boolean"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "volumeName": {
+                    "type": "string"
+                }
+            },
+            "required": [
+                "volumeName",
+                "path",
+                "key"
+            ],
             "type": "object"
         },
         "FlexVolumeSource": {
@@ -1675,6 +1737,48 @@
                         "$ref": "#/$defs/PodAffinityTerm"
                     },
                     "type": "array"
+                }
+            },
+            "type": "object"
+        },
+        "PodCertificateProjection": {
+            "additionalProperties": false,
+            "properties": {
+                "certificateChainPath": {
+                    "type": "string"
+                },
+                "credentialBundlePath": {
+                    "type": "string"
+                },
+                "keyPath": {
+                    "type": "string"
+                },
+                "keyType": {
+                    "type": "string"
+                },
+                "maxExpirationSeconds": {
+                    "type": "integer"
+                },
+                "signerName": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "PodDisruptionBudgetSpec": {
+            "additionalProperties": false,
+            "properties": {
+                "maxUnavailable": {
+                    "$ref": "#/$defs/IntOrString"
+                },
+                "minAvailable": {
+                    "$ref": "#/$defs/IntOrString"
+                },
+                "selector": {
+                    "$ref": "#/$defs/LabelSelector"
+                },
+                "unhealthyPodEvictionPolicy": {
+                    "type": "string"
                 }
             },
             "type": "object"
@@ -2625,6 +2729,9 @@
                 },
                 "downwardAPI": {
                     "$ref": "#/$defs/DownwardAPIProjection"
+                },
+                "podCertificate": {
+                    "$ref": "#/$defs/PodCertificateProjection"
                 },
                 "secret": {
                     "$ref": "#/$defs/SecretProjection"
