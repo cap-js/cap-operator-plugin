@@ -104,6 +104,9 @@ spec:
     jobDefinition:
       type: Content
       image: "{{.Values.workloads.authorReadingsAppDeployer.image}}"
+      env:
+        - name: EXIT_PROCESS_AFTER_UPLOAD
+          value: "true"
   - name: author-readings-mtx
     consumedBTPServices:
       - author-readings-registry-bind

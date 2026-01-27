@@ -181,6 +181,9 @@ workloads:
     jobDefinition:
       type: Content
       image: null
+      env:
+        - name: EXIT_PROCESS_AFTER_UPLOAD
+          value: "true"
   authorReadingsMtx:
     name: author-readings-mtx
     consumedBTPServices:
