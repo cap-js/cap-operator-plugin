@@ -249,20 +249,20 @@ async function generateRuntimeValues(option, inputYamlPath) {
 }
 
 function updateWorkloadEnv(runtimeValuesYaml, valuesYaml, answerStruct) {
+    if (!answerStruct?.hanaInstanceId) return
+
     runtimeValuesYaml['workloads'] = {}
     for (const [workloadKey, workloadDetails] of Object.entries(valuesYaml.workloads)) {
 
-        runtimeValuesYaml['workloads'][workloadKey] = workloadDetails.deploymentDefinition
-            ? { "deploymentDefinition": { "env": workloadDetails.deploymentDefinition.env ?? [] } }
-            : { "jobDefinition": { "env": workloadDetails.jobDefinition.env ?? [] } }
-
         const cdsConfigHana = Mustache.render('{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"{{hanaInstanceId}}"}}}}}', answerStruct)
 
-        if ((workloadDetails?.deploymentDefinition?.type === 'CAP' || workloadDetails?.deploymentDefinition?.type === 'Service') && answerStruct['hanaInstanceId']) {
+        if ((workloadDetails?.deploymentDefinition?.type === 'CAP' || workloadDetails?.deploymentDefinition?.type === 'Service')) {
+            runtimeValuesYaml['workloads'][workloadKey] = { "deploymentDefinition": { "env": workloadDetails.deploymentDefinition.env ?? [] }}
             updateCdsConfigEnv(runtimeValuesYaml, workloadKey, 'deploymentDefinition', cdsConfigHana)
         }
 
-        if (workloadDetails?.jobDefinition?.type === 'TenantOperation' && answerStruct['hanaInstanceId']) {
+        if (workloadDetails?.jobDefinition?.type === 'TenantOperation') {
+            runtimeValuesYaml['workloads'][workloadKey] = { "jobDefinition": { "env": workloadDetails.jobDefinition.env ?? [] } }
             updateCdsConfigEnv(runtimeValuesYaml, workloadKey, 'jobDefinition', cdsConfigHana)
         }
     }
@@ -279,6 +279,7 @@ function updateWorkloadEnv(runtimeValuesYaml, valuesYaml, answerStruct) {
         delete runtimeValuesYaml['workloads']
     }
 }
+
 
 function updateCdsConfigEnv(runtimeValuesYaml, workloadKey, workloadDefintion, cdsConfigHana) {
     const index = runtimeValuesYaml['workloads'][workloadKey][workloadDefintion]['env'].findIndex(e => e.name === 'CDS_CONFIG')

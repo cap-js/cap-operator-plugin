@@ -84,6 +84,10 @@ EXAMPLES
             question: rlQuestion,
             close: sinon.stub()
         }
+
+        // Copy over a values file with env filled for content job. It should be retained in the generated runtime-values.yaml
+        await cds.utils.copy(join(__dirname, 'files', 'values-of-simple-chart-filled.yaml'), join(bookshop, 'chart/values.yaml'))
+
         sinon.stub(readline, 'createInterface').returns(rlInterface)
 
         rlQuestion.onFirstCall().callsArgWith(1, 'bkshop')

@@ -63,12 +63,12 @@ spec:
     deploymentDefinition:
       type: Router
       image: "{{.Values.workloads.appRouter.image}}"
+      ports:
+        - name: router-port
+          port: 5000
       env:
         - name: TENANT_HOST_PATTERN
           value: '{{ include "tenantHostPattern" . }}'
-    ports:
-      - name: router-port
-        port: 5000
   - name: server
     labels:
       sme.sap.com/app-type: bookshop
@@ -91,6 +91,9 @@ spec:
     jobDefinition:
       type: Content
       image: "{{.Values.workloads.contentDeploy.image}}"
+      env:
+        - name: SOME_ENV_VAR
+          value: some-value
   - name: tenant-job
     labels:
       sme.sap.com/app-type: bookshop

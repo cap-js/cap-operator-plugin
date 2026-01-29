@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## Verion 0.12.0 - 30-January-2026
+
+### Added
+
+- Updated workload environment variable handling in `runtime-values.yaml`. Only add env to workload if the user provides hana instance ID during generation.
+
 ## Version 0.11.0 - 16-December-2025
 
 ### Added
