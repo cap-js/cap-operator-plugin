@@ -111,7 +111,7 @@ workloads:
     deploymentDefinition:
       type: Router
       image: gcr.io/test/app-router
-    ports:
+      ports:
         - name: router-port
           port: 5000
   server:
@@ -138,6 +138,9 @@ workloads:
     jobDefinition:
       type: Content
       image: gcr.io/test/content-deploy
+      env:
+      - name: SOME_ENV_VAR
+        value: some-value
   tenantJob:
     name: tenant-job
     labels:
