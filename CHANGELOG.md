@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## Verion 0.12.0 - 30-January-2026
+## Verion 0.12.0 - 02-February-2026
 
 ### Added
 
