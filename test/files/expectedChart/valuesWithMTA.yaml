@@ -181,6 +181,14 @@ workloads:
     jobDefinition:
       type: Content
       image: null
+  authorReadingsDestinationsContent:
+    name: author-readings-destinations-content
+    consumedBTPServices:
+      - author-readings-html5-repo-host-bind
+      - author-readings-uaa-bind
+    jobDefinition:
+      type: Content
+      image: null
   authorReadingsMtx:
     name: author-readings-mtx
     consumedBTPServices:

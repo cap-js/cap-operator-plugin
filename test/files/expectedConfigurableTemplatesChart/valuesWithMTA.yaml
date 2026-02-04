@@ -134,6 +134,8 @@ workloads:
     image: null
   authorReadingsAppDeployer:
     image: null
+  authorReadingsDestinationsContent:
+    image: null
   authorReadingsMtx:
     image: null
   authorReadings:
