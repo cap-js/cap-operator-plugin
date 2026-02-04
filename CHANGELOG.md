@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## Verion 0.12.1 - 04-February-2026
+## Version 0.12.1 - 04-February-2026
 
 ### Fixed
 - Updated the mta transformer to handle optional path attributes in the mta.yaml file correctly.
