@@ -104,6 +104,13 @@ spec:
     jobDefinition:
       type: Content
       image: "{{.Values.workloads.authorReadingsAppDeployer.image}}"
+  - name: author-readings-destinations-content
+    consumedBTPServices:
+      - author-readings-html5-repo-host-bind
+      - author-readings-uaa-bind
+    jobDefinition:
+      type: Content
+      image: "{{.Values.workloads.authorReadingsDestinationsContent.image}}"
   - name: author-readings-mtx
     consumedBTPServices:
       - author-readings-registry-bind

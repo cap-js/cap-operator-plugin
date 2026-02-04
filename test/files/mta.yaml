@@ -135,6 +135,21 @@ modules:
           name: authorreadingmanager
           target-path: resources/
 
+  # Module without path
+  - name: author-readings-destinations-content
+    type: com.sap.application.content
+    requires:
+      - name: author-readings-html5-repo-host
+        parameters:
+          content-target: true
+      - name: author-readings-uaa
+    build-parameters:
+      no-source: true
+    parameters:
+      content:
+        subaccount:
+          existing_destinations_policy: update
+
   # App UI Resource Module
   - name: authorreadingmanager
     type: html5
