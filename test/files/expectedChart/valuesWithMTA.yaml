@@ -137,8 +137,6 @@ workloads:
       type: Router
       image: null
       env:
-        - name: TENANT_HOST_PATTERN
-          value: '{{ include "tenantHostPattern" . }}'
         - name: httpHeaders
           value: "[{ \"Content-Security-Policy\": \"frame-ancestors 'self'
             https://*.hana.ondemand.com\" }]"
