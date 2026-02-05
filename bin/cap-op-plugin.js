@@ -19,6 +19,7 @@ const {
     transformValuesAndFillCapOpCroYaml,
     isServiceOnlyChart,
     getServiceInstanceKeyName,
+    getAllServiceInstanceKeyNames,
     getConfigurableCapOpCroYaml,
     getDomainCroYaml,
     getHelperTpl
@@ -220,15 +221,16 @@ async function generateRuntimeValues(option, inputYamlPath) {
     const valuesYaml = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, 'chart/values.yaml')))
 
     //get saas-registry and xsuaa service keys
-    const xsuaaServiceInstanceKey = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'xsuaa')
-    if (xsuaaServiceInstanceKey == null) {
+    const xsuaaServiceInstanceKeys = getAllServiceInstanceKeyNames(valuesYaml['serviceInstances'], 'xsuaa')
+    if (xsuaaServiceInstanceKeys.length === 0) {
         answerStruct['hasXsuaa'] = false
         answerStruct['subscriptionManagerKeyName'] = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'subscription-manager') || 'subscription-manager'
         answerStruct['identityKeyName'] = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'identity') || 'identity'
     } else {
         answerStruct['hasXsuaa'] = true
         answerStruct['saasRegistryKeyName'] = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'saas-registry') || 'saas-registry'
-        answerStruct['xsuaaKeyName'] = getServiceInstanceKeyName(valuesYaml['serviceInstances'], 'xsuaa') || 'xsuaa'
+        answerStruct['xsuaaKeyName'] = xsuaaServiceInstanceKeys[0] || 'xsuaa'
+        answerStruct['additionalXsuaaKeys'] = xsuaaServiceInstanceKeys.slice(1)
     }
 
     answerStruct['isApp'] = !isServiceOnly
@@ -237,6 +239,17 @@ async function generateRuntimeValues(option, inputYamlPath) {
 
     if (!answerStruct['imagePullSecret'])
         delete runtimeValuesYaml['imagePullSecrets']
+
+    // Add additional xsuaa entries for multiple xsuaa instances
+    if (answerStruct['additionalXsuaaKeys']?.length > 0) {
+        for (const xsuaaKey of answerStruct['additionalXsuaaKeys']) {
+            runtimeValuesYaml['serviceInstances'][xsuaaKey] = {
+                parameters: {
+                    xsappname: answerStruct['appName']
+                }
+            }
+        }
+    }
 
     if (isConfigurableTempChart && answerStruct['hanaInstanceId'])
         runtimeValuesYaml['hanaInstanceId'] = answerStruct['hanaInstanceId']

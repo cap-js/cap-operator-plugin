@@ -1,0 +1,41 @@
+serviceInstances:
+  saasRegistry:
+    parameters:
+      xsappname: bkshop
+      appName: bkshop
+      displayName: bkshop
+      description: A simple CAP project.
+      appUrls:
+        getDependencies: https://bem-aad-sadad-123456789012.bkshop.c-abc.kyma.ondemand.com/callback/v1.0/dependencies
+        onSubscription: https://cap-op.c-abc.kyma.ondemand.com/provision/tenants/{tenantId}
+  xsuaa:
+    parameters:
+      xsappname: bkshop
+  xsuaaApi:
+    parameters:
+      xsappname: bkshop
+app:
+  domains:
+    primary: bkshop.c-abc.kyma.ondemand.com
+    additionalDomainRefs: []
+  istioIngressGatewayLabels:
+    istio: ingressgateway
+    app: istio-ingressgateway
+btp:
+  globalAccountId: dc94db56-asda-adssa-dada-123456789012
+  provider:
+    subdomain: bem-aad-sadad-123456789012
+    tenantId: dasdsd-1234-1234-1234-123456789012
+imagePullSecrets:
+  - regcred
+workloads:
+  server:
+    deploymentDefinition:
+      env:
+        - name: CDS_CONFIG
+          value: '{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"sdasd-4c4d-4d4d-4d4d-123456789012"}}}}}'
+  tenantJob:
+    jobDefinition:
+      env:
+        - name: CDS_CONFIG
+          value: '{"requires":{"cds.xt.DeploymentService":{"hdi":{"create":{"database_id":"sdasd-4c4d-4d4d-4d4d-123456789012"}}}}}'
