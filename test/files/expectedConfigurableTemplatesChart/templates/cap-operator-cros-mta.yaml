@@ -62,7 +62,6 @@ spec:
       - author-readings-service-manager-bind
       - author-readings-service-manager-author-readings-mtx-srv-bind
       - author-readings-logging-bind
-      - author-readings-html5-repo-host-bind
     deploymentDefinition:
       type: Router
       image: "{{.Values.workloads.authorReadingsApprouter.image}}"
