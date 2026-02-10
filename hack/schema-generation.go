@@ -44,8 +44,9 @@ type serviceBindingExt struct {
 }
 
 type btp struct {
-	GlobalAccountId string   `json:"globalAccountId"`
-	Provider        provider `json:"provider"`
+	GlobalAccountId      string   `json:"globalAccountId"`
+	ProviderSubaccountId string   `json:"providerSubaccountId,omitempty"`
+	Provider             provider `json:"provider"`
 }
 
 type chartValue struct {

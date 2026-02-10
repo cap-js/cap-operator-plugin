@@ -143,6 +143,9 @@
                 },
                 "provider": {
                     "$ref": "#/$defs/provider"
+                },
+                "providerSubaccountId": {
+                    "type": "string"
                 }
             },
             "required": [
