@@ -1761,6 +1761,12 @@
                 },
                 "signerName": {
                     "type": "string"
+                },
+                "userAnnotations": {
+                    "additionalProperties": {
+                        "type": "string"
+                    },
+                    "type": "object"
                 }
             },
             "type": "object"
@@ -2885,6 +2891,9 @@
                 },
                 "provider": {
                     "$ref": "#/$defs/provider"
+                },
+                "providerSubaccountId": {
+                    "type": "string"
                 }
             },
             "required": [
