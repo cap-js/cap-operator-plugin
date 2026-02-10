@@ -194,14 +194,14 @@ async function generateRuntimeValues(option, inputYamlPath) {
 
     } else {
         const questions = [
-            ['Enter app name for deployment: ', appName, true],
-            ['Enter CAP Operator subdomain (In kyma cluster it is "cap-op" by default): ', 'cap-op', true],
-            ['Enter your cluster shoot domain: ', await getShootDomain(), true],
-            ['Enter your global account ID: ', '', true],
-            ...isServiceOnly ? [] : [['Enter your provider subdomain: ', '', true]],
-            ...isServiceOnly ? [] : [['Enter your provider tenant ID: ', '', true]],
-            ['Enter your HANA database instance ID: ', '', false],
-            ['Enter your image pull secrets: ', '', false]
+            ['Enter app name for deployment:', appName, true],
+            ['Enter CAP Operator subdomain (In kyma cluster it is "cap-op" by default):', 'cap-op', true],
+            ['Enter your cluster shoot domain:', await getShootDomain(), true],
+            ['Enter your global account ID:', '', true],
+            ...isServiceOnly ? [] : [['Enter your provider subdomain:', '', true]],
+            ...isServiceOnly ? [] : [['Enter your provider tenant ID:', '', true]],
+            ['Enter your HANA database instance ID:', '', false],
+            ['Enter your image pull secrets:', '', false]
         ]
 
         const answerKeys = [
