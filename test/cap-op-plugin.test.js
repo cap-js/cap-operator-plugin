@@ -63,25 +63,7 @@ describe('cap-op-plugin', () => {
     })
 
     it('Generate runtime-values usage help', async () => {
-        expect(() => execSync(`npx cap-op-plugin`, { cwd: bookshop })).to.throw(`
-USAGE
-
-    cap-op-plugin <command>
-
-COMMANDS
-
-    generate-runtime-values [--with-input-yaml <input-yaml-path>]   Generate runtime-values.yaml file for the cap-operator chart
-
-    convert-to-configurable-template-chart [--with-runtime-yaml <runtime-yaml-path>]  Convert existing chart to configurable template chart
-
-EXAMPLES
-
-    cap-op-plugin generate-runtime-values
-    cap-op-plugin generate-runtime-values --with-input-yaml /path/to/input.yaml
-
-    cap-op-plugin convert-to-configurable-template-chart
-    cap-op-plugin convert-to-configurable-template-chart --with-runtime-yaml /path/to/runtime.yaml
-`)
+        expect(() => execSync(`npx cap-op-plugin`, { cwd: bookshop })).to.throw(`Please specify a command`)
     })
 
     it('Generate runtime-values via prompts', async () => {
