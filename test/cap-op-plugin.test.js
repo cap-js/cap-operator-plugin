@@ -2,19 +2,27 @@ const cds = require('@sap/cds-dk')
 const { join } = require('path')
 const { execSync } = require('child_process')
 const { expect } = require("chai")
-const readline = require('readline')
-const sinon = require('sinon')
 
 const TempUtil = require('./tempUtil')
 const tempUtil = new TempUtil(__filename, { local: true })
 
 const { getFileHash, updateDependency, setupHack, undoSetupHack } = require('./util')
 const { capOperatorPlugin } = require('../bin/cap-op-plugin')
+const { setPromptFunction } = require('../lib/util')
+
+// Helper to create a mock prompt function from answer array
+function createMockPrompt(answers) {
+    return async (questions) => {
+        const result = {}
+        questions.forEach((q, i) => {
+            result[q.name] = answers[i] ?? q.initial ?? ''
+        })
+        return result
+    }
+}
 
 describe('cap-op-plugin', () => {
     let temp, bookshop
-    let rlInterface
-    let rlQuestion
 
     before(async () => {
         await tempUtil.cleanUp()
@@ -79,29 +87,23 @@ EXAMPLES
     it('Generate runtime-values via prompts', async () => {
         execSync(`cds add cap-operator`, { cwd: bookshop })
 
-        rlQuestion = sinon.stub()
-        rlInterface = {
-            question: rlQuestion,
-            close: sinon.stub()
-        }
-
         // Copy over a values file with env filled for content job. It should be retained in the generated runtime-values.yaml
         await cds.utils.copy(join(__dirname, 'files', 'values-of-simple-chart-filled.yaml'), join(bookshop, 'chart/values.yaml'))
 
-        sinon.stub(readline, 'createInterface').returns(rlInterface)
-
-        rlQuestion.onFirstCall().callsArgWith(1, 'bkshop')
-        rlQuestion.onSecondCall().callsArgWith(1, '')
-        rlQuestion.onThirdCall().callsArgWith(1, 'c-abc.kyma.ondemand.com')
-        rlQuestion.onCall(3).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(4).callsArgWith(1, 'bem-aad-sadad-123456789012')
-        rlQuestion.onCall(5).callsArgWith(1, 'dasdsd-1234-1234-1234-123456789012')
-        rlQuestion.onCall(6).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
-        rlQuestion.onCall(7).callsArgWith(1, 'regcred')
+        setPromptFunction(createMockPrompt([
+            'bkshop',
+            '',
+            'c-abc.kyma.ondemand.com',
+            'dc94db56-asda-adssa-dada-123456789012',
+            'bem-aad-sadad-123456789012',
+            'dasdsd-1234-1234-1234-123456789012',
+            'sdasd-4c4d-4d4d-4d4d-123456789012',
+            'regcred'
+        ]))
 
         cds.root = bookshop
         await capOperatorPlugin('generate-runtime-values')
-        sinon.restore()
+        setPromptFunction(null)
 
         expect(getFileHash(join(__dirname, 'files/expectedChart/runtime-values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
@@ -120,25 +122,20 @@ EXAMPLES
     it('Generate runtime-values via prompts for configurable template chart', async () => {
         execSync(`cds add cap-operator --with-configurable-templates`, { cwd: bookshop })
 
-        rlQuestion = sinon.stub()
-        rlInterface = {
-            question: rlQuestion,
-            close: sinon.stub()
-        }
-        sinon.stub(readline, 'createInterface').returns(rlInterface)
-
-        rlQuestion.onFirstCall().callsArgWith(1, 'bkshop')
-        rlQuestion.onSecondCall().callsArgWith(1, '')
-        rlQuestion.onThirdCall().callsArgWith(1, 'c-abc.kyma.ondemand.com')
-        rlQuestion.onCall(3).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(4).callsArgWith(1, 'bem-aad-sadad-123456789012')
-        rlQuestion.onCall(5).callsArgWith(1, 'dasdsd-1234-1234-1234-123456789012')
-        rlQuestion.onCall(6).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
-        rlQuestion.onCall(7).callsArgWith(1, 'regcred')
+        setPromptFunction(createMockPrompt([
+            'bkshop',
+            '',
+            'c-abc.kyma.ondemand.com',
+            'dc94db56-asda-adssa-dada-123456789012',
+            'bem-aad-sadad-123456789012',
+            'dasdsd-1234-1234-1234-123456789012',
+            'sdasd-4c4d-4d4d-4d4d-123456789012',
+            'regcred'
+        ]))
 
         cds.root = bookshop
         await capOperatorPlugin('generate-runtime-values')
-        sinon.restore()
+        setPromptFunction(null)
 
         expect(getFileHash(join(__dirname, 'files/expectedConfigurableTemplatesChart/runtime-values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
@@ -146,23 +143,18 @@ EXAMPLES
     it('Generate runtime-values via prompts for service only chart', async () => {
         execSync(`cds add cap-operator --with-service-only`, { cwd: bookshop })
 
-        rlQuestion = sinon.stub()
-        rlInterface = {
-            question: rlQuestion,
-            close: sinon.stub()
-        }
-        sinon.stub(readline, 'createInterface').returns(rlInterface)
-
-        rlQuestion.onFirstCall().callsArgWith(1, 'bkshop')
-        rlQuestion.onSecondCall().callsArgWith(1, '')
-        rlQuestion.onThirdCall().callsArgWith(1, 'c-abc.kyma.ondemand.com')
-        rlQuestion.onCall(3).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(4).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
-        rlQuestion.onCall(5).callsArgWith(1, 'regcred')
+        setPromptFunction(createMockPrompt([
+            'bkshop',
+            '',
+            'c-abc.kyma.ondemand.com',
+            'dc94db56-asda-adssa-dada-123456789012',
+            'sdasd-4c4d-4d4d-4d4d-123456789012',
+            'regcred'
+        ]))
 
         cds.root = bookshop
         await capOperatorPlugin('generate-runtime-values')
-        sinon.restore()
+        setPromptFunction(null)
 
         expect(getFileHash(join(__dirname, 'files/expectedChart/runtime-values-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
@@ -239,25 +231,20 @@ EXAMPLES
         execSync(`cds add ias`, { cwd: bookshop })
         execSync(`cds add cap-operator`, { cwd: bookshop })
 
-        rlQuestion = sinon.stub()
-        rlInterface = {
-            question: rlQuestion,
-            close: sinon.stub()
-        }
-        sinon.stub(readline, 'createInterface').returns(rlInterface)
-
-        rlQuestion.onFirstCall().callsArgWith(1, 'bkshop')
-        rlQuestion.onSecondCall().callsArgWith(1, '')
-        rlQuestion.onThirdCall().callsArgWith(1, 'c-abc.kyma.ondemand.com')
-        rlQuestion.onCall(3).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(4).callsArgWith(1, 'bem-aad-sadad-123456789012')
-        rlQuestion.onCall(5).callsArgWith(1, 'dasdsd-1234-1234-1234-123456789012')
-        rlQuestion.onCall(6).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
-        rlQuestion.onCall(7).callsArgWith(1, 'regcred')
+        setPromptFunction(createMockPrompt([
+            'bkshop',
+            '',
+            'c-abc.kyma.ondemand.com',
+            'dc94db56-asda-adssa-dada-123456789012',
+            'bem-aad-sadad-123456789012',
+            'dasdsd-1234-1234-1234-123456789012',
+            'sdasd-4c4d-4d4d-4d4d-123456789012',
+            'regcred'
+        ]))
 
         cds.root = bookshop
         await capOperatorPlugin('generate-runtime-values')
-        sinon.restore()
+        setPromptFunction(null)
 
         expect(getFileHash(join(__dirname, 'files/expectedChart/runtime-values-ias.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
@@ -266,25 +253,20 @@ EXAMPLES
         execSync(`cds add ias`, { cwd: bookshop })
         execSync(`cds add cap-operator --with-configurable-templates`, { cwd: bookshop })
 
-        rlQuestion = sinon.stub()
-        rlInterface = {
-            question: rlQuestion,
-            close: sinon.stub()
-        }
-        sinon.stub(readline, 'createInterface').returns(rlInterface)
-
-        rlQuestion.onFirstCall().callsArgWith(1, 'bkshop')
-        rlQuestion.onSecondCall().callsArgWith(1, '')
-        rlQuestion.onThirdCall().callsArgWith(1, 'c-abc.kyma.ondemand.com')
-        rlQuestion.onCall(3).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(4).callsArgWith(1, 'bem-aad-sadad-123456789012')
-        rlQuestion.onCall(5).callsArgWith(1, 'dasdsd-1234-1234-1234-123456789012')
-        rlQuestion.onCall(6).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
-        rlQuestion.onCall(7).callsArgWith(1, 'regcred')
+        setPromptFunction(createMockPrompt([
+            'bkshop',
+            '',
+            'c-abc.kyma.ondemand.com',
+            'dc94db56-asda-adssa-dada-123456789012',
+            'bem-aad-sadad-123456789012',
+            'dasdsd-1234-1234-1234-123456789012',
+            'sdasd-4c4d-4d4d-4d4d-123456789012',
+            'regcred'
+        ]))
 
         cds.root = bookshop
         await capOperatorPlugin('generate-runtime-values')
-        sinon.restore()
+        setPromptFunction(null)
 
         expect(getFileHash(join(__dirname, 'files/expectedConfigurableTemplatesChart/runtime-values-ias.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
@@ -293,23 +275,18 @@ EXAMPLES
         execSync(`cds add ias`, { cwd: bookshop })
         execSync(`cds add cap-operator --with-service-only`, { cwd: bookshop })
 
-        rlQuestion = sinon.stub()
-        rlInterface = {
-            question: rlQuestion,
-            close: sinon.stub()
-        }
-        sinon.stub(readline, 'createInterface').returns(rlInterface)
-
-        rlQuestion.onFirstCall().callsArgWith(1, 'bkshop')
-        rlQuestion.onSecondCall().callsArgWith(1, '')
-        rlQuestion.onThirdCall().callsArgWith(1, 'c-abc.kyma.ondemand.com')
-        rlQuestion.onCall(3).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(4).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
-        rlQuestion.onCall(5).callsArgWith(1, 'regcred')
+        setPromptFunction(createMockPrompt([
+            'bkshop',
+            '',
+            'c-abc.kyma.ondemand.com',
+            'dc94db56-asda-adssa-dada-123456789012',
+            'sdasd-4c4d-4d4d-4d4d-123456789012',
+            'regcred'
+        ]))
 
         cds.root = bookshop
         await capOperatorPlugin('generate-runtime-values')
-        sinon.restore()
+        setPromptFunction(null)
 
         expect(getFileHash(join(__dirname, 'files/expectedChart/runtime-values-svc-ias.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })

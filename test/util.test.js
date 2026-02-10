@@ -1,23 +1,17 @@
 const { expect } = require("chai")
-const { ask, mergeObj } = require("../lib/util")
-const readline = require('readline')
-
 const sinon = require('sinon')
+const { ask, setPromptFunction, mergeObj } = require("../lib/util")
 
 describe("ask function", () => {
-    let rlInterface
-    let rlQuestion
+    let promptStub
 
     beforeEach(() => {
-        rlQuestion = sinon.stub()
-        rlInterface = {
-            question: rlQuestion,
-            close: sinon.stub()
-        }
-        sinon.stub(readline, 'createInterface').returns(rlInterface)
+        promptStub = sinon.stub()
+        setPromptFunction(promptStub)
     })
 
     afterEach(() => {
+        setPromptFunction(null)
         sinon.restore()
     })
 
@@ -27,8 +21,7 @@ describe("ask function", () => {
             ['What is your age?', '30', true]
         ]
 
-        rlQuestion.onFirstCall().callsArgWith(1, 'Alice')
-        rlQuestion.onSecondCall().callsArgWith(1, '25')
+        promptStub.resolves({ '0': 'Alice', '1': '25' })
 
         const answers = await ask(...questions)
 
@@ -41,27 +34,26 @@ describe("ask function", () => {
             ['What is your age?', '30', false]
         ]
 
-        rlQuestion.onFirstCall().callsArgWith(1, '')
-        rlQuestion.onSecondCall().callsArgWith(1, '')
+        promptStub.resolves({ '0': '', '1': '' })
 
         const answers = await ask(...questions)
 
         expect(answers).to.deep.equal(['John Doe', '30'])
     })
 
-    it('should re-ask mandatory questions if no input is provided', async () => {
+    it('should pass required flag for mandatory questions without defaults', async () => {
         const questions = [
             ['What is your name?', '', true],
-            ['What is your age?', '', true]
+            ['What is your age?', '30', true]
         ]
 
-        rlQuestion.onFirstCall().callsArgWith(1, '')
-        rlQuestion.onSecondCall().callsArgWith(1, 'Alice')
-        rlQuestion.onThirdCall().callsArgWith(1, '25')
+        promptStub.resolves({ '0': 'Alice', '1': '25' })
 
-        const answers = await ask(...questions)
+        await ask(...questions)
 
-        expect(answers).to.deep.equal(['Alice', '25'])
+        const promptArgs = promptStub.firstCall.args[0]
+        expect(promptArgs[0].required).to.equal(true)
+        expect(promptArgs[1].required).to.equal(false) // has default, so not required
     })
 })
 
