@@ -243,6 +243,9 @@ resources:
       config:
         tenant-mode: shared
         xsappname: ${xsappname}
+        oauth2-configuration:
+          redirect-uris:
+            - ~{app-api/redirect-uris}
       path: ./xs-security.json
       service: xsuaa
       service-name: author-readings-uaa

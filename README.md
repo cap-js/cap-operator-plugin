@@ -96,6 +96,8 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
         cds add cap-operator --with-mta <mta-yaml-file-path> --with-mta-extensions <mta-ext-yaml-1-file-path>,<mta-ext-yaml-2-file-path> --with-templates
         ```
 
+        > During MTA transformation, the plugin automatically populates the `Router` workload's `consumedBTPServices` with all service bindings. This is because the `getDependencies` call is handled by the `Router` workload. If you implement a custom `getDependencies` handler, you may need to adjust the `consumedBTPServices` list accordingly.
+
 3. Once you've executed the command above, the basic chart folder or chart folder with templates is added to your project directory, depending on your choice.
 
 ## Configure Your Chart

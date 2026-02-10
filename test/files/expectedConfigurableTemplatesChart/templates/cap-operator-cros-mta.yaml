@@ -59,17 +59,20 @@ spec:
       - author-readings-auditlog-bind
       - author-readings-registry-bind
       - author-readings-html5-runtime-bind
+      - author-readings-service-manager-bind
+      - author-readings-service-manager-author-readings-mtx-srv-bind
+      - author-readings-logging-bind
     deploymentDefinition:
       type: Router
       image: "{{.Values.workloads.authorReadingsApprouter.image}}"
       env:
-        - name: TENANT_HOST_PATTERN
-          value: '{{ include "tenantHostPattern" . }}'
         - name: httpHeaders
           value: "[{ \"Content-Security-Policy\": \"frame-ancestors 'self'
             https://*.hana.ondemand.com\" }]"
         - name: CORS
           value: '[{"uriPattern":".*","allowedOrigin":[{"host":"*.${org}-${space}.${domain}","protocol":"https"}]}]'
+        - name: TENANT_HOST_PATTERN
+          value: '{{ include "tenantHostPattern" . }}'
   - name: author-readings-srv
     consumedBTPServices:
       - author-readings-service-manager-bind
