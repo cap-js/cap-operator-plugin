@@ -10,8 +10,6 @@ const cds = require('@sap/cds-dk')
 const yaml = require('@sap/cds-foss').yaml
 const Mustache = require('mustache')
 const { spawn } = require('child_process')
-const yargs = require('yargs/yargs')
-const { hideBin } = require('yargs/helpers')
 
 const {
     ask,
@@ -324,62 +322,8 @@ async function getShootDomain() {
 }
 
 if (isCli) {
-    yargs(hideBin(process.argv))
-        .scriptName('cap-op-plugin')
-        .usage('$0 <command> [options]')
-        .command(
-            'generate-runtime-values',
-            'Generate runtime-values.yaml file for the cap-operator chart',
-            (yargs) => {
-                return yargs.option('with-input-yaml', {
-                    describe: 'Path to input YAML file with pre-filled values',
-                    type: 'string',
-                    nargs: 1
-                })
-            },
-            async (argv) => {
-                try {
-                    const option = argv.withInputYaml ? '--with-input-yaml' : undefined
-                    await generateRuntimeValues(option, argv.withInputYaml)
-                } catch (e) {
-                    console.error(e.message)
-                    process.exit(1)
-                }
-            }
-        )
-        .command(
-            'convert-to-configurable-template-chart',
-            'Convert existing chart to configurable template chart',
-            (yargs) => {
-                return yargs.option('with-runtime-yaml', {
-                    describe: 'Path to runtime YAML file to transform',
-                    type: 'string',
-                    nargs: 1
-                })
-            },
-            async (argv) => {
-                try {
-                    const option = argv.withRuntimeYaml ? '--with-runtime-yaml' : undefined
-                    await convertToconfigurableTemplateChart(option, argv.withRuntimeYaml)
-                } catch (e) {
-                    console.error(e.message)
-                    process.exit(1)
-                }
-            }
-        )
-        .example('$0 generate-runtime-values', 'Generate runtime values interactively')
-        .example('$0 generate-runtime-values --with-input-yaml ./input.yaml', 'Generate runtime values from input file')
-        .example('$0 convert-to-configurable-template-chart', 'Convert chart to configurable template')
-        .example('$0 convert-to-configurable-template-chart --with-runtime-yaml ./runtime.yaml', 'Convert chart and transform runtime file')
-        .completion('completion', 'Generate shell completion script')
-        .demandCommand(1, 'Please specify a command')
-        .strict()
-        .help()
-        .alias('h', 'help')
-        .version()
-        .alias('v', 'version')
-        .wrap(null)
-        .parse()
+    const [, , cmd, option, yamlPath] = process.argv;
+    (async () => await capOperatorPlugin(cmd, option, yamlPath ?? undefined))()
 }
 
 module.exports = { capOperatorPlugin }

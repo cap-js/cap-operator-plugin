@@ -29,8 +29,7 @@
   },
   "dependencies": {
     "enquirer": "^2.4.1",
-    "mustache": "^4.2.0",
-    "yargs": "^17.7.2"
+    "mustache": "^4.2.0"
   },
   "devDependencies": {
     "chai": "^5",
