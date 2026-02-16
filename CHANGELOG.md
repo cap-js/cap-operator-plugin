@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## Version 0.13.0 - 10-February-2026
+
+### Added
+
+- Updated `values.schema.json` to support CAP Operator `v0.24.0` and BTP Service Operator `v0.10.0`.
+
+### Changed
+
+- Improved MTA transformer:
+    - `TENANT_HOST_PATTERN` is no longer added to Router workload in `values.yaml` (handled by the template)
+    - `redirect-uris` removed from xsuaa `oauth2-configuration` (computed dynamically in `service-instance.yaml` template)
+    - Router workload now includes all service bindings in `consumedBTPServices` to support `getDependencies` callback
+
 ## Version 0.12.1 - 04-February-2026
 
 ### Fixed
