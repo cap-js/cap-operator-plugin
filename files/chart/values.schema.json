@@ -2897,7 +2897,6 @@
                 }
             },
             "required": [
-                "globalAccountId",
                 "provider"
             ],
             "type": "object"
