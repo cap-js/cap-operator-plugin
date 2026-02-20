@@ -28,6 +28,7 @@ app:
     app: istio-ingressgateway
 btp:
   globalAccountId: dc94db56-asda-adssa-dada-123456789012
+  providerSubaccountId: dc94db56-asda-adssa-dada-123456789012
   provider:
     subdomain: bem-aad-sadad-123456789012
     tenantId: dasdsd-1234-1234-1234-123456789012

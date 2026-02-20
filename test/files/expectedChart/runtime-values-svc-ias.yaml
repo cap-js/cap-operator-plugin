@@ -16,6 +16,7 @@ app:
     app: istio-ingressgateway
 btp:
   globalAccountId: dc94db56-asda-adssa-dada-123456789012
+  providerSubaccountId: dc94db56-asda-adssa-dada-123456789012
 imagePullSecrets:
   - regcred
 workloads:

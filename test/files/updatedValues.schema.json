@@ -2373,12 +2373,14 @@
         },
         "provider": {
           "$ref": "#/$defs/provider"
+        },
+        "providerSubaccountId": {
+          "type": "string"
         }
       },
       "additionalProperties": false,
       "type": "object",
       "required": [
-        "globalAccountId",
         "provider"
       ]
     },
