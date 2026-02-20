@@ -94,10 +94,11 @@ EXAMPLES
         rlQuestion.onSecondCall().callsArgWith(1, '')
         rlQuestion.onThirdCall().callsArgWith(1, 'c-abc.kyma.ondemand.com')
         rlQuestion.onCall(3).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(4).callsArgWith(1, 'bem-aad-sadad-123456789012')
-        rlQuestion.onCall(5).callsArgWith(1, 'dasdsd-1234-1234-1234-123456789012')
-        rlQuestion.onCall(6).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
-        rlQuestion.onCall(7).callsArgWith(1, 'regcred')
+        rlQuestion.onCall(4).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
+        rlQuestion.onCall(5).callsArgWith(1, 'bem-aad-sadad-123456789012')
+        rlQuestion.onCall(6).callsArgWith(1, 'dasdsd-1234-1234-1234-123456789012')
+        rlQuestion.onCall(7).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
+        rlQuestion.onCall(8).callsArgWith(1, 'regcred')
 
         cds.root = bookshop
         await capOperatorPlugin('generate-runtime-values')
@@ -131,10 +132,11 @@ EXAMPLES
         rlQuestion.onSecondCall().callsArgWith(1, '')
         rlQuestion.onThirdCall().callsArgWith(1, 'c-abc.kyma.ondemand.com')
         rlQuestion.onCall(3).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(4).callsArgWith(1, 'bem-aad-sadad-123456789012')
-        rlQuestion.onCall(5).callsArgWith(1, 'dasdsd-1234-1234-1234-123456789012')
-        rlQuestion.onCall(6).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
-        rlQuestion.onCall(7).callsArgWith(1, 'regcred')
+        rlQuestion.onCall(4).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
+        rlQuestion.onCall(5).callsArgWith(1, 'bem-aad-sadad-123456789012')
+        rlQuestion.onCall(6).callsArgWith(1, 'dasdsd-1234-1234-1234-123456789012')
+        rlQuestion.onCall(7).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
+        rlQuestion.onCall(8).callsArgWith(1, 'regcred')
 
         cds.root = bookshop
         await capOperatorPlugin('generate-runtime-values')
@@ -157,8 +159,9 @@ EXAMPLES
         rlQuestion.onSecondCall().callsArgWith(1, '')
         rlQuestion.onThirdCall().callsArgWith(1, 'c-abc.kyma.ondemand.com')
         rlQuestion.onCall(3).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(4).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
-        rlQuestion.onCall(5).callsArgWith(1, 'regcred')
+        rlQuestion.onCall(4).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
+        rlQuestion.onCall(5).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
+        rlQuestion.onCall(6).callsArgWith(1, 'regcred')
 
         cds.root = bookshop
         await capOperatorPlugin('generate-runtime-values')
@@ -250,10 +253,11 @@ EXAMPLES
         rlQuestion.onSecondCall().callsArgWith(1, '')
         rlQuestion.onThirdCall().callsArgWith(1, 'c-abc.kyma.ondemand.com')
         rlQuestion.onCall(3).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(4).callsArgWith(1, 'bem-aad-sadad-123456789012')
-        rlQuestion.onCall(5).callsArgWith(1, 'dasdsd-1234-1234-1234-123456789012')
-        rlQuestion.onCall(6).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
-        rlQuestion.onCall(7).callsArgWith(1, 'regcred')
+        rlQuestion.onCall(4).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
+        rlQuestion.onCall(5).callsArgWith(1, 'bem-aad-sadad-123456789012')
+        rlQuestion.onCall(6).callsArgWith(1, 'dasdsd-1234-1234-1234-123456789012')
+        rlQuestion.onCall(7).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
+        rlQuestion.onCall(8).callsArgWith(1, 'regcred')
 
         cds.root = bookshop
         await capOperatorPlugin('generate-runtime-values')
@@ -277,10 +281,11 @@ EXAMPLES
         rlQuestion.onSecondCall().callsArgWith(1, '')
         rlQuestion.onThirdCall().callsArgWith(1, 'c-abc.kyma.ondemand.com')
         rlQuestion.onCall(3).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(4).callsArgWith(1, 'bem-aad-sadad-123456789012')
-        rlQuestion.onCall(5).callsArgWith(1, 'dasdsd-1234-1234-1234-123456789012')
-        rlQuestion.onCall(6).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
-        rlQuestion.onCall(7).callsArgWith(1, 'regcred')
+        rlQuestion.onCall(4).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
+        rlQuestion.onCall(5).callsArgWith(1, 'bem-aad-sadad-123456789012')
+        rlQuestion.onCall(6).callsArgWith(1, 'dasdsd-1234-1234-1234-123456789012')
+        rlQuestion.onCall(7).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
+        rlQuestion.onCall(8).callsArgWith(1, 'regcred')
 
         cds.root = bookshop
         await capOperatorPlugin('generate-runtime-values')
@@ -304,8 +309,9 @@ EXAMPLES
         rlQuestion.onSecondCall().callsArgWith(1, '')
         rlQuestion.onThirdCall().callsArgWith(1, 'c-abc.kyma.ondemand.com')
         rlQuestion.onCall(3).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(4).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
-        rlQuestion.onCall(5).callsArgWith(1, 'regcred')
+        rlQuestion.onCall(4).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
+        rlQuestion.onCall(5).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
+        rlQuestion.onCall(6).callsArgWith(1, 'regcred')
 
         cds.root = bookshop
         await capOperatorPlugin('generate-runtime-values')
