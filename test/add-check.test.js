@@ -14,7 +14,7 @@ describe('cds add cap-operator canRun method test', () => {
         await tempUtil.cleanUp()
         temp = await tempUtil.mkTempFolder()
         bookshop = join(temp, 'bookshop')
-        execSync(`cds init bookshop`, { cwd: temp })
+        execSync(`cds init bookshop --nodejs`, { cwd: temp })
         updateDependency(bookshop)
         execSync(`npm install`, { cwd: bookshop })
         setupHack(bookshop)

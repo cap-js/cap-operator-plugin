@@ -4,7 +4,7 @@ serviceInstances:
       xsappname: bkshop
       appName: bkshop
       displayName: bkshop
-      description: A simple CAP project.
+      description: bkshop
       appUrls:
         getDependencies: https://bem-aad-sadad-123456789012.bkshop.c-abc.kyma.ondemand.com/callback/v1.0/dependencies
         onSubscription: https://cap-op.c-abc.kyma.ondemand.com/provision/tenants/{tenantId}

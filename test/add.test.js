@@ -15,7 +15,7 @@ describe('cds add cap-operator', () => {
         await tempUtil.cleanUp()
         temp = await tempUtil.mkTempFolder()
         bookshop = join(temp, 'bookshop')
-        execSync(`cds init bookshop --add multitenancy,approuter,xsuaa,html5-repo,destination`, { cwd: temp })
+        execSync(`cds init bookshop --nodejs --add multitenancy,approuter,xsuaa,html5-repo,destination`, { cwd: temp })
         updateDependency(bookshop)
         execSync(`npm install`, { cwd: bookshop })
         setupHack(bookshop)
