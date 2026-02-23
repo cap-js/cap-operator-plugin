@@ -16,7 +16,7 @@ describe('cds build', () => {
         await tempUtil.cleanUp()
         temp = await tempUtil.mkTempFolder()
         bookshop = join(temp, 'bookshop')
-        execSync(`cds init bookshop --add xsuaa,html5-repo,destination`, { cwd: temp })
+        execSync(`cds init bookshop --nodejs --add xsuaa,html5-repo,destination`, { cwd: temp })
         updateDependency(bookshop)
         execSync(`npm install`, { cwd: bookshop })
         setupHack(bookshop)

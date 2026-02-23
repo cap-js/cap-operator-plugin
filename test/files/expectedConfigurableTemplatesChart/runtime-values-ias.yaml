@@ -3,8 +3,8 @@ serviceInstances:
     parameters:
       appName: bkshop
       commercialAppName: bkshop
-      displayName: (bkshop)
-      description: (A simple CAP project.)
+      displayName: bkshop
+      description: bkshop
       category: CAP
       appCallbacks:
         dependenciesCallbacks:
