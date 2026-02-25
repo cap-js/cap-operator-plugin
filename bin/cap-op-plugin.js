@@ -36,7 +36,7 @@ async function capOperatorPlugin(cmd, option, yamlPath) {
             if (option === '--with-input-yaml' && !yamlPath)
                 return _usage(`Input yaml path is missing.`)
 
-            if (option === '--with-input-yaml' && !yamlPath && cds.utils.exists(cds.utils.path.join(cds.root, yamlPath)))
+            if (option === '--with-input-yaml' && yamlPath && !cds.utils.exists(cds.utils.path.join(cds.root, yamlPath)))
                 return _usage(`Input yaml path ${yamlPath} does not exist.`)
 
             await generateRuntimeValues(option, yamlPath)
@@ -46,7 +46,7 @@ async function capOperatorPlugin(cmd, option, yamlPath) {
             if (option === '--with-runtime-yaml' && !yamlPath)
                 return _usage(`Input runtime yaml path is missing.`)
 
-            if (option === '--with-runtime-yaml' && !yamlPath && cds.utils.exists(cds.utils.path.join(cds.root, yamlPath)))
+            if (option === '--with-runtime-yaml' && yamlPath && !cds.utils.exists(cds.utils.path.join(cds.root, yamlPath)))
                 return _usage(`Input runtime yaml path ${yamlPath} does not exist.`)
 
             await convertToconfigurableTemplateChart(option, yamlPath)
