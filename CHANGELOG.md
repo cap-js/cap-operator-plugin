@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## Version 0.14.0 - 27-March-2026
+
+### Added
+
+- Added new mandatory parameter `providerSubaccountId` to the `values.yaml`. Required for application identification during subscription as `globalAccountId` would be deprecated in future.
+- Dependencies updated.
+
 ## Version 0.13.0 - 10-February-2026
 
 ### Added
