@@ -94,6 +94,7 @@ app:
     app: istio-ingressgateway
 btp:
   globalAccountId: null
+  providerSubaccountId: null
   provider:
     subdomain: null
     tenantId: null

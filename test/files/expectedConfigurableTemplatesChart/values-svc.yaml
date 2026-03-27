@@ -60,6 +60,7 @@ app:
     app: istio-ingressgateway
 btp:
   globalAccountId: null
+  providerSubaccountId: null
 imagePullSecrets: []
 hanaInstanceId: null
 workloads:

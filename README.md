@@ -156,7 +156,8 @@ The generated `chart/values.yaml` contains two types of information:
         ```sh
         kubectl get gateway -n kyma-system kyma-gateway -o jsonpath='{.spec.servers[0].hosts[0]}'
         ```
-    * **Global Account ID (globalAccountId) *[Mandatory]*** - SAP BTP Global Account Identifier where services are entitled for the application.
+    * **Global Account ID (globalAccountId) *[Mandatory for now; will be removed soon]*** - SAP BTP Global Account Identifier where services are entitled for the application.
+    * **Provider Subaccount ID (providerSubaccountId) *[Mandatory]*** - The Subaccount ID of the provider subaccount to which you deploy the application.
     * **Provider subdomain (providerSubdomain) *[Mandatory for applications; it does not apply to services-only scenarios]*** - Subdomain of the provider subaccount to which you deploy the application.
     * **Tenant ID (tenantId) *[Mandatory for applications; it does not apply to services-only scenarios]*** - Tenant ID of the provider subaccount to which you deploy the application.
     * **HANA Instance ID (hanaInstanceId) *[Optional]*** - ID of the SAP HANA instance to which the application is deployed. It's only required if there are multiple SAP HANA instances in the subaccount.
@@ -187,13 +188,14 @@ The generated `chart/values.yaml` contains two types of information:
         capOperatorSubdomain: cap-op
         clusterDomain: abc.com
         globalAccountId: abcdef-abcd-4ef1-9263-1b6b7b6b7b6b
+        providerSubaccountId: da37c8e0-74d4-abcd-b5e2-sd8f7d8f7d8f
         providerSubdomain: provider-subdomain-1234
         tenantId: da37c8e0-74d4-abcd-b5e2-sd8f7d8f7d8f
         hanaInstanceId: 46e285d9-abcd-4c7d-8ebb-502sd8f7d8f7d
         imagePullSecret: regcred
         ```
 
-        Similar to the interactive mode, `appName`, `capOperatorSubdomain`, `clusterDomain`, `globalAccountId`, `providerSubdomain`, and `tenantId` are mandatory fields for applications. In case of services-only scenarios, `appName`, `capOperatorSubdomain`, `clusterDomain`, and `globalAccountId` are mandatory. The plugin throws an error if they're not provided in the input YAML.
+        Similar to the interactive mode, `appName`, `capOperatorSubdomain`, `clusterDomain`, `globalAccountId`, `providerSubaccountId`, `providerSubdomain`, and `tenantId` are mandatory fields for applications. In case of services-only scenarios, `appName`, `capOperatorSubdomain`, `clusterDomain`, and `globalAccountId`, `providerSubaccountId` are mandatory. The plugin throws an error if they're not provided in the input YAML.
 
       After execution, the `runtime-values.yaml` file is created in the chart folder of your project directory.
 

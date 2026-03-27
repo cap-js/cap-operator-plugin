@@ -184,8 +184,8 @@ async function generateRuntimeValues(option, inputYamlPath) {
         answerStruct = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, inputYamlPath)))
 
         const requiredFields = isServiceOnly
-            ? ['appName', 'capOperatorSubdomain', 'clusterDomain', 'globalAccountId']
-            : ['appName', 'capOperatorSubdomain', 'clusterDomain', 'globalAccountId', 'providerSubdomain', 'tenantId']
+            ? ['appName', 'capOperatorSubdomain', 'clusterDomain', 'globalAccountId', 'providerSubaccountId']
+            : ['appName', 'capOperatorSubdomain', 'clusterDomain', 'globalAccountId', 'providerSubaccountId', 'providerSubdomain', 'tenantId']
 
         const missingFields = requiredFields.filter(field => !answerStruct[field])
         if (missingFields.length) {
@@ -198,6 +198,7 @@ async function generateRuntimeValues(option, inputYamlPath) {
             ['Enter CAP Operator subdomain (In kyma cluster it is "cap-op" by default): ', 'cap-op', true],
             ['Enter your cluster shoot domain: ', await getShootDomain(), true],
             ['Enter your global account ID: ', '', true],
+            ['Enter your provider sub-account ID: ', '', true],
             ...isServiceOnly ? [] : [['Enter your provider subdomain: ', '', true]],
             ...isServiceOnly ? [] : [['Enter your provider tenant ID: ', '', true]],
             ['Enter your HANA database instance ID: ', '', false],
@@ -205,7 +206,7 @@ async function generateRuntimeValues(option, inputYamlPath) {
         ]
 
         const answerKeys = [
-            'appName', 'capOperatorSubdomain', 'clusterDomain', 'globalAccountId',
+            'appName', 'capOperatorSubdomain', 'clusterDomain', 'globalAccountId', 'providerSubaccountId',
             ...isServiceOnly ? [] : ['providerSubdomain'],
             ...isServiceOnly ? [] : ['tenantId'],
             'hanaInstanceId', 'imagePullSecret'

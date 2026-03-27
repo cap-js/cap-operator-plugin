@@ -16,7 +16,9 @@ app:
 
 btp:
   # -- BTP Global account identifier where the application is hosted
-  globalAccountId: # mandatory let helm fail if not provided
+  globalAccountId:
+  # -- BTP Provider sub-account identifier where the application is hosted
+  providerSubaccountId:
   {{#isApp}}
   provider:
     # -- Subdomain of the provider sub-account where application services are created
