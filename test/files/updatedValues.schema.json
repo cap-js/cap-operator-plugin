@@ -2368,9 +2368,6 @@
     },
     "btp": {
       "properties": {
-        "globalAccountId": {
-          "type": "string"
-        },
         "provider": {
           "$ref": "#/$defs/provider"
         },
