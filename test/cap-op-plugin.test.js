@@ -95,6 +95,7 @@ EXAMPLES
             '',
             'c-abc.kyma.ondemand.com',
             'dc94db56-asda-adssa-dada-123456789012',
+            'dc94db56-asda-adssa-dada-123456789012',
             'bem-aad-sadad-123456789012',
             'dasdsd-1234-1234-1234-123456789012',
             'sdasd-4c4d-4d4d-4d4d-123456789012',
@@ -102,8 +103,11 @@ EXAMPLES
         ]))
 
         cds.root = bookshop
-        await capOperatorPlugin('generate-runtime-values')
-        setPromptFunction(null)
+        try {
+            await capOperatorPlugin('generate-runtime-values')
+        } finally {
+            setPromptFunction(null)
+        }
 
         expect(getFileHash(join(__dirname, 'files/expectedChart/runtime-values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
@@ -127,6 +131,7 @@ EXAMPLES
             '',
             'c-abc.kyma.ondemand.com',
             'dc94db56-asda-adssa-dada-123456789012',
+            'dc94db56-asda-adssa-dada-123456789012',
             'bem-aad-sadad-123456789012',
             'dasdsd-1234-1234-1234-123456789012',
             'sdasd-4c4d-4d4d-4d4d-123456789012',
@@ -134,8 +139,11 @@ EXAMPLES
         ]))
 
         cds.root = bookshop
-        await capOperatorPlugin('generate-runtime-values')
-        setPromptFunction(null)
+        try {
+            await capOperatorPlugin('generate-runtime-values')
+        } finally {
+            setPromptFunction(null)
+        }
 
         expect(getFileHash(join(__dirname, 'files/expectedConfigurableTemplatesChart/runtime-values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
@@ -148,13 +156,17 @@ EXAMPLES
             '',
             'c-abc.kyma.ondemand.com',
             'dc94db56-asda-adssa-dada-123456789012',
+            'dc94db56-asda-adssa-dada-123456789012',
             'sdasd-4c4d-4d4d-4d4d-123456789012',
             'regcred'
         ]))
 
         cds.root = bookshop
-        await capOperatorPlugin('generate-runtime-values')
-        setPromptFunction(null)
+        try {
+            await capOperatorPlugin('generate-runtime-values')
+        } finally {
+            setPromptFunction(null)
+        }
 
         expect(getFileHash(join(__dirname, 'files/expectedChart/runtime-values-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
@@ -236,6 +248,7 @@ EXAMPLES
             '',
             'c-abc.kyma.ondemand.com',
             'dc94db56-asda-adssa-dada-123456789012',
+            'dc94db56-asda-adssa-dada-123456789012',
             'bem-aad-sadad-123456789012',
             'dasdsd-1234-1234-1234-123456789012',
             'sdasd-4c4d-4d4d-4d4d-123456789012',
@@ -243,8 +256,11 @@ EXAMPLES
         ]))
 
         cds.root = bookshop
-        await capOperatorPlugin('generate-runtime-values')
-        setPromptFunction(null)
+        try {
+            await capOperatorPlugin('generate-runtime-values')
+        } finally {
+            setPromptFunction(null)
+        }
 
         expect(getFileHash(join(__dirname, 'files/expectedChart/runtime-values-ias.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
@@ -258,6 +274,7 @@ EXAMPLES
             '',
             'c-abc.kyma.ondemand.com',
             'dc94db56-asda-adssa-dada-123456789012',
+            'dc94db56-asda-adssa-dada-123456789012',
             'bem-aad-sadad-123456789012',
             'dasdsd-1234-1234-1234-123456789012',
             'sdasd-4c4d-4d4d-4d4d-123456789012',
@@ -265,8 +282,11 @@ EXAMPLES
         ]))
 
         cds.root = bookshop
-        await capOperatorPlugin('generate-runtime-values')
-        setPromptFunction(null)
+        try {
+            await capOperatorPlugin('generate-runtime-values')
+        } finally {
+            setPromptFunction(null)
+        }
 
         expect(getFileHash(join(__dirname, 'files/expectedConfigurableTemplatesChart/runtime-values-ias.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
@@ -280,13 +300,17 @@ EXAMPLES
             '',
             'c-abc.kyma.ondemand.com',
             'dc94db56-asda-adssa-dada-123456789012',
+            'dc94db56-asda-adssa-dada-123456789012',
             'sdasd-4c4d-4d4d-4d4d-123456789012',
             'regcred'
         ]))
 
         cds.root = bookshop
-        await capOperatorPlugin('generate-runtime-values')
-        setPromptFunction(null)
+        try {
+            await capOperatorPlugin('generate-runtime-values')
+        } finally {
+            setPromptFunction(null)
+        }
 
         expect(getFileHash(join(__dirname, 'files/expectedChart/runtime-values-svc-ias.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
