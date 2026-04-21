@@ -184,8 +184,8 @@ async function generateRuntimeValues(option, inputYamlPath) {
         answerStruct = yaml.parse(await cds.utils.read(cds.utils.path.join(cds.root, inputYamlPath)))
 
         const requiredFields = isServiceOnly
-            ? ['appName', 'capOperatorSubdomain', 'clusterDomain', 'globalAccountId', 'providerSubaccountId']
-            : ['appName', 'capOperatorSubdomain', 'clusterDomain', 'globalAccountId', 'providerSubaccountId', 'providerSubdomain', 'tenantId']
+            ? ['appName', 'capOperatorSubdomain', 'clusterDomain', 'providerSubaccountId']
+            : ['appName', 'capOperatorSubdomain', 'clusterDomain', 'providerSubaccountId', 'providerSubdomain', 'tenantId']
 
         const missingFields = requiredFields.filter(field => !answerStruct[field])
         if (missingFields.length) {
@@ -194,19 +194,18 @@ async function generateRuntimeValues(option, inputYamlPath) {
 
     } else {
         const questions = [
-            ['Enter app name for deployment: ', appName, true],
-            ['Enter CAP Operator subdomain (In kyma cluster it is "cap-op" by default): ', 'cap-op', true],
-            ['Enter your cluster shoot domain: ', await getShootDomain(), true],
-            ['Enter your global account ID: ', '', true],
-            ['Enter your provider sub-account ID: ', '', true],
-            ...isServiceOnly ? [] : [['Enter your provider subdomain: ', '', true]],
-            ...isServiceOnly ? [] : [['Enter your provider tenant ID: ', '', true]],
-            ['Enter your HANA database instance ID: ', '', false],
-            ['Enter your image pull secrets: ', '', false]
+            ['Enter app name for deployment', appName, true],
+            ['Enter CAP Operator subdomain (In kyma cluster it is "cap-op" by default)', 'cap-op', true],
+            ['Enter your cluster shoot domain', await getShootDomain(), true],
+            ['Enter your provider sub-account ID', '', true],
+            ...isServiceOnly ? [] : [['Enter your provider subdomain', '', true]],
+            ...isServiceOnly ? [] : [['Enter your provider tenant ID', '', true]],
+            ['Enter your HANA database instance ID', '', false],
+            ['Enter your image pull secrets:', '', false]
         ]
 
         const answerKeys = [
-            'appName', 'capOperatorSubdomain', 'clusterDomain', 'globalAccountId', 'providerSubaccountId',
+            'appName', 'capOperatorSubdomain', 'clusterDomain', 'providerSubaccountId',
             ...isServiceOnly ? [] : ['providerSubdomain'],
             ...isServiceOnly ? [] : ['tenantId'],
             'hanaInstanceId', 'imagePullSecret'

@@ -138,9 +138,6 @@
         "btp": {
             "additionalProperties": false,
             "properties": {
-                "globalAccountId": {
-                    "type": "string"
-                },
                 "provider": {
                     "$ref": "#/$defs/provider"
                 },
@@ -149,7 +146,7 @@
                 }
             },
             "required": [
-                "globalAccountId",
+                "providerSubaccountId",
                 "provider"
             ],
             "type": "object"

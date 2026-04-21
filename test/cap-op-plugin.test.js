@@ -2,7 +2,6 @@ const cds = require('@sap/cds-dk')
 const { join } = require('path')
 const { execSync } = require('child_process')
 const { expect } = require("chai")
-const readline = require('readline')
 const sinon = require('sinon')
 
 const TempUtil = require('./tempUtil')
@@ -10,11 +9,10 @@ const tempUtil = new TempUtil(__filename, { local: true })
 
 const { getFileHash, updateDependency, setupHack, undoSetupHack } = require('./util')
 const { capOperatorPlugin } = require('../bin/cap-op-plugin')
+const enquirer = require('enquirer')
 
 describe('cap-op-plugin', () => {
     let temp, bookshop
-    let rlInterface
-    let rlQuestion
 
     before(async () => {
         await tempUtil.cleanUp()
@@ -79,30 +77,17 @@ EXAMPLES
     it('Generate runtime-values via prompts', async () => {
         execSync(`cds add cap-operator`, { cwd: bookshop })
 
-        rlQuestion = sinon.stub()
-        rlInterface = {
-            question: rlQuestion,
-            close: sinon.stub()
-        }
-
         // Copy over a values file with env filled for content job. It should be retained in the generated runtime-values.yaml
         await cds.utils.copy(join(__dirname, 'files', 'values-of-simple-chart-filled.yaml'), join(bookshop, 'chart/values.yaml'))
 
-        sinon.stub(readline, 'createInterface').returns(rlInterface)
-
-        rlQuestion.onFirstCall().callsArgWith(1, 'bkshop')
-        rlQuestion.onSecondCall().callsArgWith(1, '')
-        rlQuestion.onThirdCall().callsArgWith(1, 'c-abc.kyma.ondemand.com')
-        rlQuestion.onCall(3).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(4).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(5).callsArgWith(1, 'bem-aad-sadad-123456789012')
-        rlQuestion.onCall(6).callsArgWith(1, 'dasdsd-1234-1234-1234-123456789012')
-        rlQuestion.onCall(7).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
-        rlQuestion.onCall(8).callsArgWith(1, 'regcred')
+        sinon.replaceGetter(enquirer, 'prompt', () => sinon.stub().resolves({ '0': 'bkshop', '1': 'cap-op', '2': 'c-abc.kyma.ondemand.com', '3': 'dc94db56-asda-adssa-dada-123456789012', '4': 'bem-aad-sadad-123456789012', '5': 'dasdsd-1234-1234-1234-123456789012', '6': 'sdasd-4c4d-4d4d-4d4d-123456789012', '7': 'regcred' }))
 
         cds.root = bookshop
-        await capOperatorPlugin('generate-runtime-values')
-        sinon.restore()
+        try {
+            await capOperatorPlugin('generate-runtime-values')
+        } finally {
+            sinon.restore()
+        }
 
         expect(getFileHash(join(__dirname, 'files/expectedChart/runtime-values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
@@ -114,33 +99,21 @@ EXAMPLES
         await cds.utils.copy(join(__dirname, 'files', 'values-of-simple-chart-filled.yaml'), join(bookshop, 'chart/values.yaml'))
         execSync(`npx cap-op-plugin convert-to-configurable-template-chart`, { cwd: bookshop })
 
-        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/templates/cap-operator-cros-modified.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cap-operator-cros.yaml')))
-        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/values-modified.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
+        expect(getFileHash(join(__dirname, 'files/expectedConfigurableTemplatesChart/templates/cap-operator-cros-modified.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cap-operator-cros.yaml')))
+        expect(getFileHash(join(__dirname, 'files/expectedConfigurableTemplatesChart/values-modified.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
     })
 
     it('Generate runtime-values via prompts for configurable template chart', async () => {
         execSync(`cds add cap-operator --with-configurable-templates`, { cwd: bookshop })
 
-        rlQuestion = sinon.stub()
-        rlInterface = {
-            question: rlQuestion,
-            close: sinon.stub()
-        }
-        sinon.stub(readline, 'createInterface').returns(rlInterface)
-
-        rlQuestion.onFirstCall().callsArgWith(1, 'bkshop')
-        rlQuestion.onSecondCall().callsArgWith(1, '')
-        rlQuestion.onThirdCall().callsArgWith(1, 'c-abc.kyma.ondemand.com')
-        rlQuestion.onCall(3).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(4).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(5).callsArgWith(1, 'bem-aad-sadad-123456789012')
-        rlQuestion.onCall(6).callsArgWith(1, 'dasdsd-1234-1234-1234-123456789012')
-        rlQuestion.onCall(7).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
-        rlQuestion.onCall(8).callsArgWith(1, 'regcred')
+        sinon.replaceGetter(enquirer, 'prompt', () => sinon.stub().resolves({ '0': 'bkshop', '1': 'cap-op', '2': 'c-abc.kyma.ondemand.com', '3': 'dc94db56-asda-adssa-dada-123456789012', '4': 'bem-aad-sadad-123456789012', '5': 'dasdsd-1234-1234-1234-123456789012', '6': 'sdasd-4c4d-4d4d-4d4d-123456789012', '7': 'regcred' }))
 
         cds.root = bookshop
-        await capOperatorPlugin('generate-runtime-values')
-        sinon.restore()
+        try {
+            await capOperatorPlugin('generate-runtime-values')
+        } finally {
+            sinon.restore()
+        }
 
         expect(getFileHash(join(__dirname, 'files/expectedConfigurableTemplatesChart/runtime-values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
@@ -148,24 +121,14 @@ EXAMPLES
     it('Generate runtime-values via prompts for service only chart', async () => {
         execSync(`cds add cap-operator --with-service-only`, { cwd: bookshop })
 
-        rlQuestion = sinon.stub()
-        rlInterface = {
-            question: rlQuestion,
-            close: sinon.stub()
-        }
-        sinon.stub(readline, 'createInterface').returns(rlInterface)
-
-        rlQuestion.onFirstCall().callsArgWith(1, 'bkshop')
-        rlQuestion.onSecondCall().callsArgWith(1, '')
-        rlQuestion.onThirdCall().callsArgWith(1, 'c-abc.kyma.ondemand.com')
-        rlQuestion.onCall(3).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(4).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(5).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
-        rlQuestion.onCall(6).callsArgWith(1, 'regcred')
+        sinon.replaceGetter(enquirer, 'prompt', () => sinon.stub().resolves({ '0': 'bkshop', '1': 'cap-op', '2': 'c-abc.kyma.ondemand.com', '3': 'dc94db56-asda-adssa-dada-123456789012', '4': 'sdasd-4c4d-4d4d-4d4d-123456789012', '5': 'regcred' }))
 
         cds.root = bookshop
-        await capOperatorPlugin('generate-runtime-values')
-        sinon.restore()
+        try {
+            await capOperatorPlugin('generate-runtime-values')
+        } finally {
+            sinon.restore()
+        }
 
         expect(getFileHash(join(__dirname, 'files/expectedChart/runtime-values-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
@@ -178,9 +141,9 @@ EXAMPLES
         await cds.utils.copy(join(__dirname, 'files', 'runtime-values-of-simple-chart.yaml'), join(bookshop, 'chart/runtime-values.yaml'))
         execSync(`npx cap-op-plugin convert-to-configurable-template-chart --with-runtime-yaml chart/runtime-values.yaml`, { cwd: bookshop })
 
-        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/templates/cap-operator-cros-modified.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cap-operator-cros.yaml')))
-        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/values-modified.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
-        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/runtime-values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
+        expect(getFileHash(join(__dirname, 'files/expectedConfigurableTemplatesChart/templates/cap-operator-cros-modified.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cap-operator-cros.yaml')))
+        expect(getFileHash(join(__dirname, 'files/expectedConfigurableTemplatesChart/values-modified.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
+        expect(getFileHash(join(__dirname, 'files/expectedConfigurableTemplatesChart/runtime-values.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
 
     it('Convert existing chart to configurable template chart first then transform runtime-values.yaml', async () => {
@@ -217,9 +180,9 @@ EXAMPLES
         await cds.utils.copy(join(__dirname, 'files', 'runtime-values-of-simple-service-chart.yaml'), join(bookshop, 'chart/runtime-values.yaml'))
         execSync(`npx cap-op-plugin convert-to-configurable-template-chart --with-runtime-yaml chart/runtime-values.yaml`, { cwd: bookshop })
 
-        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/templates/cap-operator-cros-modified-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cap-operator-cros.yaml')))
-        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/values-modified-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
-        expect(getFileHash(join(__dirname,'files/expectedConfigurableTemplatesChart/runtime-values-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
+        expect(getFileHash(join(__dirname, 'files/expectedConfigurableTemplatesChart/templates/cap-operator-cros-modified-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cap-operator-cros.yaml')))
+        expect(getFileHash(join(__dirname, 'files/expectedConfigurableTemplatesChart/values-modified-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
+        expect(getFileHash(join(__dirname, 'files/expectedConfigurableTemplatesChart/runtime-values-svc.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
 
     it('Convert existing service chart to configurable template chart first then transform runtime-values.yaml', async () => {
@@ -242,26 +205,14 @@ EXAMPLES
         execSync(`cds add ias`, { cwd: bookshop })
         execSync(`cds add cap-operator`, { cwd: bookshop })
 
-        rlQuestion = sinon.stub()
-        rlInterface = {
-            question: rlQuestion,
-            close: sinon.stub()
-        }
-        sinon.stub(readline, 'createInterface').returns(rlInterface)
-
-        rlQuestion.onFirstCall().callsArgWith(1, 'bkshop')
-        rlQuestion.onSecondCall().callsArgWith(1, '')
-        rlQuestion.onThirdCall().callsArgWith(1, 'c-abc.kyma.ondemand.com')
-        rlQuestion.onCall(3).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(4).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(5).callsArgWith(1, 'bem-aad-sadad-123456789012')
-        rlQuestion.onCall(6).callsArgWith(1, 'dasdsd-1234-1234-1234-123456789012')
-        rlQuestion.onCall(7).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
-        rlQuestion.onCall(8).callsArgWith(1, 'regcred')
+        sinon.replaceGetter(enquirer, 'prompt', () => sinon.stub().resolves({ '0': 'bkshop', '1': 'cap-op', '2': 'c-abc.kyma.ondemand.com', '3': 'dc94db56-asda-adssa-dada-123456789012', '4': 'bem-aad-sadad-123456789012', '5': 'dasdsd-1234-1234-1234-123456789012', '6': 'sdasd-4c4d-4d4d-4d4d-123456789012', '7': 'regcred' }))
 
         cds.root = bookshop
-        await capOperatorPlugin('generate-runtime-values')
-        sinon.restore()
+        try {
+            await capOperatorPlugin('generate-runtime-values')
+        } finally {
+            sinon.restore()
+        }
 
         expect(getFileHash(join(__dirname, 'files/expectedChart/runtime-values-ias.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
@@ -270,26 +221,14 @@ EXAMPLES
         execSync(`cds add ias`, { cwd: bookshop })
         execSync(`cds add cap-operator --with-configurable-templates`, { cwd: bookshop })
 
-        rlQuestion = sinon.stub()
-        rlInterface = {
-            question: rlQuestion,
-            close: sinon.stub()
-        }
-        sinon.stub(readline, 'createInterface').returns(rlInterface)
-
-        rlQuestion.onFirstCall().callsArgWith(1, 'bkshop')
-        rlQuestion.onSecondCall().callsArgWith(1, '')
-        rlQuestion.onThirdCall().callsArgWith(1, 'c-abc.kyma.ondemand.com')
-        rlQuestion.onCall(3).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(4).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(5).callsArgWith(1, 'bem-aad-sadad-123456789012')
-        rlQuestion.onCall(6).callsArgWith(1, 'dasdsd-1234-1234-1234-123456789012')
-        rlQuestion.onCall(7).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
-        rlQuestion.onCall(8).callsArgWith(1, 'regcred')
+        sinon.replaceGetter(enquirer, 'prompt', () => sinon.stub().resolves({ '0': 'bkshop', '1': 'cap-op', '2': 'c-abc.kyma.ondemand.com', '3': 'dc94db56-asda-adssa-dada-123456789012', '4': 'bem-aad-sadad-123456789012', '5': 'dasdsd-1234-1234-1234-123456789012', '6': 'sdasd-4c4d-4d4d-4d4d-123456789012', '7': 'regcred' }))
 
         cds.root = bookshop
-        await capOperatorPlugin('generate-runtime-values')
-        sinon.restore()
+        try {
+            await capOperatorPlugin('generate-runtime-values')
+        } finally {
+            sinon.restore()
+        }
 
         expect(getFileHash(join(__dirname, 'files/expectedConfigurableTemplatesChart/runtime-values-ias.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
@@ -298,24 +237,14 @@ EXAMPLES
         execSync(`cds add ias`, { cwd: bookshop })
         execSync(`cds add cap-operator --with-service-only`, { cwd: bookshop })
 
-        rlQuestion = sinon.stub()
-        rlInterface = {
-            question: rlQuestion,
-            close: sinon.stub()
-        }
-        sinon.stub(readline, 'createInterface').returns(rlInterface)
-
-        rlQuestion.onFirstCall().callsArgWith(1, 'bkshop')
-        rlQuestion.onSecondCall().callsArgWith(1, '')
-        rlQuestion.onThirdCall().callsArgWith(1, 'c-abc.kyma.ondemand.com')
-        rlQuestion.onCall(3).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(4).callsArgWith(1, 'dc94db56-asda-adssa-dada-123456789012')
-        rlQuestion.onCall(5).callsArgWith(1, 'sdasd-4c4d-4d4d-4d4d-123456789012')
-        rlQuestion.onCall(6).callsArgWith(1, 'regcred')
+        sinon.replaceGetter(enquirer, 'prompt', () => sinon.stub().resolves({ '0': 'bkshop', '1': 'cap-op', '2': 'c-abc.kyma.ondemand.com', '3': 'dc94db56-asda-adssa-dada-123456789012', '4': 'sdasd-4c4d-4d4d-4d4d-123456789012', '5': 'regcred' }))
 
         cds.root = bookshop
-        await capOperatorPlugin('generate-runtime-values')
-        sinon.restore()
+        try {
+            await capOperatorPlugin('generate-runtime-values')
+        } finally {
+            sinon.restore()
+        }
 
         expect(getFileHash(join(__dirname, 'files/expectedChart/runtime-values-svc-ias.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
