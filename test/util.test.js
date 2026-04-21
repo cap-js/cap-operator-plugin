@@ -1,17 +1,17 @@
 const { expect } = require("chai")
 const sinon = require('sinon')
-const { ask, setPromptFunction, mergeObj } = require("../lib/util")
+const enquirer = require('enquirer')
+const { ask, mergeObj } = require("../lib/util")
 
 describe("ask function", () => {
     let promptStub
 
     beforeEach(() => {
         promptStub = sinon.stub()
-        setPromptFunction(promptStub)
+        sinon.replaceGetter(enquirer, 'prompt', () => promptStub)
     })
 
     afterEach(() => {
-        setPromptFunction(null)
         sinon.restore()
     })
 
