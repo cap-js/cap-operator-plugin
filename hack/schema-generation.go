@@ -30,6 +30,7 @@ type provider struct {
 type app struct {
 	Domains                   Domains           `json:"domains"`
 	IstioIngressGatewayLabels map[string]string `json:"istioIngressGatewayLabels"`
+	Version                   string            `json:"version,omitempty"`
 }
 
 type serviceInstanceExt struct {
