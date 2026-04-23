@@ -196,6 +196,8 @@ The generated `chart/values.yaml` contains two types of information:
 
       After execution, the `runtime-values.yaml` file is created in the chart folder of your project directory.
 
+> **Note:** By default, the `CAPApplicationVersion` resource uses the Helm release revision as its version (`.Release.Revision`). If you are not using `helm install`/`helm upgrade` directly — for example, when templating the chart and applying the rendered manifests via GitOps tools like Argo CD, the revision may always be `1`. In such cases, you can explicitly set a version string via `app.version` in your runtime-values.yaml (e.g., `app.version: "1.2.3"`). When set, this value takes precedence over the release revision.
+
 7. Now, you can deploy the application using the following command:
 
    ```sh

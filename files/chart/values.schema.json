@@ -3204,6 +3204,9 @@
                         "type": "string"
                     },
                     "type": "object"
+                },
+                "version": {
+                    "type": "string"
                 }
             },
             "required": [
