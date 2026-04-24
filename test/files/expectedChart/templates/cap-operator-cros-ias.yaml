@@ -8,6 +8,9 @@ metadata:
       {
         "x-forwarded-client-cert": "%DOWNSTREAM_PEER_CERT%"
       }
+    {{- if .Values.app.enableCleanupMonitoring }}
+    sme.sap.com/enable-cleanup-monitoring: "true"
+    {{- end }}
 spec:
   domainRefs:
   - kind: Domain

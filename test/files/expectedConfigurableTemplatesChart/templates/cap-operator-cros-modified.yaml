@@ -3,6 +3,10 @@ apiVersion: sme.sap.com/v1alpha1
 kind: CAPApplication
 metadata:
   name: {{ include "appName" $ }}
+  {{- if .Values.app.enableCleanupMonitoring }}
+  annotations:
+    sme.sap.com/enable-cleanup-monitoring: "true"
+  {{- end }}
 spec:
   domainRefs:
   - kind: Domain
