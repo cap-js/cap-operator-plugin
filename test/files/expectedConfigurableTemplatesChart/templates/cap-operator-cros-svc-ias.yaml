@@ -94,11 +94,11 @@ spec:
     jobDefinition:
       type: Content
       image: {{ .Values.workloads.amsDeployer.image }}
+  contentJobs:
+  - content-deploy
+  - ams-deployer
   serviceExposures:
   - subDomain: {{ include "appName" $ }}
     routes:
     - workloadName: server
       port: 4004
-  contentJobs:
-  - content-deploy
-  - ams-deployer
