@@ -110,8 +110,3 @@ spec:
     jobDefinition:
       type: Content
       image: {{ .Values.workloads.contentDeploy.image }}
-  serviceExposures:
-  - subDomain: {{ include "appName" $ }}
-    routes:
-    - workloadName: server
-      port: 4004

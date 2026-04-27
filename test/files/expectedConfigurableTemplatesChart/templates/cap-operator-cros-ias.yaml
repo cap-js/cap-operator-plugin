@@ -130,8 +130,3 @@ spec:
   contentJobs:
   - content-deploy
   - ams-deployer
-  serviceExposures:
-  - subDomain: {{ include "appName" $ }}
-    routes:
-    - workloadName: server
-      port: 4004
