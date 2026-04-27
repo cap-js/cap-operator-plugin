@@ -105,6 +105,7 @@ spec:
     jobDefinition:
       type: TenantOperation
       image: {{ .Values.workloads.tenantJob.image }}
+      ttlSecondsAfterFinished: 300
       {{- if .Values.hanaInstanceId }}
       env:
       - name: CDS_CONFIG
@@ -119,6 +120,7 @@ spec:
     jobDefinition:
       type: Content
       image: {{ .Values.workloads.contentDeploy.image }}
+      ttlSecondsAfterFinished: 300
   - name: ams-deployer
     labels:
       sme.sap.com/app-type: {{ include "appName" $ }}
@@ -127,6 +129,7 @@ spec:
     jobDefinition:
       type: Content
       image: {{ .Values.workloads.amsDeployer.image }}
+      ttlSecondsAfterFinished: 300
   contentJobs:
   - content-deploy
   - ams-deployer

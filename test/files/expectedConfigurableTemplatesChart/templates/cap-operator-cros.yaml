@@ -96,6 +96,7 @@ spec:
     jobDefinition:
       type: TenantOperation
       image: {{ .Values.workloads.tenantJob.image }}
+      ttlSecondsAfterFinished: 300
       {{- if .Values.hanaInstanceId }}
       env:
       - name: CDS_CONFIG
@@ -110,3 +111,4 @@ spec:
     jobDefinition:
       type: Content
       image: {{ .Values.workloads.contentDeploy.image }}
+      ttlSecondsAfterFinished: 300

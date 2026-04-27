@@ -86,6 +86,7 @@ spec:
     jobDefinition:
       type: Content
       image: {{ .Values.workloads.contentDeploy.image }}
+      ttlSecondsAfterFinished: 300
   - name: ams-deployer
     labels:
       sme.sap.com/app-type: {{ include "appName" $ }}
@@ -94,6 +95,7 @@ spec:
     jobDefinition:
       type: Content
       image: {{ .Values.workloads.amsDeployer.image }}
+      ttlSecondsAfterFinished: 300
   contentJobs:
   - content-deploy
   - ams-deployer
