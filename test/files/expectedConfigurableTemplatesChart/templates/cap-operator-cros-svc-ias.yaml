@@ -8,6 +8,7 @@ metadata:
       {
         "x-forwarded-client-cert": "%DOWNSTREAM_PEER_CERT%"
       }
+    sme.sap.com/enable-cleanup-monitoring: "{{ .Values.app.enableCleanupMonitoring }}"
 spec:
   domainRefs:
   - kind: Domain
@@ -85,6 +86,7 @@ spec:
     jobDefinition:
       type: Content
       image: {{ .Values.workloads.contentDeploy.image }}
+      ttlSecondsAfterFinished: 300
   - name: ams-deployer
     labels:
       sme.sap.com/app-type: {{ include "appName" $ }}
@@ -93,11 +95,12 @@ spec:
     jobDefinition:
       type: Content
       image: {{ .Values.workloads.amsDeployer.image }}
+      ttlSecondsAfterFinished: 300
+  contentJobs:
+  - content-deploy
+  - ams-deployer
   serviceExposures:
   - subDomain: {{ include "appName" $ }}
     routes:
     - workloadName: server
       port: 4004
-  contentJobs:
-  - content-deploy
-  - ams-deployer

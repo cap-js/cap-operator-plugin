@@ -3,6 +3,8 @@ apiVersion: sme.sap.com/v1alpha1
 kind: CAPApplication
 metadata:
   name: {{ include "appName" $ }}
+  annotations:
+    sme.sap.com/enable-cleanup-monitoring: "{{ .Values.app.enableCleanupMonitoring }}"
 spec:
   domainRefs:
   - kind: Domain
@@ -84,7 +86,8 @@ spec:
     {{- end }}
 
     {{- if $v.jobDefinition }}
-    jobDefinition: {{- toYaml $v.jobDefinition | trim | nindent 6 }}
+    {{- $jobDef := merge $v.jobDefinition (dict "ttlSecondsAfterFinished" 300) }}
+    jobDefinition: {{- toYaml $jobDef | trim | nindent 6 }}
     {{- end }}
   {{- end }}
 

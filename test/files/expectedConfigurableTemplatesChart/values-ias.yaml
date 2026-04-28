@@ -101,6 +101,7 @@ app:
   istioIngressGatewayLabels:
     istio: ingressgateway
     app: istio-ingressgateway
+  enableCleanupMonitoring: true
 btp:
   providerSubaccountId: null
   provider:

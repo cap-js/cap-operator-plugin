@@ -130,6 +130,9 @@
                 },
                 "version": {
                     "type": "string"
+                },
+                "enableCleanupMonitoring": {
+                    "type": "boolean"
                 }
             },
             "required": [
