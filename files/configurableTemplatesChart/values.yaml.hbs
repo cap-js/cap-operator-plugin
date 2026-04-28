@@ -13,6 +13,8 @@ app:
   istioIngressGatewayLabels:
     istio: ingressgateway
     app: istio-ingressgateway
+  # -- Enable cleanup monitoring for CAPApplication versions
+  enableCleanupMonitoring: true
 
 btp:
   # -- BTP Provider sub-account identifier where the application is hosted

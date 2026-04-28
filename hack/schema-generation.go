@@ -31,6 +31,7 @@ type app struct {
 	Domains                   Domains           `json:"domains"`
 	IstioIngressGatewayLabels map[string]string `json:"istioIngressGatewayLabels"`
 	Version                   string            `json:"version,omitempty"`
+	EnableCleanupMonitoring   bool              `json:"enableCleanupMonitoring,omitempty"`
 }
 
 type serviceInstanceExt struct {
