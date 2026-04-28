@@ -209,4 +209,60 @@ describe('cds add cap-operator', () => {
         expect(getFileHash(join(__dirname, '../files/commonTemplates/service-binding.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/service-binding.yaml')))
         expect(getFileHash(join(__dirname, '../files/commonTemplates/service-instance.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/service-instance.yaml')))
     })
+
+    it('Migrates globalAccountId to providerSubaccountId in simple chart', async () => {
+        execSync(`cds add cap-operator`, { cwd: bookshop })
+
+        const valuesPath = join(bookshop, 'chart/values.yaml')
+        fs.writeFileSync(valuesPath, fs.readFileSync(valuesPath, 'utf8').replace('  providerSubaccountId:', '  globalAccountId:'))
+
+        const log = execSync(`cds add cap-operator`, { cwd: bookshop }).toString()
+
+        expect(log).to.include("'globalAccountId' is deprecated")
+        expect(log).to.include('Updated values.yaml')
+        expect(log).to.include('Updated values.schema.json')
+
+        const updatedValues = fs.readFileSync(valuesPath, 'utf8')
+        expect(updatedValues).to.include('  providerSubaccountId:')
+        expect(updatedValues).to.not.include('globalAccountId:')
+    })
+
+    it('Migrates globalAccountId to providerSubaccountId in configurable template chart', async () => {
+        fs.writeFileSync(join(bookshop, 'xs-security.json'), orignalXsSecurityJson)
+        execSync(`cds add cap-operator --with-configurable-templates`, { cwd: bookshop })
+
+        const valuesPath = join(bookshop, 'chart/values.yaml')
+        fs.writeFileSync(valuesPath, fs.readFileSync(valuesPath, 'utf8').replace('  providerSubaccountId:', '  globalAccountId:'))
+
+        const croPath = join(bookshop, 'chart/templates/cap-operator-cros.yaml')
+        fs.writeFileSync(croPath, fs.readFileSync(croPath, 'utf8').replace(
+            'providerSubaccountId: {{ .Values.btp.providerSubaccountId }}',
+            'globalAccountId: {{ .Values.btp.globalAccountId }}'
+        ))
+
+        const log = execSync(`cds add cap-operator`, { cwd: bookshop }).toString()
+
+        expect(log).to.include("'globalAccountId' is deprecated")
+        expect(log).to.include('Updated values.yaml')
+        expect(log).to.include('Updated chart/templates/cap-operator-cros.yaml')
+        expect(log).to.include('Updated values.schema.json')
+
+        const updatedValues = fs.readFileSync(valuesPath, 'utf8')
+        expect(updatedValues).to.include('  providerSubaccountId:')
+        expect(updatedValues).to.not.include('globalAccountId:')
+
+        const updatedCro = fs.readFileSync(croPath, 'utf8')
+        expect(updatedCro).to.include('providerSubaccountId: {{ .Values.btp.providerSubaccountId }}')
+        expect(updatedCro).to.not.include('globalAccountId: {{ .Values.btp.globalAccountId }}')
+    })
+
+    it('Skips globalAccountId migration when chart is already up to date', async () => {
+        execSync(`cds add cap-operator`, { cwd: bookshop })
+
+        const log = execSync(`cds add cap-operator`, { cwd: bookshop }).toString()
+
+        expect(log).to.not.include("'globalAccountId' is deprecated")
+        expect(log).to.not.include('Updated values.yaml')
+        expect(log).to.not.include('Updated values.schema.json')
+    })
 })
