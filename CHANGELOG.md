@@ -2,11 +2,14 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## Version 0.15.0 - 21-April-2026
+## Version 0.15.0 - 29-April-2026
 
 ### Changed
 
 - Deprecated `globalAccountId` in favor of `providerSubaccountId` in the `values.yaml` file. This change is part of the latest CAP Operator version `v0.28.0`. **Use this version with CAP Operator `v0.28.0` or later to avoid any compatibility issues.**
+- Defaulting `ttlSecondsAfterFinished` to 300 seconds for job workloads.
+- Added `sme.sap.com/enable-cleanup-monitoring: "true"` as a default annotation on the CAPApplication resource.
+- `serviceExposures` restriction removed in from CAPApplicationVersion template to allow users to configure it as per their needs.
 - Updated `values.schema.json` to align with the latest CAP Operator version `v0.28.0` and BTP Service Operator version `v0.10.5`.
 - Replaced `readline` based prompt with [`enquirer`](https://github.com/enquirer/enquirer) for improved interactive prompt experience during runtime values generation. Required fields are now marked with `*` and validated inline.
 

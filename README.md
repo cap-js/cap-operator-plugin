@@ -9,6 +9,14 @@
 
 The CAP Operator Plugin offers a simple method for generating [CAP Operator](https://sap.github.io/cap-operator/) resources, which are essential for deploying multi-tenant CAP Applications.
 
+> [!WARNING]
+> ## Action Required:
+> The `globalAccountId` field in the `CAPApplication` spec is [deprecated](https://github.com/SAP/cap-operator/discussions/343) since CAP Operator v0.28.0 and will be removed in a future release.
+>
+> **To migrate**, upgrade to CAP Operator Plugin v0.15.0 or later and run `cds add cap-operator`. This updates `values.yaml`, `values.schema.json`, and `templates/cap-operator-cros.yaml` to use `providerSubaccountId` instead.
+>
+> If you have already migrated, you can ignore this message.
+
 ## Before You Start
 
 The CAP Operator plugin requires `@sap/cds-dk: ">=8.2.1"`. If you've installed @sap/cds-dk  globally, ensure that the installed version is `8.2.1` or higher.
