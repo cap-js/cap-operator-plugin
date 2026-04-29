@@ -1,4 +1,4 @@
-const { expect } = require("chai")
+const { expect } = require('chai')
 const sinon = require('sinon')
 const enquirer = require('enquirer')
 const { ask, mergeObj } = require("../lib/util")

@@ -1,7 +1,7 @@
 const cds = require('@sap/cds-dk')
-const { join } = require('path')
-const { execSync } = require('child_process')
-const { expect } = require("chai")
+const { join } = require('node:path')
+const { execSync } = require('node:child_process')
+const { expect } = require('chai')
 const sinon = require('sinon')
 
 const TempUtil = require('./tempUtil')

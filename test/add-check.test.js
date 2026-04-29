@@ -1,6 +1,6 @@
-const { join } = require('path')
-const { execSync } = require('child_process')
-const { expect } = require("chai")
+const { join } = require('node:path')
+const { execSync } = require('node:child_process')
+const { expect } = require('chai')
 
 const TempUtil = require('./tempUtil')
 const tempUtil = new TempUtil(__filename, { local: true })
