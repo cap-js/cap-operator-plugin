@@ -37,6 +37,9 @@
     "nyc": "^18",
     "sinon": "^21"
   },
+  "overrides": {
+    "serialize-javascript": ">=7.0.5"
+  },
   "scripts": {
     "test": "mocha --timeout 20000",
     "test-coverage-lcov": "nyc mocha --timeout 20000 && nyc --reporter lcov --reporter text --report-dir coverage report"
