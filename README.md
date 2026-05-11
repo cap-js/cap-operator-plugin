@@ -110,41 +110,49 @@ To integrate the CAP Operator Plugin into your project, follow these steps:
 
 ## Configure Your Chart
 
-The generated `chart/values.yaml` contains two types of information:
+The generated `chart/values.yaml` contains two categories of values: **design-time** and **runtime**.
 
-   * Design-time deployment
-        * Without option `--with-configurable-templates`
-            - [serviceInstances](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-instance)
-            - [serviceBindings](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-binding)
-            - workloads - There are two types of workloads:
-                - [Deployment definition](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#workloads-with-deploymentdefinition)
-                - [Job definition](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#workloads-with-jobdefinition)
-            - [tenantOperations](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#sequencing-tenant-operations)
-            - [contentJobs](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#sequencing-content-jobs)
-        * With option `--with-configurable-templates`
-            - [serviceInstances](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-instance)
-            - [serviceBindings](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-binding)
-            - workloads - With this option all the workload configuations are maintained in `templates/cap-operator-cros.yaml` and in the `values.yaml` you can only define the images for the workloads.
+**Design-time values** describe your application's services and workloads. They are stable across environments and can be committed to your repository. The plugin auto-populates many of these from your project configuration, but you should verify them and fill in any gaps.
 
-   * Runtime deployment
-        - app
-            - Primary - Primary application domain is used to generate a wildcard TLS certificate. In clusters managed by project "Gardener", this is (usually) a subdomain of the cluster domain
-            - Secondary ***[DEPRECATED with v0.7.0]*** - Customer-specific domains to serve application endpoints (optional). Use `additionalDomainRefs` instead.
-            - additionalDomainRefs - References to exisiting customer specific `Domains` or `ClusterDomain` resources. For details, refer to the [CAP Operator documentation](https://sap.github.io/cap-operator/docs/usage/domain-management).
-            - IstioIngressGatewayLabels - Labels used to identify the Istio ingress-gateway component and its corresponding namespace. Usually {“app”:“istio-ingressgateway”,“istio”:“ingressgateway”}
-        - btp
-            - Subdomain - Subdomain of the provider subaccount to which you deploy the application. This is not required for services-only applications.
-            - TenantId - Tenant ID of the provider subaccount to which you deploy the application. This is not required for services-only applications.
-        - [imagePullSecrets](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) - Kubernetes secret used to pull the application docker images from a private container image registry or repository.
-        - env information inside workloads
+Depending on whether you used `--with-configurable-templates`, the design-time section contains:
 
-   As a developer, you must fill in the design-time deployment information in the `values.yaml` file, which can then be pushed to your GitHub repository. The plugin auto-populates some values based on your project configuration, but verifying them and manually filling in any missing information is essential. You can refer to `values.schema.json` file for the structure of the `values.yaml` file.
+- Basic chart (default):
+    - [serviceInstances](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-instance) (enhanced with [`subscriptionDependency`](https://sap.github.io/cap-operator/docs/usage/tenant-provisioning/#configuring-dependencies-with-subscriptiondependency))
+    - [serviceBindings](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-binding)
+    - workloads ([Deployment](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#workloads-with-deploymentdefinition) or [Job](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#workloads-with-jobdefinition) definitions)
+    - [tenantOperations](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#sequencing-tenant-operations)
+    - [contentJobs](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#sequencing-content-jobs)
+    - [serviceExposures](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#serviceexposures-configuration)
 
-   **Please fill the `values.yaml` according to the schema as it is tightly coupled to the predefined templates.** You can use a YAML schema validation extension such as [YAML](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) or run the following command to validate your `values.yaml` file. You can ignore the errors from runtime values as they are not filled in yet.
+- Configurable templates chart (`--with-configurable-templates`):
+    - [serviceInstances](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-instance)
+    - [serviceBindings](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-binding)
+    - workload images only — full workload configurations are defined in `templates/cap-operator-cros.yaml`
 
-   ```sh
-   helm lint <chart-path>
-   ```
+**Runtime values** are environment-specific and must be provided separately at deploy time (see [Deploy Your Application](#deploy-your-application)). They include:
+
+- `app`
+    - `domains`
+        - `primary` — Primary application domain, used to generate a wildcard TLS certificate. In Gardener-managed clusters, this is typically a subdomain of the cluster domain.
+        - `additionalDomainRefs` — References to existing customer-specific `Domain` or `ClusterDomain` resources. See the [CAP Operator documentation](https://sap.github.io/cap-operator/docs/usage/domain-management) for details.
+    - `istioIngressGatewayLabels` — Labels identifying the Istio ingress-gateway and its namespace. Typically `{“app”:”istio-ingressgateway”,”istio”:”ingressgateway”}`.
+    - `enableCleanupMonitoring` — Enable monitoring for cleanup operations.
+- `btp`
+    - `providerSubaccountId` — ID of the provider subaccount to which you deploy the application.
+    - `provider`
+        - `subdomain` — Subdomain of the provider subaccount. Not required for services-only applications.
+        - `tenantId` — Tenant ID of the provider subaccount. Not required for services-only applications.
+- [imagePullSecrets](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) — Kubernetes secret for pulling images from a private registry.
+- `env` — Environment variables defined inside individual workloads.
+
+> The `values.yaml` is tightly coupled to the predefined templates, so it must conform to `values.schema.json`. You can validate it with the [YAML extension](https://marketplace.visualstudio.com/items?itemName=redhat.vscode-yaml) or by running:
+>
+> ```sh
+> helm lint <chart-path>
+> ```
+>
+> You can ignore validation errors for runtime values, as those are filled in later.
+
 ## Deploy Your Application
 
 1. You must generate the final Helm chart before deploying your application. You can do so by running `cds build`. During the build, the plugin generates the final Helm chart in your project's `gen` directory, which includes the predefined `templates` folder.
