@@ -193,8 +193,9 @@ async function generateRuntimeValues(option, inputYamlPath) {
         }
 
     } else {
+        const appNameValidator = !isServiceOnly ? (value) => /^[a-z0-9-]+$/.test(value?.trim()) || 'Only a-z, 0-9 and - are allowed' : undefined
         const questions = [
-            ['Enter app name for deployment', appName, true],
+            ['Enter app name for deployment', appName, true, appNameValidator],
             ['Enter CAP Operator subdomain (In kyma cluster it is "cap-op" by default)', 'cap-op', true],
             ['Enter your cluster shoot domain', await getShootDomain(), true],
             ['Enter your provider sub-account ID', '', true],

@@ -8,12 +8,7 @@ serviceInstances:
             displayName: {{appName}}
             description: {{appDescription}}
             appUrls:
-                {{#isApp}}
-                getDependencies: "https://{{providerSubdomain}}.{{appName}}.{{clusterDomain}}/callback/v1.0/dependencies"
-                {{/isApp}}
-                {{#isService}}
-                getDependencies: "https://{{appName}}.{{clusterDomain}}/callback/v1.0/dependencies"
-                {{/isService}}
+                getDependencies: "https://{{capOperatorSubdomain}}.{{clusterDomain}}/dependencies/{{providerSubaccountId}}/{{appName}}"
                 onSubscription: "https://{{capOperatorSubdomain}}.{{clusterDomain}}/provision/tenants/{tenantId}"
     {{/isApp}}
     {{xsuaaKeyName}}:
@@ -31,7 +26,7 @@ serviceInstances:
             category: CAP
             appCallbacks:
                 dependenciesCallbacks:
-                    url: "https://{{providerSubdomain}}.{{appName}}.{{clusterDomain}}/v1.0/callback/tenants/{app_tid}/dependencies"
+                    url: "https://{{capOperatorSubdomain}}.{{clusterDomain}}/sms/dependencies/{{providerSubaccountId}}/{{appName}}/{app_tid}"
                 subscriptionCallbacks:
                     url: "https://{{capOperatorSubdomain}}.{{clusterDomain}}/sms/provision/tenants/{app_tid}"
     {{/isApp}}

@@ -8,7 +8,7 @@ serviceInstances:
       category: CAP
       appCallbacks:
         dependenciesCallbacks:
-          url: https://bem-aad-sadad-123456789012.bkshop.c-abc.kyma.ondemand.com/v1.0/callback/tenants/{app_tid}/dependencies
+          url: https://cap-op.c-abc.kyma.ondemand.com/sms/dependencies/dc94db56-asda-adssa-dada-123456789012/bkshop/{app_tid}
         subscriptionCallbacks:
           url: https://cap-op.c-abc.kyma.ondemand.com/sms/provision/tenants/{app_tid}
   identity:

@@ -34,10 +34,19 @@ type app struct {
 	EnableCleanupMonitoring   bool              `json:"enableCleanupMonitoring,omitempty"`
 }
 
+type SubscriptionDependencyMode string
+
+const (
+	SubscriptionDependencyAuto   SubscriptionDependencyMode = "Auto"
+	SubscriptionDependencyAlways SubscriptionDependencyMode = "Always"
+	SubscriptionDependencyNever  SubscriptionDependencyMode = "Never"
+)
+
 type serviceInstanceExt struct {
 	Name string `json:"name"`
 	*servicesv1.ServiceInstanceSpec
-	JsonParameters string `json:"jsonParameters,omitempty"`
+	JsonParameters         string                     `json:"jsonParameters,omitempty"`
+	SubscriptionDependency SubscriptionDependencyMode `json:"subscriptionDependency,omitempty" jsonschema:"enum=Auto,enum=Always,enum=Never"`
 }
 
 type serviceBindingExt struct {
@@ -86,11 +95,37 @@ func updateProperties(data []byte) []byte {
 	rawExt["additionalProperties"] = true
 	m["$defs"].(map[string]interface{})["RawExtension"] = rawExt
 
+	fieldsV1 := m["$defs"].(map[string]interface{})["FieldsV1"].(map[string]interface{})
+	fieldsV1["additionalProperties"] = true
+	delete(fieldsV1, "properties")
+	m["$defs"].(map[string]interface{})["FieldsV1"] = fieldsV1
+
 	quantity := m["$defs"].(map[string]interface{})["Quantity"].(map[string]interface{})
 	quantity["type"] = "string"
 	delete(quantity, "properties")
 	delete(quantity, "required")
 	m["$defs"].(map[string]interface{})["Quantity"] = quantity
+
+	duration := m["$defs"].(map[string]interface{})["Duration"].(map[string]interface{})
+	duration["type"] = "string"
+	delete(duration, "additionalProperties")
+	delete(duration, "properties")
+	delete(duration, "required")
+	m["$defs"].(map[string]interface{})["Duration"] = duration
+
+	t := m["$defs"].(map[string]interface{})["Time"].(map[string]interface{})
+	t["type"] = "string"
+	delete(t, "additionalProperties")
+	delete(t, "properties")
+	m["$defs"].(map[string]interface{})["Time"] = t
+
+	intOrString := m["$defs"].(map[string]interface{})["IntOrString"].(map[string]interface{})
+	delete(intOrString, "additionalProperties")
+	delete(intOrString, "properties")
+	delete(intOrString, "required")
+	delete(intOrString, "type")
+	intOrString["anyOf"] = []map[string]interface{}{{"type": "integer"}, {"type": "string"}}
+	m["$defs"].(map[string]interface{})["IntOrString"] = intOrString
 
 	serviceBindingSpec := m["$defs"].(map[string]interface{})["serviceBindingExt"].(map[string]interface{})
 	serviceBindingSpec["required"] = []string{"name", "serviceInstanceName", "secretName"}
@@ -99,7 +134,7 @@ func updateProperties(data []byte) []byte {
 	chartValue["additionalProperties"] = true
 	m["$defs"].(map[string]interface{})["chartValue"] = chartValue
 
-	data, _ = json.Marshal(m)
+	data, _ = json.MarshalIndent(m, "", "    ")
 
 	return data
 }
@@ -125,7 +160,7 @@ func updatePropertiesconfigurableChart(data []byte) []byte {
 	configurableChartValue["additionalProperties"] = true
 	m["$defs"].(map[string]interface{})["configurableChartValue"] = configurableChartValue
 
-	data, _ = json.Marshal(m)
+	data, _ = json.MarshalIndent(m, "", "    ")
 
 	return data
 }
@@ -142,7 +177,7 @@ func main() {
 	fmt.Println(string(data))
 
 	// write the whole body at once
-	err = os.WriteFile("../files/chart/values.schema.json", data, 0644)
+	err = os.WriteFile("../files/chart/values.schema.json", append(data, '\n'), 0644)
 	if err != nil {
 		panic(err)
 	}
@@ -159,7 +194,7 @@ func main() {
 	fmt.Println(string(dataV2))
 
 	// write the whole body at once
-	err = os.WriteFile("../files/configurableTemplatesChart/values.schema.json", dataV2, 0644)
+	err = os.WriteFile("../files/configurableTemplatesChart/values.schema.json", append(dataV2, '\n'), 0644)
 	if err != nil {
 		panic(err)
 	}

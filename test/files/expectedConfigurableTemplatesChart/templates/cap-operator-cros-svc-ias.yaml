@@ -4,10 +4,6 @@ kind: CAPApplication
 metadata:
   name: {{ include "appName" $ }}
   annotations:
-    sme.sap.com/vs-route-request-header-set: |
-      {
-        "x-forwarded-client-cert": "%DOWNSTREAM_PEER_CERT%"
-      }
     sme.sap.com/enable-cleanup-monitoring: "{{ .Values.app.enableCleanupMonitoring }}"
 spec:
   domainRefs:

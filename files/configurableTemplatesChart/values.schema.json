@@ -122,6 +122,9 @@
                 "domains": {
                     "$ref": "#/$defs/Domains"
                 },
+                "enableCleanupMonitoring": {
+                    "type": "boolean"
+                },
                 "istioIngressGatewayLabels": {
                     "additionalProperties": {
                         "type": "string"
@@ -130,9 +133,6 @@
                 },
                 "version": {
                     "type": "string"
-                },
-                "enableCleanupMonitoring": {
-                    "type": "boolean"
                 }
             },
             "required": [
@@ -313,6 +313,14 @@
                 },
                 "shared": {
                     "type": "boolean"
+                },
+                "subscriptionDependency": {
+                    "enum": [
+                        "Auto",
+                        "Always",
+                        "Never"
+                    ],
+                    "type": "string"
                 },
                 "userInfo": {
                     "$ref": "#/$defs/UserInfo"

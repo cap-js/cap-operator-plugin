@@ -624,6 +624,9 @@
                 "serviceAccountName": {
                     "type": "string"
                 },
+                "startupProbe": {
+                    "$ref": "#/$defs/Probe"
+                },
                 "stickiness": {
                     "$ref": "#/$defs/Stickiness"
                 },
@@ -745,16 +748,7 @@
             "type": "object"
         },
         "Duration": {
-            "additionalProperties": false,
-            "properties": {
-                "Duration": {
-                    "$ref": "#/$defs/Duration"
-                }
-            },
-            "required": [
-                "Duration"
-            ],
-            "type": "object"
+            "type": "string"
         },
         "EmptyDirVolumeSource": {
             "additionalProperties": false,
@@ -893,8 +887,7 @@
             "type": "object"
         },
         "FieldsV1": {
-            "additionalProperties": false,
-            "properties": {},
+            "additionalProperties": true,
             "type": "object"
         },
         "FileKeySelector": {
@@ -1249,24 +1242,14 @@
             "type": "object"
         },
         "IntOrString": {
-            "additionalProperties": false,
-            "properties": {
-                "IntVal": {
+            "anyOf": [
+                {
                     "type": "integer"
                 },
-                "StrVal": {
+                {
                     "type": "string"
-                },
-                "Type": {
-                    "type": "integer"
                 }
-            },
-            "required": [
-                "Type",
-                "IntVal",
-                "StrVal"
-            ],
-            "type": "object"
+            ]
         },
         "JobDetails": {
             "additionalProperties": false,
@@ -2774,9 +2757,7 @@
             "type": "object"
         },
         "Time": {
-            "additionalProperties": false,
-            "properties": {},
-            "type": "object"
+            "type": "string"
         },
         "Toleration": {
             "additionalProperties": false,
@@ -3199,6 +3180,9 @@
                 "domains": {
                     "$ref": "#/$defs/Domains"
                 },
+                "enableCleanupMonitoring": {
+                    "type": "boolean"
+                },
                 "istioIngressGatewayLabels": {
                     "additionalProperties": {
                         "type": "string"
@@ -3207,9 +3191,6 @@
                 },
                 "version": {
                     "type": "string"
-                },
-                "enableCleanupMonitoring": {
-                    "type": "boolean"
                 }
             },
             "required": [
@@ -3402,6 +3383,14 @@
                 },
                 "shared": {
                     "type": "boolean"
+                },
+                "subscriptionDependency": {
+                    "enum": [
+                        "Auto",
+                        "Always",
+                        "Never"
+                    ],
+                    "type": "string"
                 },
                 "userInfo": {
                     "$ref": "#/$defs/UserInfo"
