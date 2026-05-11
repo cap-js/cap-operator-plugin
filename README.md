@@ -117,7 +117,7 @@ The generated `chart/values.yaml` contains two categories of values: **design-ti
 Depending on whether you used `--with-configurable-templates`, the design-time section contains:
 
 - Basic chart (default):
-    - [serviceInstances](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-instance) (enhanced with [`subscriptionDependency`](https://sap.github.io/cap-operator/docs/usage/tenant-provisioning/#configuring-dependencies-with-subscriptiondependency))
+    - [serviceInstances](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-instance) (enhanced with [`subscriptionDependency`](https://sap.github.io/cap-operator/docs/usage/tenant-provisioning/#configuring-dependencies-with-subscriptiondependency) parameter)
     - [serviceBindings](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-binding)
     - workloads ([Deployment](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#workloads-with-deploymentdefinition) or [Job](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#workloads-with-jobdefinition) definitions)
     - [tenantOperations](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#sequencing-tenant-operations)
@@ -125,7 +125,7 @@ Depending on whether you used `--with-configurable-templates`, the design-time s
     - [serviceExposures](https://sap.github.io/cap-operator/docs/usage/resources/capapplicationversion/#serviceexposures-configuration)
 
 - Configurable templates chart (`--with-configurable-templates`):
-    - [serviceInstances](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-instance)
+    - [serviceInstances](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-instance) (enhanced with [`subscriptionDependency`](https://sap.github.io/cap-operator/docs/usage/tenant-provisioning/#configuring-dependencies-with-subscriptiondependency) parameter)
     - [serviceBindings](https://github.com/SAP/sap-btp-service-operator?tab=readme-ov-file#service-binding)
     - workload images only — full workload configurations are defined in `templates/cap-operator-cros.yaml`
 
@@ -134,7 +134,7 @@ Depending on whether you used `--with-configurable-templates`, the design-time s
 - `app`
     - `domains`
         - `primary` — Primary application domain, used to generate a wildcard TLS certificate. In Gardener-managed clusters, this is typically a subdomain of the cluster domain.
-        - `additionalDomainRefs` — References to existing customer-specific `Domain` or `ClusterDomain` resources. See the [CAP Operator documentation](https://sap.github.io/cap-operator/docs/usage/domain-management) for details.
+        - `additionalDomainRefs` — References to existing customer-specific `Domain` or `ClusterDomain` resources. See the [Domain Management](https://sap.github.io/cap-operator/docs/usage/domain-management) for details.
     - `istioIngressGatewayLabels` — Labels identifying the Istio ingress-gateway and its namespace. Typically `{“app”:”istio-ingressgateway”,”istio”:”ingressgateway”}`.
     - `enableCleanupMonitoring` — Enable monitoring for cleanup operations.
 - `btp`
@@ -165,7 +165,7 @@ Depending on whether you used `--with-configurable-templates`, the design-time s
 
     The plugin requires the following information to generate the `runtime-values.yaml`:
 
-    * **Application name (appName) *[Mandatory]***
+    * **Application name (appName) *[Mandatory]*** - Must consist of lowercase alphanumeric characters and hyphens only (`^[a-z0-9-]+$`). This value is used as `xsappname` in the saas-registry which have the same restriction.
     * **CAP Operator subdomain (capOperatorSubdomain) *[Mandatory]*** - In Kyma clusters, CAP Operator subdomain defaults to `cap-op`. But if you're using your "Gardener" cluster, you must provide the subdomain you used to install the CAP Operator.
     * **Cluster shoot domain (clusterDomain) *[Mandatory]*** - Shoot domain of your cluster. In Kyma clusters, you can get the shoot domain by running the following command.
         ```sh
