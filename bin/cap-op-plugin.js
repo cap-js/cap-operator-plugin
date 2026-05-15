@@ -192,6 +192,10 @@ async function generateRuntimeValues(option, inputYamlPath) {
             throw new Error(`Missing mandatory fields in the input yaml file: ${missingFields.join(', ')}`)
         }
 
+        if (!isServiceOnly && !/^[a-z0-9-]+$/.test(answerStruct['appName']?.trim())) {
+            throw new Error(`Invalid app name '${answerStruct['appName']}': only a-z, 0-9 and - are allowed`)
+        }
+
     } else {
         const appNameValidator = !isServiceOnly ? (value) => /^[a-z0-9-]+$/.test(value?.trim()) || 'Only a-z, 0-9 and - are allowed' : undefined
         const questions = [

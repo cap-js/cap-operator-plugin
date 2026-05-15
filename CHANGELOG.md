@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## Version 0.16.0 - 18-May-2026
+
+### Added
+
+- Added `SubscriptionDependencyMode` support (`Auto`, `Always`, `Never`) to `serviceInstances` in `values.schema.json`.
+- Added `startupProbe` field to workload definitions in `values.schema.json`.
+
+### Changed
+
+- Updated `getDependencies` and `dependenciesCallbacks` URLs in `runtime-values.yaml` to use the CAP Operator-managed endpoints (`/dependencies/{{providerSubaccountId}}/{{appName}}`), replacing the previous approuter callback URLs.
+- Removed optional mutual TLS (`OptionalMutual`) configuration; TLS mode is now always set to `Simple`.
+- Removed `sme.sap.com/vs-route-request-header-set` (`x-forwarded-client-cert`) annotation from CAPApplication templates.
+- Improved validation logic for `appName` field during `runtime-values.yaml` generation.
+- Simplified `Duration` type in `values.schema.json` from a nested object to a plain string.
+
 ## Version 0.15.0 - 29-April-2026
 
 ### Changed
