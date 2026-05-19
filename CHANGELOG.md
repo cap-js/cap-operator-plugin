@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Changed
 
-- Updated `getDependencies` and `dependenciesCallbacks` URLs in `runtime-values.yaml` to use the CAP Operator-managed endpoints (`/dependencies/{{providerSubaccountId}}/{{appName}}`), replacing the previous approuter callback URLs.
+- Updated `getDependencies` and `dependenciesCallbacks` URLs in `runtime-values.yaml` to use the CAP Operator-managed endpoints (`/dependencies/{{providerSubaccountId}}/{{appName}}`), replacing the previous approuter callback URLs. **Use this version with CAP Operator `v0.29.2` or later.**
 - Removed optional mutual TLS (`OptionalMutual`) configuration; TLS mode is now always set to `Simple`.
 - Removed `sme.sap.com/vs-route-request-header-set` (`x-forwarded-client-cert`) annotation from CAPApplication templates.
 - Improved validation logic for `appName` field during `runtime-values.yaml` generation.

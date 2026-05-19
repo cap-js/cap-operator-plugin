@@ -187,7 +187,7 @@ async function generateRuntimeValues(option, inputYamlPath) {
             ? ['appName', 'capOperatorSubdomain', 'clusterDomain', 'providerSubaccountId']
             : ['appName', 'capOperatorSubdomain', 'clusterDomain', 'providerSubaccountId', 'providerSubdomain', 'tenantId']
 
-        const missingFields = requiredFields.filter(field => !answerStruct[field])
+        const missingFields = requiredFields.filter(field => !answerStruct[field]?.trim())
         if (missingFields.length) {
             throw new Error(`Missing mandatory fields in the input yaml file: ${missingFields.join(', ')}`)
         }
