@@ -47,6 +47,23 @@ describe('cds build', () => {
 
     })
 
+    it('Build cap-operator chart with user-defined custom template', async () => {
+        execSync(`cds add cap-operator`, { cwd: bookshop })
+
+        fs.mkdirSync(join(bookshop, 'chart/templates'), { recursive: true })
+        fs.writeFileSync(join(bookshop, 'chart/templates/my-custom-template.yaml'), '# custom user template\n')
+
+        execSync(`cds build`, { cwd: bookshop })
+
+        expect(fs.readFileSync(join(bookshop, 'gen/chart/templates/my-custom-template.yaml'), 'utf8')).to.equal('# custom user template\n')
+
+        expect(fs.existsSync(join(bookshop, 'gen/chart/templates/_helpers.tpl'))).to.equal(true)
+        expect(fs.existsSync(join(bookshop, 'gen/chart/templates/domain.yaml'))).to.equal(true)
+        expect(fs.existsSync(join(bookshop, 'gen/chart/templates/cap-operator-cros.yaml'))).to.equal(true)
+        expect(fs.existsSync(join(bookshop, 'gen/chart/templates/service-binding.yaml'))).to.equal(true)
+        expect(fs.existsSync(join(bookshop, 'gen/chart/templates/service-instance.yaml'))).to.equal(true)
+    })
+
     it('Build cap-operator chart with modified templates', async () => {
         execSync(`cds add cap-operator --with-templates`, { cwd: bookshop })
 
@@ -64,6 +81,6 @@ describe('cds build', () => {
         expect(getFileHash(join(__dirname,'../files/commonTemplates/service-instance.yaml'))).to.equal(getFileHash(join(bookshop, 'gen/chart/templates/service-instance.yaml')))
         expect(getFileHash(join(__dirname,'files/domain.yaml'))).to.equal(getFileHash(join(bookshop, 'gen/chart/templates/domain.yaml')))
 
-        expect(fs.existsSync(join(bookshop, 'gen/chart/templates/_helpers.tpl'))).to.equal(false)
+        expect(fs.existsSync(join(bookshop, 'gen/chart/templates/_helpers.tpl'))).to.equal(true)
     })
 })
