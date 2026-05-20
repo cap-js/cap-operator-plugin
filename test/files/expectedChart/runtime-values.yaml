@@ -6,7 +6,7 @@ serviceInstances:
       displayName: bkshop
       description: bkshop
       appUrls:
-        getDependencies: https://bem-aad-sadad-123456789012.bkshop.c-abc.kyma.ondemand.com/callback/v1.0/dependencies
+        getDependencies: https://cap-op.c-abc.kyma.ondemand.com/dependencies/dc94db56-asda-adssa-dada-123456789012/bkshop
         onSubscription: https://cap-op.c-abc.kyma.ondemand.com/provision/tenants/{tenantId}
   xsuaa:
     parameters:

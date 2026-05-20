@@ -203,7 +203,7 @@ describe('cds add cap-operator', () => {
         expect(getFileHash(join(__dirname, 'files/expectedConfigurableTemplatesChart/values-ias.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/values.yaml')))
         expect(getFileHash(join(__dirname, 'files/expectedConfigurableTemplatesChart/templates/_helpers-ias.tpl'))).to.equal(getFileHash(join(bookshop, 'chart/templates/_helpers.tpl')))
         expect(getFileHash(join(__dirname, 'files/expectedConfigurableTemplatesChart/templates/cap-operator-cros-ias.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/cap-operator-cros.yaml')))
-        expect(getFileHash(join(__dirname, 'files/domain-ias.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/domain.yaml')))
+        expect(getFileHash(join(__dirname, 'files/domain.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/domain.yaml')))
 
         expect(getFileHash(join(__dirname, '../files/configurableTemplatesChart/values.schema.json'))).to.equal(getFileHash(join(bookshop, 'chart/values.schema.json')))
         expect(getFileHash(join(__dirname, '../files/commonTemplates/service-binding.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/service-binding.yaml')))

@@ -547,8 +547,7 @@
       "type": "object"
     },
     "FieldsV1": {
-      "properties": {},
-      "additionalProperties": false,
+      "additionalProperties": true,
       "type": "object"
     },
     "FlexVolumeSource": {
@@ -770,23 +769,13 @@
       ]
     },
     "IntOrString": {
-      "properties": {
-        "Type": {
+      "anyOf": [
+        {
           "type": "integer"
         },
-        "IntVal": {
-          "type": "integer"
-        },
-        "StrVal": {
+        {
           "type": "string"
         }
-      },
-      "additionalProperties": false,
-      "type": "object",
-      "required": [
-        "Type",
-        "IntVal",
-        "StrVal"
       ]
     },
     "JobDetails": {
@@ -1965,9 +1954,7 @@
       "type": "object"
     },
     "Time": {
-      "properties": {},
-      "additionalProperties": false,
-      "type": "object"
+      "type": "string"
     },
     "Toleration": {
       "properties": {

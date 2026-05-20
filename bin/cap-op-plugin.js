@@ -187,14 +187,19 @@ async function generateRuntimeValues(option, inputYamlPath) {
             ? ['appName', 'capOperatorSubdomain', 'clusterDomain', 'providerSubaccountId']
             : ['appName', 'capOperatorSubdomain', 'clusterDomain', 'providerSubaccountId', 'providerSubdomain', 'tenantId']
 
-        const missingFields = requiredFields.filter(field => !answerStruct[field])
+        const missingFields = requiredFields.filter(field => !answerStruct[field]?.trim())
         if (missingFields.length) {
             throw new Error(`Missing mandatory fields in the input yaml file: ${missingFields.join(', ')}`)
         }
 
+        if (!isServiceOnly && !/^[a-z0-9-]+$/.test(answerStruct['appName']?.trim())) {
+            throw new Error(`Invalid app name '${answerStruct['appName']}': only a-z, 0-9 and - are allowed`)
+        }
+
     } else {
+        const appNameValidator = !isServiceOnly ? (value) => /^[a-z0-9-]+$/.test(value?.trim()) || 'Only a-z, 0-9 and - are allowed' : undefined
         const questions = [
-            ['Enter app name for deployment', appName, true],
+            ['Enter app name for deployment', appName, true, appNameValidator],
             ['Enter CAP Operator subdomain (In kyma cluster it is "cap-op" by default)', 'cap-op', true],
             ['Enter your cluster shoot domain', await getShootDomain(), true],
             ['Enter your provider sub-account ID', '', true],

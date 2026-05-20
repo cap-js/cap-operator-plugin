@@ -248,4 +248,31 @@ EXAMPLES
 
         expect(getFileHash(join(__dirname, 'files/expectedChart/runtime-values-svc-ias.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/runtime-values.yaml')))
     })
+
+    it('Generate runtime-values via prompts - invalid app name raises error', async () => {
+        execSync(`cds add cap-operator`, { cwd: bookshop })
+
+        sinon.replaceGetter(enquirer, 'prompt', () => sinon.stub().callsFake((questions) => {
+            const answers = { '0': 'MyApp123', '1': 'cap-op', '2': 'c-abc.kyma.ondemand.com', '3': 'dc94db56-asda-adssa-dada-123456789012', '4': 'bem-aad-sadad-123456789012', '5': 'dasdsd-1234-1234-1234-123456789012', '6': 'sdasd-4c4d-4d4d-4d4d-123456789012', '7': 'regcred' }
+            for (const question of questions) {
+                if (question.validate) {
+                    const result = question.validate(answers[question.name])
+                    if (result !== true) throw new Error(result)
+                }
+            }
+            return Promise.resolve(answers)
+        }))
+
+        cds.root = bookshop
+        let error
+        try {
+            await capOperatorPlugin('generate-runtime-values')
+        } catch (e) {
+            error = e
+        } finally {
+            sinon.restore()
+        }
+
+        expect(error?.message).to.equal('Only a-z, 0-9 and - are allowed')
+    })
 })
