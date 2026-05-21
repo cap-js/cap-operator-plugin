@@ -48,14 +48,17 @@ describe('cds build', () => {
     })
 
     it('Build cap-operator chart with user-defined custom template', async () => {
+        execSync(`rm -rf gen`, { cwd: bookshop })
         execSync(`cds add cap-operator`, { cwd: bookshop })
 
-        fs.mkdirSync(join(bookshop, 'chart/templates'), { recursive: true })
+        fs.mkdirSync(join(bookshop, 'chart/templates/my-subdir'), { recursive: true })
         fs.writeFileSync(join(bookshop, 'chart/templates/my-custom-template.yaml'), '# custom user template\n')
+        fs.writeFileSync(join(bookshop, 'chart/templates/my-subdir/my-nested-template.yaml'), '# custom nested template\n')
 
         execSync(`cds build`, { cwd: bookshop })
 
         expect(fs.readFileSync(join(bookshop, 'gen/chart/templates/my-custom-template.yaml'), 'utf8')).to.equal('# custom user template\n')
+        expect(fs.readFileSync(join(bookshop, 'gen/chart/templates/my-subdir/my-nested-template.yaml'), 'utf8')).to.equal('# custom nested template\n')
 
         expect(fs.existsSync(join(bookshop, 'gen/chart/templates/_helpers.tpl'))).to.equal(true)
         expect(fs.existsSync(join(bookshop, 'gen/chart/templates/domain.yaml'))).to.equal(true)
