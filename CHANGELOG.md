@@ -2,12 +2,13 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## Version 0.16.0 - 18-May-2026
+## Version 0.16.0 - 29-May-2026
 
 ### Added
 
 - Added `SubscriptionDependencyMode` support (`Auto`, `Always`, `Never`) to `serviceInstances` in `values.schema.json`.
 - Added `startupProbe` field to workload definitions in `values.schema.json`.
+- Updated build step to be more flexible and support user-defined templates.
 
 ### Changed
 
