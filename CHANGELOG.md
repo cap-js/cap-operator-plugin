@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## Version 0.16.1 - 29-May-2026
+
+### Fixed
+
+- `subscriptionDependency` field from `serviceInstances` is now propagated to the `btp.services` section in the CAPApplication template.
+
 ## Version 0.16.0 - 29-May-2026
 
 ### Added

@@ -33,6 +33,9 @@ spec:
       name: {{ $v.name | default "invalidValue" }}
       {{- end }}
       secret: {{ $v.secretName | default "invalidValue" }}
+      {{- if hasKey $serviceInstance "subscriptionDependency" }}
+      subscriptionDependency: {{ get $serviceInstance "subscriptionDependency" }}
+      {{- end }}
     {{- end }}
     {{- end }}
 ---
