@@ -32,6 +32,7 @@ jobs:
     name: Analyze with Sonar Cloud
     needs: build
     runs-on: ubuntu-latest
+    environment: build
     steps:
     - name: Check out code for Sonar Analysis
       uses: actions/checkout@v4
@@ -48,5 +49,4 @@ jobs:
     - name: SonarCloud Scan
       uses: SonarSource/sonarcloud-github-action@master
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
