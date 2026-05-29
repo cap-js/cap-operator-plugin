@@ -161,6 +161,10 @@ Depending on whether you used `--with-configurable-templates`, the design-time s
 
    > If you've already added the `templates` folder during the initial plugin call using `--with-templates` or `--with-configurable-templates` option, you can skip this step as the Helm chart is already complete.
 
+   > **Custom templates**: If you place files in the `chart/templates` folder, the build handles them as follows:
+   > - A file with the **same name** as one of the plugin-generated templates (`_helpers.tpl`, `domain.yaml`, `cap-operator-cros.yaml`, `service-binding.yaml`, `service-instance.yaml`) will be used as-is instead of the plugin's default, and a message is printed to indicate this.
+   > - Any **additional files** you add to `chart/templates` (i.e. files with names not in the list above) are copied alongside the standard templates without modification.
+
 2. Up to this point, you've only filled in the design time information in the chart. But to deploy the application, you need to create a `runtime-values.yaml` file with all the runtime values, as mentioned in the section on configuration. You can generate the file using the plugin itself.
 
     The plugin requires the following information to generate the `runtime-values.yaml`:
