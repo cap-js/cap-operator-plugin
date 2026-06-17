@@ -9,7 +9,7 @@ serviceInstances:
             description: {{appDescription}}
             appUrls:
                 getDependencies: "https://{{capOperatorSubdomain}}.{{clusterDomain}}/dependencies/{{providerSubaccountId}}/{{appName}}"
-                onSubscription: "https://{{capOperatorSubdomain}}.{{clusterDomain}}/provision/tenants/{app_tid}"
+                onSubscription: "https://{{capOperatorSubdomain}}.{{clusterDomain}}/provision/tenants/{tenantId}"
     {{/isApp}}
     {{xsuaaKeyName}}:
         parameters:
