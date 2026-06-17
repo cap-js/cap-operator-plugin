@@ -80,7 +80,7 @@ EXAMPLES
         // Copy over a values file with env filled for content job. It should be retained in the generated runtime-values.yaml
         await cds.utils.copy(join(__dirname, 'files', 'values-of-simple-chart-filled.yaml'), join(bookshop, 'chart/values.yaml'))
 
-        sinon.replaceGetter(enquirer, 'prompt', () => sinon.stub().resolves({ '0': 'bkshop', '1': 'cap-op', '2': 'c-abc.kyma.ondemand.com', '3': 'dc94db56-asda-adssa-dada-123456789012', '4': 'bem-aad-sadad-123456789012', '5': 'dasdsd-1234-1234-1234-123456789012', '6': 'sdasd-4c4d-4d4d-4d4d-123456789012', '7': 'regcred' }))
+        sinon.replaceGetter(enquirer, 'prompt', () => sinon.stub().resolves({ '0': 'bkshop', '1': 'cap-op', '2': 'c-abc.kyma.ondemand.com', '3': 'dc94db56-asda-adssa-dada-123456789012', '4': 'sdasd-4c4d-4d4d-4d4d-123456789012', '5': 'regcred' }))
 
         cds.root = bookshop
         try {
@@ -106,7 +106,7 @@ EXAMPLES
     it('Generate runtime-values via prompts for configurable template chart', async () => {
         execSync(`cds add cap-operator --with-configurable-templates`, { cwd: bookshop })
 
-        sinon.replaceGetter(enquirer, 'prompt', () => sinon.stub().resolves({ '0': 'bkshop', '1': 'cap-op', '2': 'c-abc.kyma.ondemand.com', '3': 'dc94db56-asda-adssa-dada-123456789012', '4': 'bem-aad-sadad-123456789012', '5': 'dasdsd-1234-1234-1234-123456789012', '6': 'sdasd-4c4d-4d4d-4d4d-123456789012', '7': 'regcred' }))
+        sinon.replaceGetter(enquirer, 'prompt', () => sinon.stub().resolves({ '0': 'bkshop', '1': 'cap-op', '2': 'c-abc.kyma.ondemand.com', '3': 'dc94db56-asda-adssa-dada-123456789012', '4': 'sdasd-4c4d-4d4d-4d4d-123456789012', '5': 'regcred' }))
 
         cds.root = bookshop
         try {
@@ -205,7 +205,7 @@ EXAMPLES
         execSync(`cds add ias`, { cwd: bookshop })
         execSync(`cds add cap-operator`, { cwd: bookshop })
 
-        sinon.replaceGetter(enquirer, 'prompt', () => sinon.stub().resolves({ '0': 'bkshop', '1': 'cap-op', '2': 'c-abc.kyma.ondemand.com', '3': 'dc94db56-asda-adssa-dada-123456789012', '4': 'bem-aad-sadad-123456789012', '5': 'dasdsd-1234-1234-1234-123456789012', '6': 'sdasd-4c4d-4d4d-4d4d-123456789012', '7': 'regcred' }))
+        sinon.replaceGetter(enquirer, 'prompt', () => sinon.stub().resolves({ '0': 'bkshop', '1': 'cap-op', '2': 'c-abc.kyma.ondemand.com', '3': 'dc94db56-asda-adssa-dada-123456789012', '4': 'sdasd-4c4d-4d4d-4d4d-123456789012', '5': 'regcred' }))
 
         cds.root = bookshop
         try {
@@ -221,7 +221,7 @@ EXAMPLES
         execSync(`cds add ias`, { cwd: bookshop })
         execSync(`cds add cap-operator --with-configurable-templates`, { cwd: bookshop })
 
-        sinon.replaceGetter(enquirer, 'prompt', () => sinon.stub().resolves({ '0': 'bkshop', '1': 'cap-op', '2': 'c-abc.kyma.ondemand.com', '3': 'dc94db56-asda-adssa-dada-123456789012', '4': 'bem-aad-sadad-123456789012', '5': 'dasdsd-1234-1234-1234-123456789012', '6': 'sdasd-4c4d-4d4d-4d4d-123456789012', '7': 'regcred' }))
+        sinon.replaceGetter(enquirer, 'prompt', () => sinon.stub().resolves({ '0': 'bkshop', '1': 'cap-op', '2': 'c-abc.kyma.ondemand.com', '3': 'dc94db56-asda-adssa-dada-123456789012', '4': 'sdasd-4c4d-4d4d-4d4d-123456789012', '5': 'regcred' }))
 
         cds.root = bookshop
         try {
@@ -253,7 +253,7 @@ EXAMPLES
         execSync(`cds add cap-operator`, { cwd: bookshop })
 
         sinon.replaceGetter(enquirer, 'prompt', () => sinon.stub().callsFake((questions) => {
-            const answers = { '0': 'MyApp123', '1': 'cap-op', '2': 'c-abc.kyma.ondemand.com', '3': 'dc94db56-asda-adssa-dada-123456789012', '4': 'bem-aad-sadad-123456789012', '5': 'dasdsd-1234-1234-1234-123456789012', '6': 'sdasd-4c4d-4d4d-4d4d-123456789012', '7': 'regcred' }
+            const answers = { '0': 'MyApp123', '1': 'cap-op', '2': 'c-abc.kyma.ondemand.com', '3': 'dc94db56-asda-adssa-dada-123456789012', '4': 'sdasd-4c4d-4d4d-4d4d-123456789012', '5': 'regcred' }
             for (const question of questions) {
                 if (question.validate) {
                     const result = question.validate(answers[question.name])
