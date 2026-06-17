@@ -313,6 +313,8 @@ async function getShootDomain() {
 
             kubectl.stderr.on('data', () => { reject() })
 
+            kubectl.on('error', () => { reject() })
+
             kubectl.on('close', () => { resolve() })
         })
     } catch (error) { }

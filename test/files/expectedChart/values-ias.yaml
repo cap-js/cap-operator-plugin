@@ -104,7 +104,6 @@ app:
   enableCleanupMonitoring: true
 btp:
   providerSubaccountId: null
-
 imagePullSecrets: []
 workloads:
   appRouter:

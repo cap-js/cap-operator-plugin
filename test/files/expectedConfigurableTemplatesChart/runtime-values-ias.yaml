@@ -26,8 +26,8 @@ app:
   istioIngressGatewayLabels:
     istio: ingressgateway
     app: istio-ingressgateway
-providerSubaccountId: dc94db56-asda-adssa-dada-123456789012
 btp:
+  providerSubaccountId: dc94db56-asda-adssa-dada-123456789012
 imagePullSecrets:
   - regcred
 hanaInstanceId: sdasd-4c4d-4d4d-4d4d-123456789012
