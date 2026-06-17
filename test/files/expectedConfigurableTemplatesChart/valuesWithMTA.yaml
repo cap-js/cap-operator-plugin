@@ -119,11 +119,9 @@ app:
     istio: ingressgateway
     app: istio-ingressgateway
   enableCleanupMonitoring: true
+providerSubaccountId: null
 btp:
-  providerSubaccountId: null
-  provider:
-    subdomain: null
-    tenantId: null
+
 imagePullSecrets: []
 hanaInstanceId: null
 workloads:

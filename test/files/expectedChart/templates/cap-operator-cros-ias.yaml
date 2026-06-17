@@ -15,9 +15,6 @@ spec:
   {{- end }}
   btpAppName: {{ include "appName" $ }}
   providerSubaccountId: {{ .Values.btp.providerSubaccountId }}
-  provider:
-    subDomain: {{ .Values.btp.provider.subdomain }}
-    tenantId: {{ .Values.btp.provider.tenantId }}
   btp:
     services:
     {{- $serviceInstances := .Values.serviceInstances }}
