@@ -20,13 +20,6 @@ type Domains struct {
 	AdditionalDomainRefs []v1alpha1.DomainRef `json:"additionalDomainRefs"`
 }
 
-type provider struct {
-	// BTP subaccount subdomain
-	Subdomain string `json:"subdomain"`
-	// BTP subaccount Tenant ID
-	TenantId string `json:"tenantId"`
-}
-
 type app struct {
 	Domains                   Domains           `json:"domains"`
 	IstioIngressGatewayLabels map[string]string `json:"istioIngressGatewayLabels"`
@@ -55,8 +48,7 @@ type serviceBindingExt struct {
 }
 
 type btp struct {
-	ProviderSubaccountId string   `json:"providerSubaccountId"`
-	Provider             provider `json:"provider"`
+	ProviderSubaccountId string `json:"providerSubaccountId"`
 }
 
 type chartValue struct {

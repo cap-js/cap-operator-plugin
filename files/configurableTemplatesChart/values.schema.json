@@ -144,16 +144,12 @@
         "btp": {
             "additionalProperties": false,
             "properties": {
-                "provider": {
-                    "$ref": "#/$defs/provider"
-                },
                 "providerSubaccountId": {
                     "type": "string"
                 }
             },
             "required": [
-                "providerSubaccountId",
-                "provider"
+                "providerSubaccountId"
             ],
             "type": "object"
         },
@@ -200,22 +196,6 @@
                 "serviceInstances",
                 "serviceBindings",
                 "workloads"
-            ],
-            "type": "object"
-        },
-        "provider": {
-            "additionalProperties": false,
-            "properties": {
-                "subdomain": {
-                    "type": "string"
-                },
-                "tenantId": {
-                    "type": "string"
-                }
-            },
-            "required": [
-                "subdomain",
-                "tenantId"
             ],
             "type": "object"
         },
