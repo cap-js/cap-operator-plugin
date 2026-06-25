@@ -10,22 +10,20 @@
 The CAP Operator Plugin offers a simple method for generating [CAP Operator](https://sap.github.io/cap-operator/) resources, which are essential for deploying multi-tenant CAP Applications.
 
 > [!WARNING]
-> ## Action Required:
-> The `globalAccountId` field in the `CAPApplication` spec is [deprecated](https://github.com/SAP/cap-operator/discussions/343) since CAP Operator v0.28.0 and will be removed in a future release.
+> ## Action Required: Deprecated Fields in `CAPApplication` Spec
 >
-> **To migrate**, upgrade to CAP Operator Plugin v0.15.0 or later and run `cds add cap-operator`. This updates `values.yaml`, `values.schema.json`, and `templates/cap-operator-cros.yaml` to use `providerSubaccountId` instead.
+> The following fields have been deprecated and require migration:
 >
-> If you have already migrated, you can ignore this message.
-
-> [!WARNING]
-> ## Action Required:
-> The `CAPApplication` spec `provider` field (`subdomain` and `tenantId`) is [deprecated](https://github.com/SAP/cap-operator/releases/tag/v0.31.0) since CAP Operator v0.31.0 and has been removed from the generated chart.
+> | Field | Deprecated Since | Plugin Version Required | Details |
+> |---|---|---|---|
+> | `provider` (`subdomain`, `tenantId`) | CAP Operator [v0.31.0](https://github.com/SAP/cap-operator/releases/tag/v0.31.0) | v0.17.0+ | Removed from generated chart. Existing provider tenants must be **manually cleaned up** in the cluster. |
+> | `globalAccountId` | CAP Operator [v0.28.0](https://github.com/SAP/cap-operator/discussions/343) | v0.15.0+ | Replaced by `providerSubaccountId`. |
 >
-> **To migrate**, upgrade to CAP Operator Plugin v0.17.0 or later and run `cds add cap-operator`. This automatically removes `btp.provider` from `values.yaml`, `values.schema.json`, and `chart/templates/cap-operator-cros.yaml` if present.
+> **To migrate**, upgrade to the required plugin version and run `cds add cap-operator`. This updates `values.yaml`, `values.schema.json`, and `chart/templates/cap-operator-cros.yaml` accordingly.
 >
-> Note that existing provider tenants will **not** be deleted automatically in the cluster, they must be manually cleaned up by the application.
+> After running the migration, please **review the changed files** to ensure the updates are correct before deploying.
 >
-> If you do not have `btp.provider` in your chart, you can ignore this message.
+> If you have already migrated or the fields are not present in your chart, you can ignore this message.
 
 ## Before You Start
 
