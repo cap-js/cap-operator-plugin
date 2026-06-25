@@ -51,11 +51,6 @@ app:
 
 btp:
     providerSubaccountId: {{providerSubaccountId}}
-    {{#isApp}}
-    provider:
-        subdomain: {{providerSubdomain}}
-        tenantId: {{tenantId}}
-    {{/isApp}}
 
 imagePullSecrets:
     - {{imagePullSecret}}

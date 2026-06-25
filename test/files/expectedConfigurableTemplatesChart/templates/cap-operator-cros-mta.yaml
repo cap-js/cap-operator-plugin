@@ -15,9 +15,6 @@ spec:
   {{- end }}
   btpAppName: {{ include "appName" $ }}
   providerSubaccountId: {{ .Values.btp.providerSubaccountId }}
-  provider:
-    subDomain: {{ .Values.btp.provider.subdomain }}
-    tenantId: {{ .Values.btp.provider.tenantId }}
   btp:
     services:
     {{- $serviceInstances := .Values.serviceInstances }}
@@ -52,9 +49,13 @@ metadata:
 spec:
   capApplicationInstance: {{ include "appName" $ }}
   version: "{{ .Values.app.version | default .Release.Revision }}"
+  {{- if .Values.imagePullSecrets }}
   registrySecrets:
   {{- range .Values.imagePullSecrets }}
   - {{ . }}
+  {{- end }}
+  {{- else }}
+  registrySecrets: []
   {{- end }}
   workloads:
   - name: author-readings-approuter

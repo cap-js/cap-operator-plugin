@@ -10,12 +10,20 @@
 The CAP Operator Plugin offers a simple method for generating [CAP Operator](https://sap.github.io/cap-operator/) resources, which are essential for deploying multi-tenant CAP Applications.
 
 > [!WARNING]
-> ## Action Required:
-> The `globalAccountId` field in the `CAPApplication` spec is [deprecated](https://github.com/SAP/cap-operator/discussions/343) since CAP Operator v0.28.0 and will be removed in a future release.
+> ## Action Required: Deprecated Fields in `CAPApplication` Spec
 >
-> **To migrate**, upgrade to CAP Operator Plugin v0.15.0 or later and run `cds add cap-operator`. This updates `values.yaml`, `values.schema.json`, and `templates/cap-operator-cros.yaml` to use `providerSubaccountId` instead.
+> The following fields have been deprecated and require migration:
 >
-> If you have already migrated, you can ignore this message.
+> | Field | Deprecated Since | Plugin Version Required | Details |
+> |---|---|---|---|
+> | `provider` (`subdomain`, `tenantId`) | CAP Operator [v0.31.0](https://github.com/SAP/cap-operator/releases/tag/v0.31.0) | v0.17.0+ | Removed from generated chart. Existing provider tenants must be **manually cleaned up** in the cluster. |
+> | `globalAccountId` | CAP Operator [v0.28.0](https://github.com/SAP/cap-operator/discussions/343) | v0.15.0+ | Replaced by `providerSubaccountId`. |
+>
+> **To migrate**, upgrade to the required plugin version and run `cds add cap-operator`. This updates `values.yaml`, `values.schema.json`, and `chart/templates/cap-operator-cros.yaml` accordingly.
+>
+> After running the migration, please **review the changed files** to ensure the updates are correct before deploying.
+>
+> If you have already migrated or the fields are not present in your chart, you can ignore this message.
 
 ## Before You Start
 
@@ -139,9 +147,6 @@ Depending on whether you used `--with-configurable-templates`, the design-time s
     - `enableCleanupMonitoring` — Enable monitoring for cleanup operations.
 - `btp`
     - `providerSubaccountId` — ID of the provider subaccount to which you deploy the application.
-    - `provider`
-        - `subdomain` — Subdomain of the provider subaccount. Not required for services-only applications.
-        - `tenantId` — Tenant ID of the provider subaccount. Not required for services-only applications.
 - [imagePullSecrets](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) — Kubernetes secret for pulling images from a private registry.
 - `env` — Environment variables defined inside individual workloads.
 
@@ -176,8 +181,6 @@ Depending on whether you used `--with-configurable-templates`, the design-time s
         kubectl get gateway -n kyma-system kyma-gateway -o jsonpath='{.spec.servers[0].hosts[0]}'
         ```
     * **Provider Subaccount ID (providerSubaccountId) *[Mandatory]*** - The Subaccount ID of the provider subaccount to which you deploy the application.
-    * **Provider subdomain (providerSubdomain) *[Mandatory for applications; it does not apply to services-only scenarios]*** - Subdomain of the provider subaccount to which you deploy the application.
-    * **Tenant ID (tenantId) *[Mandatory for applications; it does not apply to services-only scenarios]*** - Tenant ID of the provider subaccount to which you deploy the application.
     * **HANA Instance ID (hanaInstanceId) *[Optional]*** - ID of the SAP HANA instance to which the application is deployed. It's only required if there are multiple SAP HANA instances in the subaccount.
     * **Image Pull Secrets (imagePullSecret) *[Optional]*** - Kubernetes secret used to pull the application docker images from a private container image registry or repository.
 
@@ -206,13 +209,11 @@ Depending on whether you used `--with-configurable-templates`, the design-time s
         capOperatorSubdomain: cap-op
         clusterDomain: abc.com
         providerSubaccountId: da37c8e0-74d4-abcd-b5e2-sd8f7d8f7d8f
-        providerSubdomain: provider-subdomain-1234
-        tenantId: da37c8e0-74d4-abcd-b5e2-sd8f7d8f7d8f
         hanaInstanceId: 46e285d9-abcd-4c7d-8ebb-502sd8f7d8f7d
         imagePullSecret: regcred
         ```
 
-        Similar to the interactive mode, `appName`, `capOperatorSubdomain`, `clusterDomain`, `providerSubaccountId`, `providerSubdomain`, and `tenantId` are mandatory fields for applications. In case of services-only scenarios, `appName`, `capOperatorSubdomain`, `clusterDomain`, and `providerSubaccountId` are mandatory. The plugin throws an error if they're not provided in the input YAML.
+        Similar to the interactive mode, `appName`, `capOperatorSubdomain`, `clusterDomain`, and `providerSubaccountId` are mandatory fields. The plugin throws an error if they're not provided in the input YAML.
 
       After execution, the `runtime-values.yaml` file is created in the chart folder of your project directory.
 

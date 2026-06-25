@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## Version 0.17.0 - 26-June-2026
+
+### Changed
+
+- `btp.provider` (`subdomain` and `tenantId`) has been removed from the generated Helm chart. The `CAPApplication` spec `provider` field is [deprecated since CAP Operator v0.31.0](https://github.com/SAP/cap-operator/releases/tag/v0.31.0). The `generate-runtime-values` command no longer prompts for `providerSubdomain` and `tenantId`.
+
+- **Use this version with CAP Operator `v0.31.0` or later.**
+
+### Fixed
+
+- `registrySecrets` in `CAPApplicationVersion` template now renders as an empty array (`[]`) when `imagePullSecrets` is not set, preventing a CRD validation failure on helm install/upgrade.
+
 ## Version 0.16.1 - 29-May-2026
 
 ### Fixed

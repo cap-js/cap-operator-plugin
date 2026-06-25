@@ -121,9 +121,6 @@ app:
   enableCleanupMonitoring: true
 btp:
   providerSubaccountId: null
-  provider:
-    subdomain: null
-    tenantId: null
 imagePullSecrets: []
 hanaInstanceId: null
 workloads:
