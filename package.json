@@ -38,8 +38,7 @@
     "sinon": "^22"
   },
   "overrides": {
-    "serialize-javascript": ">=7.0.5",
-    "uuid": ">=14"
+    "serialize-javascript": ">=7.0.5"
   },
   "scripts": {
     "test": "mocha --timeout 20000",
