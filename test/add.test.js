@@ -265,4 +265,60 @@ describe('cds add cap-operator', () => {
         expect(log).to.not.include('Updated values.yaml')
         expect(log).to.not.include('Updated values.schema.json')
     })
+
+    it('Migrates btp.provider removal in simple chart', async () => {
+        execSync(`cds add cap-operator`, { cwd: bookshop })
+
+        const valuesPath = join(bookshop, 'chart/values.yaml')
+        fs.writeFileSync(valuesPath, fs.readFileSync(valuesPath, 'utf8').replace(
+            '  providerSubaccountId:',
+            '  providerSubaccountId:\n  provider:\n    subdomain: test\n    tenantId: test-guid'
+        ))
+
+        const log = execSync(`cds add cap-operator`, { cwd: bookshop }).toString()
+
+        expect(log).to.include("'btp.provider'")
+        expect(log).to.include('deprecated since CAP Operator v0.31.0')
+        expect(log).to.include('Updated values.yaml')
+
+        const updatedValues = fs.readFileSync(valuesPath, 'utf8')
+        expect(updatedValues).to.not.include('provider:')
+        expect(updatedValues).to.include('providerSubaccountId:')
+    })
+
+    it('Migrates btp.provider removal in configurable template chart', async () => {
+        execSync(`cds add cap-operator --with-configurable-templates`, { cwd: bookshop })
+
+        const valuesPath = join(bookshop, 'chart/values.yaml')
+        fs.writeFileSync(valuesPath, fs.readFileSync(valuesPath, 'utf8').replace(
+            '  providerSubaccountId:',
+            '  providerSubaccountId:\n  provider:\n    subdomain: test\n    tenantId: test-guid'
+        ))
+
+        const croPath = join(bookshop, 'chart/templates/cap-operator-cros.yaml')
+        fs.writeFileSync(croPath, fs.readFileSync(croPath, 'utf8').replace(
+            'providerSubaccountId: {{ .Values.btp.providerSubaccountId }}',
+            'providerSubaccountId: {{ .Values.btp.providerSubaccountId }}\n  provider:\n    subDomain: {{ .Values.btp.provider.subdomain }}\n    tenantId: {{ .Values.btp.provider.tenantId }}'
+        ))
+
+        const log = execSync(`cds add cap-operator`, { cwd: bookshop }).toString()
+
+        expect(log).to.include("'btp.provider'")
+        expect(log).to.include('Updated values.yaml')
+        expect(log).to.include('Updated chart/templates/cap-operator-cros.yaml')
+
+        const updatedValues = fs.readFileSync(valuesPath, 'utf8')
+        expect(updatedValues).to.not.include('provider:')
+
+        const updatedCro = fs.readFileSync(croPath, 'utf8')
+        expect(updatedCro).to.not.include('btp.provider.subdomain')
+    })
+
+    it('Skips btp.provider migration when chart is already up to date', async () => {
+        execSync(`cds add cap-operator`, { cwd: bookshop })
+
+        const log = execSync(`cds add cap-operator`, { cwd: bookshop }).toString()
+
+        expect(log).to.not.include("'btp.provider'")
+    })
 })

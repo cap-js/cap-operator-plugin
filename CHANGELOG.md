@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file. This projec
 
 - `btp.provider` (`subdomain` and `tenantId`) has been removed from the generated Helm chart. The `CAPApplication` spec `provider` field is [deprecated since CAP Operator v0.31.0](https://github.com/SAP/cap-operator/releases/tag/v0.31.0). The `generate-runtime-values` command no longer prompts for `providerSubdomain` and `tenantId`.
 
+- **Use this version with CAP Operator `v0.31.0` or later.**
+
 ## Version 0.16.1 - 29-May-2026
 
 ### Fixed

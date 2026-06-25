@@ -21,7 +21,9 @@ The CAP Operator Plugin offers a simple method for generating [CAP Operator](htt
 > ## Action Required:
 > The `CAPApplication` spec `provider` field (`subdomain` and `tenantId`) is [deprecated](https://github.com/SAP/cap-operator/releases/tag/v0.31.0) since CAP Operator v0.31.0 and has been removed from the generated chart.
 >
-> **To migrate**, remove the `btp.provider` block from your `chart/values.yaml`. If you are using configurable templates, also remove the `provider` block from `chart/templates/cap-operator-cros.yaml`. Additionally, remove `providerSubdomain` and `tenantId` from your `runtime-values.yaml` if present.
+> **To migrate**, upgrade to CAP Operator Plugin v0.17.0 or later and run `cds add cap-operator`. This automatically removes `btp.provider` from `values.yaml`, `values.schema.json`, and `chart/templates/cap-operator-cros.yaml` if present.
+>
+> Note that existing provider tenants will **not** be deleted automatically in the cluster, they must be manually cleaned up by the application.
 >
 > If you do not have `btp.provider` in your chart, you can ignore this message.
 
