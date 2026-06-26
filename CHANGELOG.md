@@ -3,12 +3,12 @@
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
 ## Version 0.17.0 - 26-June-2026
+**Use this version with CAP Operator `v0.31.0` or later.**
 
 ### Changed
 
-- `btp.provider` (`subdomain` and `tenantId`) has been removed from the generated Helm chart. The `CAPApplication` spec `provider` field is [deprecated since CAP Operator v0.31.0](https://github.com/SAP/cap-operator/releases/tag/v0.31.0). The `generate-runtime-values` command no longer prompts for `providerSubdomain` and `tenantId`.
-
-- **Use this version with CAP Operator `v0.31.0` or later.**
+- `btp.provider` (`subdomain` and `tenantId`) has been removed from the generated Helm chart. The `CAPApplication` spec `provider` field is [deprecated since CAP Operator v0.31.0](https://github.com/SAP/cap-operator/releases/tag/v0.31.0). The `generate-runtime-values` command no longer prompts for `providerSubdomain` and `tenantId`.  
+- Dependencies Updated
 
 ### Fixed
 
