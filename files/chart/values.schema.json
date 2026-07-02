@@ -3189,6 +3189,9 @@
                     },
                     "type": "object"
                 },
+                "rolloutOnCredentialUpdate": {
+                    "type": "boolean"
+                },
                 "version": {
                     "type": "string"
                 }

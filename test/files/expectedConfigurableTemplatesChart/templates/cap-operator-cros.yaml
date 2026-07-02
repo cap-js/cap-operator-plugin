@@ -15,6 +15,9 @@ spec:
   {{- end }}
   btpAppName: {{ include "appName" $ }}
   providerSubaccountId: {{ .Values.btp.providerSubaccountId }}
+  {{- if .Values.app.rolloutOnCredentialUpdate }}
+  rolloutOnCredentialUpdate: {{ .Values.app.rolloutOnCredentialUpdate }}
+  {{- end }}
   btp:
     services:
     {{- $serviceInstances := .Values.serviceInstances }}
