@@ -2,8 +2,15 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## Version 0.18.0 - 03-July-2026
+### **Use this version with CAP Operator `v0.32.0` or later.**
+
+### Added
+
+- `rolloutOnCredentialUpdate` field to `CAPApplication` spec. When enabled, workloads are automatically redeployed when their service credentials are updated.
+
 ## Version 0.17.0 - 26-June-2026
-**Use this version with CAP Operator `v0.31.0` or later.**
+### **Use this version with CAP Operator `v0.31.0` or later.**
 
 ### Changed
 
