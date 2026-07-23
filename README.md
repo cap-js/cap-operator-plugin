@@ -27,7 +27,7 @@ The CAP Operator Plugin offers a simple method for generating [CAP Operator](htt
 
 ## Before You Start
 
-The CAP Operator plugin requires `@sap/cds-dk: ">=8.2.1"`. If you've installed @sap/cds-dk  globally, ensure that the installed version is `8.2.1` or higher.
+The CAP Operator plugin requires `@sap/cds-dk: ">=9"`. If you've installed @sap/cds-dk  globally, ensure that the installed version is `9` or higher.
 
 ## Set Up the Plugin
 
@@ -269,6 +269,19 @@ This downloads the skill files from the **latest release** of CAP Operator and w
     ```sh
     npx cap-op-plugin add-cap-operator-skill --branch main
     ```
+
+**Making the skill available in Claude Code**
+
+Some AI tools, including Claude Code, may not automatically detect skills placed in a project's `.agents/` folder. If the skill is not picked up automatically, paste the following prompt into Claude Code to register it globally:
+
+> Link the cap-operator skill from this project's `.agents/skills/cap-operator` folder to the central Claude skills directory so it's available globally:
+>
+> ```sh
+> mkdir -p ~/.claude/skills
+> ln -s "$(pwd)/.agents/skills/cap-operator" ~/.claude/skills/cap-operator
+> ```
+>
+> Then run `/reload-skills` in Claude Code to pick it up.
 
 ## Example
 
