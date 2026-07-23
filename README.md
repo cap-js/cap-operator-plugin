@@ -246,6 +246,30 @@ npx cap-op-plugin convert-to-configurable-template-chart --with-runtime-yaml <pr
 ```
 ![](.images/cap-op-plugin-convert-to-configurable-templates.gif)
 
+## Adding CAP Operator Agent Skill
+
+CAP Operator ships an [agent skill](https://github.com/SAP/cap-operator/tree/main/.agents/skills/cap-operator) that teaches AI coding assistants (such as Claude Code) how to manage CAP Operator resources on Kubernetes. You can add this skill to your project's `.agents/skills/cap-operator` folder using the plugin:
+
+```sh
+npx cap-op-plugin add-cap-operator-skill
+```
+
+This downloads the skill files from the **latest release** of CAP Operator and writes them into `.agents/skills/cap-operator/` in your project. Running the command again on a newer release cleanly replaces the skill files (orphaned files removed upstream are pruned), while leaving any other skills you keep under `.agents/` untouched.
+
+**Options**
+
+* `--version <release-version>` — Download the skill from a specific CAP Operator release instead of the latest:
+
+    ```sh
+    npx cap-op-plugin add-cap-operator-skill --version v0.33.0
+    ```
+
+* `--branch <branch-name>` — Download the skill directly from a branch (useful for testing unreleased changes):
+
+    ```sh
+    npx cap-op-plugin add-cap-operator-skill --branch main
+    ```
+
 ## Example
 
 As a reference, check out the [CAP Operator Helm chart](https://github.com/cap-js/incidents-app/tree/cap-operator-plugin/chart) in the sample incident app. Also, take a look at the corresponding [runtime-values.yaml](https://github.com/cap-js/incidents-app/blob/cap-operator-plugin/chart/runtime-values.yaml) file.

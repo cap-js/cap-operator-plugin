@@ -10,6 +10,8 @@ const cds = require('@sap/cds-dk')
 const yaml = require('@sap/cds-foss').yaml
 const Mustache = require('mustache')
 const { spawn } = require('child_process')
+const https = require('https')
+const zlib = require('zlib')
 
 const {
     ask,
@@ -24,32 +26,39 @@ const {
     getHelperTpl
 } = require('../lib/util')
 
-const SUPPORTED = { 'generate-runtime-values': ['--with-input-yaml'], 'convert-to-configurable-template-chart': ['--with-runtime-yaml'] }
+const SUPPORTED = { 'generate-runtime-values': ['--with-input-yaml'], 'convert-to-configurable-template-chart': ['--with-runtime-yaml'], 'add-cap-operator-skill': ['--branch', '--version'] }
 
-async function capOperatorPlugin(cmd, option, yamlPath) {
+async function capOperatorPlugin(cmd, option, optionValue) {
     try {
         if (!cmd) return _usage()
         if (!Object.keys(SUPPORTED).includes(cmd)) return _usage(`Unknown command ${cmd}.`)
         if (option && !SUPPORTED[cmd].includes(option)) return _usage(`Invalid option ${option}.`)
 
+        if (cmd === 'add-cap-operator-skill') {
+            if (option === '--branch' && !optionValue) return _usage(`Branch name is missing.`)
+            if (option === '--version' && !optionValue) return _usage(`Version is missing.`)
+            await addCapOperatorSkill({ branch: option === '--branch' ? optionValue : undefined, version: option === '--version' ? optionValue : undefined })
+            return
+        }
+
         if (cmd === 'generate-runtime-values') {
-            if (option === '--with-input-yaml' && !yamlPath)
+            if (option === '--with-input-yaml' && !optionValue)
                 return _usage(`Input yaml path is missing.`)
 
-            if (option === '--with-input-yaml' && yamlPath && !cds.utils.exists(cds.utils.path.join(cds.root, yamlPath)))
-                return _usage(`Input yaml path ${yamlPath} does not exist.`)
+            if (option === '--with-input-yaml' && optionValue && !cds.utils.exists(cds.utils.path.join(cds.root, optionValue)))
+                return _usage(`Input yaml path ${optionValue} does not exist.`)
 
-            await generateRuntimeValues(option, yamlPath)
+            await generateRuntimeValues(option, optionValue)
         }
 
         if (cmd === 'convert-to-configurable-template-chart') {
-            if (option === '--with-runtime-yaml' && !yamlPath)
+            if (option === '--with-runtime-yaml' && !optionValue)
                 return _usage(`Input runtime yaml path is missing.`)
 
-            if (option === '--with-runtime-yaml' && yamlPath && !cds.utils.exists(cds.utils.path.join(cds.root, yamlPath)))
-                return _usage(`Input runtime yaml path ${yamlPath} does not exist.`)
+            if (option === '--with-runtime-yaml' && optionValue && !cds.utils.exists(cds.utils.path.join(cds.root, optionValue)))
+                return _usage(`Input runtime yaml path ${optionValue} does not exist.`)
 
-            await convertToconfigurableTemplateChart(option, yamlPath)
+            await convertToconfigurableTemplateChart(option, optionValue)
         }
     } catch (e) {
         if (isCli) {
@@ -80,6 +89,8 @@ COMMANDS
 
     convert-to-configurable-template-chart [--with-runtime-yaml <runtime-yaml-path>]  Convert existing chart to configurable template chart
 
+    add-cap-operator-skill [--branch <branch-name> | --version <release-version>]   Add the CAP Operator agent skill to the .agents/skills/cap-operator folder
+
 EXAMPLES
 
     cap-op-plugin generate-runtime-values
@@ -87,6 +98,10 @@ EXAMPLES
 
     cap-op-plugin convert-to-configurable-template-chart
     cap-op-plugin convert-to-configurable-template-chart --with-runtime-yaml /path/to/runtime.yaml
+
+    cap-op-plugin add-cap-operator-skill
+    cap-op-plugin add-cap-operator-skill --branch main
+    cap-op-plugin add-cap-operator-skill --version v0.33.0
 `
     )
 }
@@ -292,6 +307,120 @@ function updateCdsConfigEnv(runtimeValuesYaml, workloadKey, workloadDefintion, c
         runtimeValuesYaml['workloads'][workloadKey][workloadDefintion]['env'].push({ name: 'CDS_CONFIG', value: cdsConfigHana })
 }
 
+function httpsGetJson(url) {
+    return new Promise((resolve, reject) => {
+        const req = https.get(url, { headers: { 'User-Agent': 'cap-operator-plugin' } }, res => {
+            if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+                resolve(httpsGetJson(res.headers.location))
+                return
+            }
+            if (res.statusCode !== 200) {
+                res.resume()
+                reject(new Error(`HTTP ${res.statusCode} for ${url}`))
+                return
+            }
+            const chunks = []
+            res.on('data', chunk => chunks.push(chunk))
+            res.on('end', () => resolve(JSON.parse(Buffer.concat(chunks).toString())))
+        })
+        req.on('error', reject)
+    })
+}
+
+function streamTarball(url, onEntry) {
+    return new Promise((resolve, reject) => {
+        const follow = (target) => {
+            https.get(target, { headers: { 'User-Agent': 'cap-operator-plugin' } }, res => {
+                if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+                    res.resume()
+                    follow(res.headers.location)
+                    return
+                }
+                if (res.statusCode !== 200) {
+                    res.resume()
+                    reject(new Error(`HTTP ${res.statusCode} downloading tarball`))
+                    return
+                }
+                const entries = []
+                let buf = Buffer.alloc(0)
+
+                const gunzip = zlib.createGunzip()
+                gunzip.on('error', reject)
+
+                // Minimal tar parser: each 512-byte header block followed by content blocks
+                gunzip.on('data', chunk => {
+                    buf = Buffer.concat([buf, chunk])
+                    while (buf.length >= 512) {
+                        const nameRaw = buf.slice(0, 100).toString('utf8').replace(/\0/g, '')
+                        if (!nameRaw) { buf = buf.slice(512); continue }
+
+                        const sizeOctal = buf.slice(124, 136).toString('utf8').replace(/\0/g, '').trim()
+                        const size = parseInt(sizeOctal, 8) || 0
+                        const typeFlag = buf.slice(156, 157).toString('utf8').replace(/\0/g, '')
+                        const blocks = Math.ceil(size / 512)
+                        const total = 512 + blocks * 512
+
+                        if (buf.length < total) break
+
+                        if (typeFlag === '0' || typeFlag === '') {
+                            // strip leading top-level directory (e.g. "cap-operator-v0.33.0/")
+                            const pathInTar = nameRaw.replace(/^[^/]+\//, '')
+                            const content = buf.slice(512, 512 + size)
+                            entries.push(onEntry(pathInTar, content))
+                        }
+
+                        buf = buf.slice(total)
+                    }
+                })
+
+                gunzip.on('end', () => resolve(Promise.all(entries)))
+                res.pipe(gunzip)
+            }).on('error', reject)
+        }
+        follow(url)
+    })
+}
+
+async function addCapOperatorSkill({ branch, version } = {}) {
+    const REPO = 'SAP/cap-operator'
+    const AGENTS_FOLDER = '.agents'
+
+    let ref, tarballUrl
+    if (branch) {
+        ref = branch
+        tarballUrl = `https://github.com/${REPO}/archive/refs/heads/${branch}.tar.gz`
+    } else {
+        const tag = version ?? (await httpsGetJson(`https://api.github.com/repos/${REPO}/releases/latest`)).tag_name
+        ref = tag
+        tarballUrl = `https://github.com/${REPO}/archive/refs/tags/${tag}.tar.gz`
+    }
+
+    const agentFiles = []
+    await streamTarball(tarballUrl, (pathInTar, content) => {
+        if (pathInTar.startsWith(`${AGENTS_FOLDER}/`))
+            agentFiles.push({ path: pathInTar, content: Buffer.from(content) })
+    })
+
+    if (!agentFiles.length)
+        throw new Error(`No .agents folder found in cap-operator ${ref}.`)
+
+    const skillDirs = new Set()
+    for (const { path: p } of agentFiles) {
+        const match = p.match(/^\.agents\/skills\/[^/]+/)
+        if (match) skillDirs.add(match[0])
+    }
+    for (const dir of skillDirs) {
+        const abs = cds.utils.path.join(cds.root, dir)
+        if (cds.utils.exists(abs)) await cds.utils.rimraf(abs)
+    }
+
+    for (const { path: p, content } of agentFiles) {
+        await cds.utils.write(content).to(cds.utils.path.join(cds.root, p))
+    }
+
+    console.log(`Added CAP Operator agent skills (${ref}) to '${AGENTS_FOLDER}'.`)
+}
+
 function getAppDetails() {
     const { name, description } = JSON.parse(cds.utils.fs.readFileSync(cds.utils.path.join(cds.root, 'package.json')))
     const segments = (name ?? this.appName).trim().replace(/@/g, '').split('/').map(encodeURIComponent)
@@ -323,8 +452,8 @@ async function getShootDomain() {
 }
 
 if (isCli) {
-    const [, , cmd, option, yamlPath] = process.argv;
-    (async () => await capOperatorPlugin(cmd, option, yamlPath ?? undefined))()
+    const [, , cmd, option, optionValue] = process.argv;
+    (async () => await capOperatorPlugin(cmd, option, optionValue ?? undefined))()
 }
 
 module.exports = { capOperatorPlugin }
