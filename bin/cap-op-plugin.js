@@ -307,11 +307,18 @@ function updateCdsConfigEnv(runtimeValuesYaml, workloadKey, workloadDefintion, c
         runtimeValuesYaml['workloads'][workloadKey][workloadDefintion]['env'].push({ name: 'CDS_CONFIG', value: cdsConfigHana })
 }
 
-function httpsGetJson(url) {
+const MAX_REDIRECTS = 10
+
+function httpsGetJson(url, redirectCount = 0) {
     return new Promise((resolve, reject) => {
         const req = https.get(url, { headers: { 'User-Agent': 'cap-operator-plugin' } }, res => {
             if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
-                resolve(httpsGetJson(res.headers.location))
+                res.resume()
+                if (redirectCount >= MAX_REDIRECTS) {
+                    reject(new Error(`Too many redirects for ${url}`))
+                    return
+                }
+                resolve(httpsGetJson(res.headers.location, redirectCount + 1))
                 return
             }
             if (res.statusCode !== 200) {
@@ -321,7 +328,13 @@ function httpsGetJson(url) {
             }
             const chunks = []
             res.on('data', chunk => chunks.push(chunk))
-            res.on('end', () => resolve(JSON.parse(Buffer.concat(chunks).toString())))
+            res.on('end', () => {
+                try {
+                    resolve(JSON.parse(Buffer.concat(chunks).toString()))
+                } catch (e) {
+                    reject(new Error(`Failed to parse JSON response from ${url}: ${e.message}`))
+                }
+            })
         })
         req.on('error', reject)
     })
@@ -329,10 +342,15 @@ function httpsGetJson(url) {
 
 function streamTarball(url, onEntry) {
     return new Promise((resolve, reject) => {
+        let redirectCount = 0
         const follow = (target) => {
             https.get(target, { headers: { 'User-Agent': 'cap-operator-plugin' } }, res => {
                 if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
                     res.resume()
+                    if (++redirectCount > MAX_REDIRECTS) {
+                        reject(new Error(`Too many redirects downloading tarball`))
+                        return
+                    }
                     follow(res.headers.location)
                     return
                 }
@@ -341,7 +359,6 @@ function streamTarball(url, onEntry) {
                     reject(new Error(`HTTP ${res.statusCode} downloading tarball`))
                     return
                 }
-                const entries = []
                 let buf = Buffer.alloc(0)
 
                 const gunzip = zlib.createGunzip()
@@ -366,14 +383,14 @@ function streamTarball(url, onEntry) {
                             // strip leading top-level directory (e.g. "cap-operator-v0.33.0/")
                             const pathInTar = nameRaw.replace(/^[^/]+\//, '')
                             const content = buf.slice(512, 512 + size)
-                            entries.push(onEntry(pathInTar, content))
+                            onEntry(pathInTar, content)
                         }
 
                         buf = buf.slice(total)
                     }
                 })
 
-                gunzip.on('end', () => resolve(Promise.all(entries)))
+                gunzip.on('end', () => resolve())
                 res.pipe(gunzip)
             }).on('error', reject)
         }
@@ -415,7 +432,10 @@ async function addCapOperatorSkill({ branch, version } = {}) {
     }
 
     for (const { path: p, content } of agentFiles) {
-        await cds.utils.write(content).to(cds.utils.path.join(cds.root, p))
+        const abs = cds.utils.path.resolve(cds.root, p)
+        if (!abs.startsWith(cds.utils.path.resolve(cds.root) + cds.utils.path.sep))
+            throw new Error(`Unsafe path in tarball: ${p}`)
+        await cds.utils.write(content).to(abs)
     }
 
     console.log(`Added CAP Operator agent skills (${ref}) to '${AGENTS_FOLDER}'.`)
