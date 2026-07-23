@@ -406,6 +406,38 @@ EXAMPLES
             expect(error?.message).to.include('HTTP 404')
         })
 
+        it('--branch throws descriptive error when branch does not exist', async () => {
+            sinon.stub(https, 'get').callsFake((_url, _opts, callback) => {
+                const req = new EventEmitter()
+                setImmediate(() => {
+                    const res = Object.assign(new Readable({ read() {} }), { statusCode: 404, headers: {} })
+                    callback(res)
+                    res.push(null)
+                })
+                return req
+            })
+
+            let error
+            try { await capOperatorPlugin('add-cap-operator-skill', '--branch', 'no-such-branch') } catch (e) { error = e }
+            expect(error?.message).to.equal(`Branch 'no-such-branch' not found in SAP/cap-operator.`)
+        })
+
+        it('--version throws descriptive error when release does not exist', async () => {
+            sinon.stub(https, 'get').callsFake((_url, _opts, callback) => {
+                const req = new EventEmitter()
+                setImmediate(() => {
+                    const res = Object.assign(new Readable({ read() {} }), { statusCode: 404, headers: {} })
+                    callback(res)
+                    res.push(null)
+                })
+                return req
+            })
+
+            let error
+            try { await capOperatorPlugin('add-cap-operator-skill', '--version', 'v0.0.0') } catch (e) { error = e }
+            expect(error?.message).to.equal(`Release 'v0.0.0' not found in SAP/cap-operator.`)
+        })
+
         it('throws when tarball has no .agents folder', async () => {
             stubHttpsWithTarball('v0.1.0', makeTarGz([
                 { path: 'cap-operator-v0.1.0/README.md', content: 'readme' }

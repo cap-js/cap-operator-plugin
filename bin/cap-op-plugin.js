@@ -413,10 +413,18 @@ async function addCapOperatorSkill({ branch, version } = {}) {
     }
 
     const agentFiles = []
-    await streamTarball(tarballUrl, (pathInTar, content) => {
-        if (pathInTar.startsWith(`${AGENTS_FOLDER}/`))
-            agentFiles.push({ path: pathInTar, content: Buffer.from(content) })
-    })
+    try {
+        await streamTarball(tarballUrl, (pathInTar, content) => {
+            if (pathInTar.startsWith(`${AGENTS_FOLDER}/`))
+                agentFiles.push({ path: pathInTar, content: Buffer.from(content) })
+        })
+    } catch (e) {
+        if (e.message.includes('HTTP 404'))
+            throw new Error(branch
+                ? `Branch '${branch}' not found in ${REPO}.`
+                : `Release '${ref}' not found in ${REPO}.`)
+        throw e
+    }
 
     if (!agentFiles.length)
         throw new Error(`No .agents folder found in cap-operator ${ref}.`)
