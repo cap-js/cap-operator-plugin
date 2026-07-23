@@ -65,8 +65,8 @@ describe('cds add cap-operator', () => {
         expect(getFileHash(join(__dirname, '../files/commonTemplates/service-instance.yaml'))).to.equal(getFileHash(join(bookshop, 'chart/templates/service-instance.yaml')))
     })
 
-    it('Chart folder already added by `cds add helm` ', async () => {
-        execSync(`cds add helm --y`, { cwd: bookshop })
+    it('Chart folder already added by `cds add kyma` ', async () => {
+        execSync(`cds add kyma --y`, { cwd: bookshop })
         expect(() => execSync(`cds add cap-operator`, { cwd: bookshop })).to.throw('Existing \'chart\' folder is not a CAP Operator helm chart. Run \'cds add cap-operator --force\' to overwrite.')
     })
 
