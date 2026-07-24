@@ -320,7 +320,7 @@ function httpGet(url, redirectCount = 0) {
 }
 
 async function addCapOperatorSkill() {
-    const SKILL_URL = 'https://sap.github.io/cap-operator/agent.tar.gz'
+    const SKILL_URL = 'https://sap.github.io/cap-operator/agents.tar.gz'
     const AGENTS_FOLDER = '.agents'
     const skillDest = cds.utils.path.join(cds.root, AGENTS_FOLDER)
 
