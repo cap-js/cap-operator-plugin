@@ -331,7 +331,7 @@ async function addCapOperatorSkill() {
     if (cds.utils.exists(capOpSkillDir)) await cds.utils.rimraf(capOpSkillDir)
 
     await cds.utils.fs.promises.mkdir(skillDest, { recursive: true })
-    await cds.utils.tar.extract(response).to(skillDest)
+    await cds.utils.tar.xzf(response).to(skillDest)
 
     console.log(`Added CAP Operator agent skills to '${AGENTS_FOLDER}'.`)
 }
