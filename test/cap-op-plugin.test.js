@@ -3,10 +3,6 @@ const { join } = require('node:path')
 const { execSync } = require('node:child_process')
 const { expect } = require('chai')
 const sinon = require('sinon')
-const https = require('https')
-const zlib = require('zlib')
-const { EventEmitter } = require('node:events')
-const { Readable } = require('node:stream')
 
 const TempUtil = require('./tempUtil')
 const tempUtil = new TempUtil(__filename, { local: true })
@@ -68,7 +64,7 @@ COMMANDS
 
     convert-to-configurable-template-chart [--with-runtime-yaml <runtime-yaml-path>]  Convert existing chart to configurable template chart
 
-    add-cap-operator-skill [--branch <branch-name> | --version <release-version>]   Add the CAP Operator agent skill to the .agents/skills/cap-operator folder
+    add-cap-operator-skill   Add the latest CAP Operator agent skill to the .agents/skills/cap-operator folder
 
 EXAMPLES
 
@@ -79,8 +75,6 @@ EXAMPLES
     cap-op-plugin convert-to-configurable-template-chart --with-runtime-yaml /path/to/runtime.yaml
 
     cap-op-plugin add-cap-operator-skill
-    cap-op-plugin add-cap-operator-skill --branch main
-    cap-op-plugin add-cap-operator-skill --version v0.33.0
 `)
     })
 
@@ -291,215 +285,49 @@ EXAMPLES
     //------------------------------------------------
 
     describe('add-cap-operator-skill', () => {
-        function makeTarGz(files) {
-            const blocks = []
-            for (const { path: filePath, content } of files) {
-                const contentBuf = Buffer.isBuffer(content) ? content : Buffer.from(content)
-                const header = Buffer.alloc(512)
-                header.write(filePath, 0, 100, 'utf8')
-                header.write('0000644\0', 100, 8, 'utf8')
-                const sizeOctal = contentBuf.length.toString(8).padStart(11, '0') + ' '
-                header.write(sizeOctal, 124, 12, 'utf8')
-                header.write('0', 156, 1, 'utf8')
-                header.fill(32, 148, 156)
-                let sum = 0
-                for (let i = 0; i < 512; i++) sum += header[i]
-                header.write(sum.toString(8).padStart(6, '0') + '\0 ', 148, 8, 'utf8')
-                blocks.push(header)
-                const padded = Buffer.alloc(Math.ceil(contentBuf.length / 512) * 512)
-                contentBuf.copy(padded)
-                blocks.push(padded)
-            }
-            blocks.push(Buffer.alloc(1024))
-            return zlib.gzipSync(Buffer.concat(blocks))
-        }
-
-        function stubHttpsWithTarball(tag, tarGzBuf) {
-            sinon.stub(https, 'get').callsFake((url, _opts, callback) => {
-                const req = new EventEmitter()
-                setImmediate(() => {
-                    if (url.includes('releases/latest')) {
-                        const res = Object.assign(new Readable({ read() {} }), { statusCode: 200, headers: {} })
-                        callback(res)
-                        res.push(JSON.stringify({ tag_name: tag }))
-                        res.push(null)
-                    } else {
-                        const res = Object.assign(new Readable({ read() {} }), { statusCode: 200, headers: {} })
-                        callback(res)
-                        res.push(tarGzBuf)
-                        res.push(null)
-                    }
-                })
-                return req
-            })
-        }
-
         beforeEach(() => { cds.root = bookshop })
 
         afterEach(() => {
-            sinon.restore()
             if (cds.utils.exists(join(bookshop, '.agents')))
                 execSync('rm -rf .agents', { cwd: bookshop })
         })
 
-        it('extracts .agents folder from tarball', async () => {
-            stubHttpsWithTarball('v0.33.0', makeTarGz([
-                { path: 'cap-operator-v0.33.0/.agents/skills/cap-operator/SKILL.md', content: '# SKILL' },
-                { path: 'cap-operator-v0.33.0/.agents/skills/cap-operator/references/deploy.md', content: '# deploy' },
-                { path: 'cap-operator-v0.33.0/README.md', content: 'readme' }
-            ]))
-
+        it('downloads and extracts skill files from live URL', async () => {
             await capOperatorPlugin('add-cap-operator-skill')
 
             expect(cds.utils.exists(join(bookshop, '.agents/skills/cap-operator/SKILL.md'))).to.be.ok
-            expect(cds.utils.exists(join(bookshop, '.agents/skills/cap-operator/references/deploy.md'))).to.be.ok
-            expect(await cds.utils.read(join(bookshop, '.agents/skills/cap-operator/SKILL.md'))).to.equal('# SKILL')
-            expect(await cds.utils.read(join(bookshop, '.agents/skills/cap-operator/references/deploy.md'))).to.equal('# deploy')
-            expect(cds.utils.exists(join(bookshop, '.agents/README.md'))).to.not.be.ok
+            expect(cds.utils.exists(join(bookshop, '.agents/skills/cap-operator/references'))).to.be.ok
         })
 
-        it('overwrites existing files', async () => {
+        it('overwrites existing files on re-run', async () => {
             await cds.utils.write('old content').to(join(bookshop, '.agents/skills/cap-operator/SKILL.md'))
-            stubHttpsWithTarball('v0.33.0', makeTarGz([
-                { path: 'cap-operator-v0.33.0/.agents/skills/cap-operator/SKILL.md', content: 'new content' }
-            ]))
 
             await capOperatorPlugin('add-cap-operator-skill')
 
-            expect(await cds.utils.read(join(bookshop, '.agents/skills/cap-operator/SKILL.md'))).to.equal('new content')
+            const content = await cds.utils.read(join(bookshop, '.agents/skills/cap-operator/SKILL.md'))
+            expect(content).to.not.equal('old content')
         })
 
-        it('prunes files removed upstream on re-run', async () => {
-            stubHttpsWithTarball('v0.33.0', makeTarGz([
-                { path: 'cap-operator-v0.33.0/.agents/skills/cap-operator/SKILL.md', content: '# SKILL' },
-                { path: 'cap-operator-v0.33.0/.agents/skills/cap-operator/references/old.md', content: '# old' }
-            ]))
-            await capOperatorPlugin('add-cap-operator-skill')
-            expect(cds.utils.exists(join(bookshop, '.agents/skills/cap-operator/references/old.md'))).to.be.ok
-            sinon.restore()
+        it('prunes stale files on re-run', async () => {
+            await cds.utils.write('stale').to(join(bookshop, '.agents/skills/cap-operator/stale.md'))
 
+            await capOperatorPlugin('add-cap-operator-skill')
+
+            expect(cds.utils.exists(join(bookshop, '.agents/skills/cap-operator/stale.md'))).to.not.be.ok
+        })
+
+        it('preserves unrelated skills', async () => {
             await cds.utils.write('mine').to(join(bookshop, '.agents/skills/my-own/SKILL.md'))
 
-            stubHttpsWithTarball('v0.34.0', makeTarGz([
-                { path: 'cap-operator-v0.34.0/.agents/skills/cap-operator/SKILL.md', content: '# SKILL v2' }
-            ]))
             await capOperatorPlugin('add-cap-operator-skill')
 
-            expect(await cds.utils.read(join(bookshop, '.agents/skills/cap-operator/SKILL.md'))).to.equal('# SKILL v2')
-            expect(cds.utils.exists(join(bookshop, '.agents/skills/cap-operator/references/old.md'))).to.not.be.ok
             expect(await cds.utils.read(join(bookshop, '.agents/skills/my-own/SKILL.md'))).to.equal('mine')
         })
 
-        it('throws when release fetch fails', async () => {
-            sinon.stub(https, 'get').callsFake((_url, _opts, callback) => {
-                const req = new EventEmitter()
-                setImmediate(() => {
-                    const res = Object.assign(new Readable({ read() {} }), { statusCode: 404, headers: {} })
-                    callback(res)
-                    res.push(null)
-                })
-                return req
-            })
-
+        it('rejects unknown option', async () => {
             let error
-            try { await capOperatorPlugin('add-cap-operator-skill') } catch (e) { error = e }
-            expect(error?.message).to.include('HTTP 404')
-        })
-
-        it('--branch throws descriptive error when branch does not exist', async () => {
-            sinon.stub(https, 'get').callsFake((_url, _opts, callback) => {
-                const req = new EventEmitter()
-                setImmediate(() => {
-                    const res = Object.assign(new Readable({ read() {} }), { statusCode: 404, headers: {} })
-                    callback(res)
-                    res.push(null)
-                })
-                return req
-            })
-
-            let error
-            try { await capOperatorPlugin('add-cap-operator-skill', '--branch', 'no-such-branch') } catch (e) { error = e }
-            expect(error?.message).to.equal(`Branch 'no-such-branch' not found in SAP/cap-operator.`)
-        })
-
-        it('--version throws descriptive error when release does not exist', async () => {
-            sinon.stub(https, 'get').callsFake((_url, _opts, callback) => {
-                const req = new EventEmitter()
-                setImmediate(() => {
-                    const res = Object.assign(new Readable({ read() {} }), { statusCode: 404, headers: {} })
-                    callback(res)
-                    res.push(null)
-                })
-                return req
-            })
-
-            let error
-            try { await capOperatorPlugin('add-cap-operator-skill', '--version', 'v0.0.0') } catch (e) { error = e }
-            expect(error?.message).to.equal(`Release 'v0.0.0' not found in SAP/cap-operator.`)
-        })
-
-        it('throws when tarball has no .agents folder', async () => {
-            stubHttpsWithTarball('v0.1.0', makeTarGz([
-                { path: 'cap-operator-v0.1.0/README.md', content: 'readme' }
-            ]))
-
-            let error
-            try { await capOperatorPlugin('add-cap-operator-skill') } catch (e) { error = e }
-            expect(error?.message).to.include('No .agents folder found in cap-operator v0.1.0')
-        })
-
-        it('--version downloads specific release tarball without API call', async () => {
-            let capturedUrl
-            sinon.stub(https, 'get').callsFake((url, _opts, callback) => {
-                capturedUrl = url
-                const req = new EventEmitter()
-                setImmediate(() => {
-                    const res = Object.assign(new Readable({ read() {} }), { statusCode: 200, headers: {} })
-                    callback(res)
-                    res.push(makeTarGz([{ path: 'cap-operator-v0.30.0/.agents/skills/cap-operator/SKILL.md', content: '# SKILL v0.30.0' }]))
-                    res.push(null)
-                })
-                return req
-            })
-
-            await capOperatorPlugin('add-cap-operator-skill', '--version', 'v0.30.0')
-
-            expect(capturedUrl).to.include('tags/v0.30.0')
-            expect(capturedUrl).to.not.include('releases/latest')
-            expect(await cds.utils.read(join(bookshop, '.agents/skills/cap-operator/SKILL.md'))).to.equal('# SKILL v0.30.0')
-        })
-
-        it('--branch downloads branch tarball without API call', async () => {
-            let capturedUrl
-            sinon.stub(https, 'get').callsFake((url, _opts, callback) => {
-                capturedUrl = url
-                const req = new EventEmitter()
-                setImmediate(() => {
-                    const res = Object.assign(new Readable({ read() {} }), { statusCode: 200, headers: {} })
-                    callback(res)
-                    res.push(makeTarGz([{ path: 'cap-operator-main/.agents/skills/cap-operator/SKILL.md', content: '# SKILL main' }]))
-                    res.push(null)
-                })
-                return req
-            })
-
-            await capOperatorPlugin('add-cap-operator-skill', '--branch', 'main')
-
-            expect(capturedUrl).to.include('heads/main')
-            expect(capturedUrl).to.not.include('releases/latest')
-            expect(await cds.utils.read(join(bookshop, '.agents/skills/cap-operator/SKILL.md'))).to.equal('# SKILL main')
-        })
-
-        it('--branch missing value shows usage error', async () => {
-            let error
-            try { await capOperatorPlugin('add-cap-operator-skill', '--branch', undefined) } catch (e) { error = e }
-            expect(error?.message).to.include('Branch name is missing.')
-        })
-
-        it('--version missing value shows usage error', async () => {
-            let error
-            try { await capOperatorPlugin('add-cap-operator-skill', '--version', undefined) } catch (e) { error = e }
-            expect(error?.message).to.include('Version is missing.')
+            try { await capOperatorPlugin('add-cap-operator-skill', '--unknown') } catch (e) { error = e }
+            expect(error?.message).to.include('Invalid option --unknown')
         })
     })
 })

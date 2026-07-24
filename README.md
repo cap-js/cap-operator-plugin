@@ -254,21 +254,7 @@ CAP Operator ships an [agent skill](https://github.com/SAP/cap-operator/tree/mai
 npx cap-op-plugin add-cap-operator-skill
 ```
 
-This downloads the skill files from the **latest release** of CAP Operator and writes them into `.agents/skills/cap-operator/` in your project. Running the command again on a newer release cleanly replaces the skill files (orphaned files removed upstream are pruned), while leaving any other skills you keep under `.agents/` untouched.
-
-**Options**
-
-* `--version <release-version>` — Download the skill from a specific CAP Operator release instead of the latest:
-
-    ```sh
-    npx cap-op-plugin add-cap-operator-skill --version v0.33.0
-    ```
-
-* `--branch <branch-name>` — Download the skill directly from a branch (useful for testing unreleased changes):
-
-    ```sh
-    npx cap-op-plugin add-cap-operator-skill --branch main
-    ```
+This downloads the latest skill files and writes them into `.agents/skills/cap-operator/` in your project. Running the command again cleanly replaces the skill (stale files are pruned, unrelated skills under `.agents/` are left untouched).
 
 **Making the skill available in Claude Code**
 
