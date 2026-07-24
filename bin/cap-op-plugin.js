@@ -303,8 +303,7 @@ function updateCdsConfigEnv(runtimeValuesYaml, workloadKey, workloadDefintion, c
 
 function httpGet(url, redirectCount = 0) {
     return new Promise((resolve, reject) => {
-        const mod = url.startsWith('https') ? require('https') : require('http')
-        mod.get(url, { headers: { 'User-Agent': 'cap-operator-plugin' } }, res => {
+        require('https').get(url, { headers: { 'User-Agent': 'cap-operator-plugin' } }, res => {
             if (res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
                 res.resume()
                 if (redirectCount >= 10) return reject(new Error('Too many redirects downloading skill tarball'))
