@@ -256,6 +256,8 @@ npx cap-op-plugin add-cap-operator-skill
 
 This downloads the latest skill files and writes them into `.agents/skills/cap-operator/` in your project. Running the command again cleanly replaces the skill (stale files are pruned, unrelated skills under `.agents/` are left untouched).
 
+> **Note:** This command requires `tar` to be available on your system. On Windows, you may need to follow the [CAP troubleshooting guide for tar issues](https://cap.cloud.sap/docs/get-started/get-help#how-to-fix-tar-error-is-not-recoverable-exiting-now).
+
 **Making the skill available in Claude Code**
 
 Some AI tools, including Claude Code, may not automatically detect skills placed in a project's `.agents/` folder. If the skill is not picked up automatically, paste the following prompt into Claude Code to register it globally:

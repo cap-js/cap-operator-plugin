@@ -320,19 +320,15 @@ function httpGet(url, redirectCount = 0) {
 
 async function addCapOperatorSkill() {
     const SKILL_URL = 'https://sap.github.io/cap-operator/agentskills.tar.gz'
-    const AGENTS_FOLDER = '.agents'
-    const skillDest = cds.utils.path.join(cds.root, AGENTS_FOLDER)
-
-    const response = await httpGet(SKILL_URL)
 
     // Wipe existing cap-operator skill dir so removed files are pruned on re-run
-    const capOpSkillDir = cds.utils.path.join(skillDest, 'skills', 'cap-operator')
+    const capOpSkillDir = cds.utils.path.join(cds.root, '.agents', 'skills', 'cap-operator')
     if (cds.utils.exists(capOpSkillDir)) await cds.utils.rimraf(capOpSkillDir)
 
-    await cds.utils.fs.promises.mkdir(skillDest, { recursive: true })
-    await cds.utils.tar.xzf(response).to(skillDest)
+    const response = await httpGet(SKILL_URL)
+    await cds.utils.tar.xzf(response).to(cds.root)
 
-    console.log(`Added CAP Operator agent skills to '${AGENTS_FOLDER}'.`)
+    console.log(`Added CAP Operator agent skills to '.agents'.`)
 }
 
 function getAppDetails() {
