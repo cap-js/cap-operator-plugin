@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## Version 0.19.0 - 27-July-2026
+
+### Added
+
+- New `add-cap-operator-skill` command to download and install the CAP Operator agent skill into `.agents/skills/cap-operator/`. The skill teaches AI coding assistants (such as Claude Code) how to manage CAP Operator resources on Kubernetes.
+
 ## Version 0.18.0 - 03-July-2026
 ### **Use this version with CAP Operator `v0.32.0` or later.**
 
