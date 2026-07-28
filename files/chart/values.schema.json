@@ -656,6 +656,12 @@
                         "$ref": "#/$defs/Volume"
                     },
                     "type": "array"
+                },
+                "lifecycle": {
+                    "$ref": "#/$defs/Lifecycle"
+                },
+                "terminationGracePeriodSeconds": {
+                    "type": "integer"
                 }
             },
             "required": [
@@ -1349,6 +1355,12 @@
                         "$ref": "#/$defs/Volume"
                     },
                     "type": "array"
+                },
+                "lifecycle": {
+                    "$ref": "#/$defs/Lifecycle"
+                },
+                "terminationGracePeriodSeconds": {
+                    "type": "integer"
                 }
             },
             "required": [
