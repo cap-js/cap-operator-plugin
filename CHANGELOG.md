@@ -2,11 +2,11 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
-## Version 0.19.0 - date
+## Version 0.19.0 - 31-July-2026
 
 ### Added
 
-- `lifecycle` and `terminationGracePeriodSeconds` fields to `DeploymentDetails` and `JobDetails` in `values.schema.json`, enabling pod lifecycle hooks (`postStart`, `preStop`) and graceful termination configuration for workloads.
+- `lifecycle` and `terminationGracePeriodSeconds` fields to `DeploymentDetails` and `JobDetails` in `values.schema.json`, enabling pod lifecycle hooks and graceful termination configuration for workloads.
 
 ## Version 0.18.0 - 03-July-2026
 ### **Use this version with CAP Operator `v0.32.0` or later.**
