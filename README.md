@@ -27,7 +27,7 @@ The CAP Operator Plugin offers a simple method for generating [CAP Operator](htt
 
 ## Before You Start
 
-The CAP Operator plugin requires `@sap/cds-dk: ">=8.2.1"`. If you've installed @sap/cds-dk  globally, ensure that the installed version is `8.2.1` or higher.
+The CAP Operator plugin requires `@sap/cds-dk: ">=9"`. If you've installed @sap/cds-dk  globally, ensure that the installed version is `9` or higher.
 
 ## Set Up the Plugin
 
@@ -255,6 +255,14 @@ As a reference, check out the [CAP Operator Helm chart](https://github.com/cap-j
 * If you're adding the basic chart folder using the `cds add cap-operator` command, don't modify the `values.schema.json` file. The templates injected automatically during `cds build` are tightly coupled with the structure in `values.schema.json`. If schema changes are needed, use the option `--with-templates` to add the templates folder and adjust them accordingly.
 
 * When defining environment variables for workloads in the `values.yaml` file, it's crucial to mirror these definitions in the `runtime-values.yaml` file. This ensures consistency and avoids potential conflicts, as Helm doesn't merge arrays. If you're introducing new environment variables in `runtime-values.yaml` for a workload, remember to include existing variables from `values.yaml` to maintain coherence. If you use the plugin to generate the `runtime-values.yaml`, the environment variables are automatically copied from `values.yaml`.
+
+## CAP Operator Skill
+
+The [CAP Operator skill](https://skills.cloud.sap/skills/SAP/cap-operator/cap-operator) extends AI tools with domain knowledge for managing the lifecycle of multi-tenant CAP applications on Kubernetes. It understands CAP Operator custom resources (`CAPApplication`, `CAPApplicationVersion`, `CAPTenant`, `Domain`, `ClusterDomain`) and can assist with deploying, upgrading, configuring domains, rotating credentials, and troubleshooting.
+
+```sh
+npx skills add SAP/cap-operator --skill cap-operator
+```
 
 ## Contributing
 
