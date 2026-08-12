@@ -4,8 +4,8 @@ serviceInstances:
         serviceOfferingName: build-workzone-standard
         servicePlanName: local-entry-point
         parameters:
-            providerId:
-            exposureId:
+            providerId: {{strippedAppName}}
+            exposureId: "{{strippedAppName}}.service"
 serviceBindings:
     workzone:
         name: {{appName}}-workzone-bind
