@@ -334,6 +334,7 @@ describe('cds add cap-operator', () => {
         expect(wzInstance.serviceOfferingName).to.equal('build-workzone-standard')
         expect(wzInstance.servicePlanName).to.equal('local-entry-point')
         expect(wzInstance.parameters.providerId).to.equal('bookshop')
+        expect(wzInstance.parameters.providerId.length).to.be.at.most(20)
         expect(wzInstance.parameters.exposureId).to.equal('bookshop.service')
 
         // service binding
