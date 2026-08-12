@@ -2,6 +2,7 @@ const { join } = require('node:path')
 const { execSync } = require('node:child_process')
 const { expect } = require('chai')
 const fs = require('node:fs')
+const yaml = require('yaml')
 
 const TempUtil = require('./tempUtil')
 const tempUtil = new TempUtil(__filename, { local: true })
@@ -320,5 +321,38 @@ describe('cds add cap-operator', () => {
         const log = execSync(`cds add cap-operator`, { cwd: bookshop }).toString()
 
         expect(log).to.not.include("'btp.provider'")
+    })
+
+    it('Add cap-operator chart with workzone-standard', async () => {
+        execSync(`cds add workzone-standard`, { cwd: bookshop })
+        execSync(`cds add cap-operator`, { cwd: bookshop })
+
+        const parsed = yaml.parse(fs.readFileSync(join(bookshop, 'chart/values.yaml'), 'utf8'))
+
+        // service instance
+        const wzInstance = parsed.serviceInstances.workzone
+        expect(wzInstance.serviceOfferingName).to.equal('build-workzone-standard')
+        expect(wzInstance.servicePlanName).to.equal('local-entry-point')
+        expect(wzInstance.parameters.providerId).to.equal('bookshop')
+        expect(wzInstance.parameters.exposureId).to.equal('bookshop.service')
+
+        // service binding
+        const wzBinding = parsed.serviceBindings.workzone
+        expect(wzBinding.name).to.equal('bookshop-workzone-bind')
+        expect(wzBinding.serviceInstanceName).to.equal('bookshop-workzone-service')
+
+        // appRouter: workzone binding in consumedBTPServices + OWN_SAP_CLOUD_SERVICE env var
+        const appRouter = parsed.workloads.appRouter
+        expect(appRouter.consumedBTPServices).to.include('bookshop-workzone-bind')
+        const ownSapCloudService = appRouter.deploymentDefinition.env?.find(e => e.name === 'OWN_SAP_CLOUD_SERVICE')
+        expect(ownSapCloudService).to.exist
+        expect(ownSapCloudService.value).to.include('bookshop.service')
+
+        // contentDeploy: workzone binding in consumedBTPServices + ASYNC_UPLOAD env var
+        const contentDeploy = parsed.workloads.contentDeploy
+        expect(contentDeploy.consumedBTPServices).to.include('bookshop-workzone-bind')
+        const asyncUpload = contentDeploy.jobDefinition.env?.find(e => e.name === 'ASYNC_UPLOAD')
+        expect(asyncUpload).to.exist
+        expect(asyncUpload.value).to.equal('true')
     })
 })
