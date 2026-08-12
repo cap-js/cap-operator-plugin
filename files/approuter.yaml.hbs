@@ -22,9 +22,17 @@ workloads:
         {{#hasHTML5Repo}}
         - {{appName}}-html5-repo-runtime-bind
         {{/hasHTML5Repo}}
+        {{#hasWorkzoneStandard}}
+        - {{appName}}-workzone-bind
+        {{/hasWorkzoneStandard}}
         deploymentDefinition:
             type: Router
             image:
             ports:
             - name: router-port
               port: 5000
+            {{#hasWorkzoneStandard}}
+            env:
+            - name: OWN_SAP_CLOUD_SERVICE
+              value: '["{{strippedAppName}}.service"]'
+            {{/hasWorkzoneStandard}}
