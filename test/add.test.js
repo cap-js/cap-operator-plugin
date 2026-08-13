@@ -349,11 +349,8 @@ describe('cds add cap-operator', () => {
         expect(ownSapCloudService).to.exist
         expect(ownSapCloudService.value).to.include('bookshop.service')
 
-        // contentDeploy: workzone binding in consumedBTPServices + ASYNC_UPLOAD env var
+        // contentDeploy: workzone binding in consumedBTPServices
         const contentDeploy = parsed.workloads.contentDeploy
         expect(contentDeploy.consumedBTPServices).to.include('bookshop-workzone-bind')
-        const asyncUpload = contentDeploy.jobDefinition.env?.find(e => e.name === 'ASYNC_UPLOAD')
-        expect(asyncUpload).to.exist
-        expect(asyncUpload.value).to.equal('true')
     })
 })

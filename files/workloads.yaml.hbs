@@ -60,11 +60,6 @@ workloads:
         jobDefinition:
             type: Content
             image:
-            {{#hasWorkzoneStandard}}
-            env:
-            - name: ASYNC_UPLOAD
-              value: "true"
-            {{/hasWorkzoneStandard}}
 
     {{#isApp}}
     tenantJob:
