@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file. This projec
 
 ### Added
 
-- Added support for SAP Build Work Zone, Standard Edition (`workzone-standard`). Generates a `build-workzone-standard` service instance (`local-entry-point` plan) and binding, with workloads updated as required.
+- Added support for SAP Build Work Zone, Standard Edition, generating a `build-workzone-standard` service instance with the `local-entry-point` plan and binding, along with the required workload updates.
 
 ## Version 0.19.0 - 31-July-2026
 
