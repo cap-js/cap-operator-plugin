@@ -2,6 +2,12 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## Version 0.20.0 - 18-August-2026
+
+### Added
+
+- Added support for SAP Build Work Zone, Standard Edition, generating a `build-workzone-standard` service instance with the `local-entry-point` plan and binding, along with the required workload updates.
+
 ## Version 0.19.0 - 31-July-2026
 
 ### Added

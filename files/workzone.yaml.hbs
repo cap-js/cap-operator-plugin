@@ -1,0 +1,15 @@
+serviceInstances:
+    workzone:
+        name: {{appName}}-workzone-service
+        serviceOfferingName: build-workzone-standard
+        servicePlanName: local-entry-point
+        parameters:
+            providerId: {{workzoneProviderId}}
+            exposureId: "{{strippedAppName}}.service"
+serviceBindings:
+    workzone:
+        name: {{appName}}-workzone-bind
+        serviceInstanceName: {{appName}}-workzone-service
+        secretName: {{appName}}-workzone-bind-secret
+        secretKey: credentials
+        parameters: {}
