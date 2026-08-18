@@ -1,5 +1,5 @@
 /*
-SPDX-FileCopyrightText: 2025 SAP SE or an SAP affiliate company and cap-operator-plugin contributors
+SPDX-FileCopyrightText: 2026 SAP SE or an SAP affiliate company and cap-operator-plugin contributors
 SPDX-License-Identifier: Apache-2.0
 */
 
@@ -21,11 +21,11 @@ type Domains struct {
 }
 
 type app struct {
-	Domains                    Domains           `json:"domains"`
-	IstioIngressGatewayLabels  map[string]string `json:"istioIngressGatewayLabels"`
-	Version                    string            `json:"version,omitempty"`
-	EnableCleanupMonitoring    bool              `json:"enableCleanupMonitoring,omitempty"`
-	RolloutOnCredentialUpdate  bool              `json:"rolloutOnCredentialUpdate,omitempty"`
+	Domains                   Domains           `json:"domains"`
+	IstioIngressGatewayLabels map[string]string `json:"istioIngressGatewayLabels"`
+	Version                   string            `json:"version,omitempty"`
+	EnableCleanupMonitoring   bool              `json:"enableCleanupMonitoring,omitempty"`
+	RolloutOnCredentialUpdate bool              `json:"rolloutOnCredentialUpdate,omitempty"`
 }
 
 type SubscriptionDependencyMode string
