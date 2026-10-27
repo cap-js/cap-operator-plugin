@@ -18,7 +18,7 @@
 {{- define "domainHostMap" -}}
   {{- $domains := list .Values.app.domains.primary -}}
   {{- range .Values.app.domains.additionalDomainRefs }}
-    {{- $apiVersion := "sme.sap.com/v1alpha1" -}}
+    {{- $apiVersion := "sme.sap.com/v1alpha2" -}}
     {{- $namespace := (eq .kind "Domain" | ternary $.Release.Namespace "") -}}
     {{- $resource := (lookup $apiVersion .kind $namespace .name) -}}
     {{- if and $resource (kindIs "map" $resource) (hasKey $resource "spec") (hasKey $resource.spec "domain") -}}

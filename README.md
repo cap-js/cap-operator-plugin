@@ -9,6 +9,9 @@
 
 The CAP Operator Plugin offers a simple method for generating [CAP Operator](https://sap.github.io/cap-operator/) resources, which are essential for deploying multi-tenant CAP Applications.
 
+> [!IMPORTANT]
+> Version `0.21.0` of the plugin requires CAP Operator [v0.37.0](https://github.com/SAP/cap-operator/releases/tag/v0.37.0) or later.
+
 > [!WARNING]
 > ## Action Required: Deprecated Fields in `CAPApplication` Spec
 >
@@ -145,6 +148,7 @@ Depending on whether you used `--with-configurable-templates`, the design-time s
         - `additionalDomainRefs` — References to existing customer-specific `Domain` or `ClusterDomain` resources. See the [Domain Management](https://sap.github.io/cap-operator/docs/usage/domain-management) for details.
     - `istioIngressGatewayLabels` — Labels identifying the Istio ingress-gateway and its namespace. Typically `{“app”:”istio-ingressgateway”,”istio”:”ingressgateway”}`.
     - `enableCleanupMonitoring` — Enable monitoring for cleanup operations.
+    - `maxSubscriptions` — Maximum number of consumer subscriptions allowed for the application (minimum `1`).
 - `btp`
     - `providerSubaccountId` — ID of the provider subaccount to which you deploy the application.
 - [imagePullSecrets](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/) — Kubernetes secret for pulling images from a private registry.

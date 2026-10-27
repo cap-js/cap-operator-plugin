@@ -1,5 +1,5 @@
 ---
-apiVersion: sme.sap.com/v1alpha1
+apiVersion: sme.sap.com/v1alpha2
 kind: CAPApplication
 metadata:
   name: {{ include "appName" $ }}
@@ -17,6 +17,9 @@ spec:
   providerSubaccountId: {{ .Values.btp.providerSubaccountId }}
   {{- if .Values.app.rolloutOnCredentialUpdate }}
   rolloutOnCredentialUpdate: {{ .Values.app.rolloutOnCredentialUpdate }}
+  {{- end }}
+  {{- if .Values.app.maxSubscriptions }}
+  maxSubscriptions: {{ .Values.app.maxSubscriptions }}
   {{- end }}
   btp:
     services:
@@ -42,7 +45,7 @@ spec:
     {{- end }}
     {{- end }}
 ---
-apiVersion: sme.sap.com/v1alpha1
+apiVersion: sme.sap.com/v1alpha2
 kind: CAPApplicationVersion
 metadata:
   annotations:
