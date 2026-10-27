@@ -131,6 +131,10 @@
                     },
                     "type": "object"
                 },
+                "maxSubscriptions": {
+                    "minimum": 1,
+                    "type": "integer"
+                },
                 "rolloutOnCredentialUpdate": {
                     "type": "boolean"
                 },
