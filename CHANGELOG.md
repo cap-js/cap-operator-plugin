@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. This project adheres to [Semantic Versioning](http://semver.org/). The format is based on [Keep a Changelog](http://keepachangelog.com/).
 
+## Version 0.21.0 - TBD
+### **Use this version with CAP Operator `v0.37.0` or later.**
+
+### Added
+
+- Added optional `app.maxSubscriptions` support for `CAPApplication` resources.
+
+### Changed
+
+- Added support for CAP Operator API `sme.sap.com/v1alpha2`.
+- Existing charts with `v1alpha1` templates now show a warning when `cds add cap-operator` is run, prompting application developers to migrate their templates.
+
 ## Version 0.20.0 - 18-August-2026
 
 ### Added

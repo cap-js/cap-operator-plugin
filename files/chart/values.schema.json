@@ -211,6 +211,9 @@
                 },
                 "signerName": {
                     "type": "string"
+                },
+                "user": {
+                    "type": "integer"
                 }
             },
             "required": [
@@ -270,6 +273,9 @@
             "additionalProperties": false,
             "properties": {
                 "defaultMode": {
+                    "type": "integer"
+                },
+                "defaultUser": {
                     "type": "integer"
                 },
                 "items": {
@@ -731,6 +737,9 @@
                 },
                 "resourceFieldRef": {
                     "$ref": "#/$defs/ResourceFieldSelector"
+                },
+                "user": {
+                    "type": "integer"
                 }
             },
             "required": [
@@ -742,6 +751,9 @@
             "additionalProperties": false,
             "properties": {
                 "defaultMode": {
+                    "type": "integer"
+                },
+                "defaultUser": {
                     "type": "integer"
                 },
                 "items": {
@@ -761,6 +773,9 @@
             "properties": {
                 "medium": {
                     "type": "string"
+                },
+                "mode": {
+                    "type": "integer"
                 },
                 "sizeLimit": {
                     "$ref": "#/$defs/Quantity"
@@ -982,6 +997,9 @@
         "GRPCAction": {
             "additionalProperties": false,
             "properties": {
+                "mode": {
+                    "type": "string"
+                },
                 "port": {
                     "type": "integer"
                 },
@@ -1111,6 +1129,9 @@
                 },
                 "port": {
                     "$ref": "#/$defs/IntOrString"
+                },
+                "protocol": {
+                    "type": "string"
                 },
                 "scheme": {
                     "type": "string"
@@ -1380,6 +1401,9 @@
                 },
                 "path": {
                     "type": "string"
+                },
+                "user": {
+                    "type": "integer"
                 }
             },
             "required": [
@@ -2027,6 +2051,9 @@
                 "signerName": {
                     "type": "string"
                 },
+                "user": {
+                    "type": "integer"
+                },
                 "userAnnotations": {
                     "additionalProperties": {
                         "type": "string"
@@ -2220,6 +2247,9 @@
             "additionalProperties": false,
             "properties": {
                 "defaultMode": {
+                    "type": "integer"
+                },
+                "defaultUser": {
                     "type": "integer"
                 },
                 "sources": {
@@ -2544,6 +2574,9 @@
                 "defaultMode": {
                     "type": "integer"
                 },
+                "defaultUser": {
+                    "type": "integer"
+                },
                 "items": {
                     "items": {
                         "$ref": "#/$defs/KeyToPath"
@@ -2612,6 +2645,9 @@
                 },
                 "path": {
                     "type": "string"
+                },
+                "user": {
+                    "type": "integer"
                 }
             },
             "required": [
@@ -3018,6 +3054,12 @@
         "VolumeMount": {
             "additionalProperties": false,
             "properties": {
+                "bindMountOptions": {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
                 "mountPath": {
                     "type": "string"
                 },
@@ -3200,6 +3242,10 @@
                         "type": "string"
                     },
                     "type": "object"
+                },
+                "maxSubscriptions": {
+                    "minimum": 1,
+                    "type": "integer"
                 },
                 "rolloutOnCredentialUpdate": {
                     "type": "boolean"

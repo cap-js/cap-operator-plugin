@@ -12,12 +12,12 @@ import (
 
 	servicesv1 "github.com/SAP/sap-btp-service-operator/api/v1"
 	"github.com/invopop/jsonschema"
-	"github.com/sap/cap-operator/pkg/apis/sme.sap.com/v1alpha1"
+	"github.com/sap/cap-operator/pkg/apis/sme.sap.com/v1alpha2"
 )
 
 type Domains struct {
 	Primary              string               `json:"primary"`
-	AdditionalDomainRefs []v1alpha1.DomainRef `json:"additionalDomainRefs"`
+	AdditionalDomainRefs []v1alpha2.DomainRef `json:"additionalDomainRefs"`
 }
 
 type app struct {
@@ -26,6 +26,7 @@ type app struct {
 	Version                   string            `json:"version,omitempty"`
 	EnableCleanupMonitoring   bool              `json:"enableCleanupMonitoring,omitempty"`
 	RolloutOnCredentialUpdate bool              `json:"rolloutOnCredentialUpdate,omitempty"`
+	MaxSubscriptions          *int32            `json:"maxSubscriptions,omitempty" jsonschema:"minimum=1"`
 }
 
 type SubscriptionDependencyMode string
@@ -58,10 +59,10 @@ type chartValue struct {
 	ImagePullSecrets []string                            `json:"imagePullSecrets,omitempty"`
 	ServiceInstances map[string]serviceInstanceExt       `json:"serviceInstances"`
 	ServiceBindings  map[string]serviceBindingExt        `json:"serviceBindings"`
-	Workloads        map[string]v1alpha1.WorkloadDetails `json:"workloads"`
-	TenantOperations v1alpha1.TenantOperations           `json:"tenantOperations,omitempty"`
+	Workloads        map[string]v1alpha2.WorkloadDetails `json:"workloads"`
+	TenantOperations v1alpha2.TenantOperations           `json:"tenantOperations,omitempty"`
 	ContentJobs      []string                            `json:"contentJobs,omitempty"`
-	ServiceExposures []v1alpha1.ServiceExposure          `json:"serviceExposures,omitempty"`
+	ServiceExposures []v1alpha2.ServiceExposure          `json:"serviceExposures,omitempty"`
 }
 
 type workloadDefinition struct {

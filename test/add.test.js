@@ -97,6 +97,42 @@ describe('cds add cap-operator', () => {
 
     })
 
+    it('Warns when existing templates use CAP Operator v1alpha1', async () => {
+        execSync(`cds add cap-operator --with-templates`, { cwd: bookshop })
+
+        const templatePath = join(bookshop, 'chart/templates/cap-operator-cros.yaml')
+        fs.writeFileSync(templatePath, fs.readFileSync(templatePath, 'utf8').replace('sme.sap.com/v1alpha2', 'sme.sap.com/v1alpha1'))
+
+        const log = execSync(`cds add cap-operator`, { cwd: bookshop }).toString()
+        expect(log).to.include("CAP Operator API version 'sme.sap.com/v1alpha2' is available. Update the chart templates from 'sme.sap.com/v1alpha1'.")
+        expect(fs.readFileSync(templatePath, 'utf8')).to.include('sme.sap.com/v1alpha1')
+    })
+
+    it('Renders CAP Operator v1alpha2 resources and optional maxSubscriptions', async () => {
+        execSync(`cds add cap-operator --with-templates`, { cwd: bookshop })
+        const valuesPath = join(bookshop, 'chart', 'values.yaml')
+        const values = yaml.parse(fs.readFileSync(join(__dirname, 'files', 'values-of-simple-chart-filled.yaml'), 'utf8'))
+        values.app.domains.primary = 'example.test'
+        values.btp.providerSubaccountId = 'dc94db56-asda-adssa-dada-123456789012'
+        fs.writeFileSync(valuesPath, yaml.stringify(values))
+
+        const render = (...args) => yaml.parseAllDocuments(execSync(`helm template bookshop chart ${args.join(' ')}`, { cwd: bookshop }).toString())
+            .map(document => document.toJSON())
+        const resources = render()
+        const capApplication = resources.find(resource => resource?.kind === 'CAPApplication')
+        const capApplicationVersion = resources.find(resource => resource?.kind === 'CAPApplicationVersion')
+        const domain = resources.find(resource => resource?.kind === 'Domain')
+
+        expect(capApplication.apiVersion).to.equal('sme.sap.com/v1alpha2')
+        expect(capApplication.spec).to.not.have.property('maxSubscriptions')
+        expect(capApplicationVersion.apiVersion).to.equal('sme.sap.com/v1alpha2')
+        expect(domain.apiVersion).to.equal('sme.sap.com/v1alpha2')
+
+        const resourcesWithMaxSubscriptions = render('--set', 'app.maxSubscriptions=42')
+        const capApplicationWithMaxSubscriptions = resourcesWithMaxSubscriptions.find(resource => resource?.kind === 'CAPApplication')
+        expect(capApplicationWithMaxSubscriptions.spec.maxSubscriptions).to.equal(42)
+    })
+
     it('Add cap-operator chart with mta but mta.yaml is not present', async () => {
         // remove mta.yaml if present
         if (cds.utils.exists(join(bookshop, 'mta.yaml'))) fs.unlinkSync(join(bookshop, 'mta.yaml'))
